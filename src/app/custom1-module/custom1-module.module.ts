@@ -1,10 +1,11 @@
-import {NgModule, CUSTOM_ELEMENTS_SCHEMA, isDevMode, Injector} from '@angular/core';
+import {NgModule, CUSTOM_ELEMENTS_SCHEMA, isDevMode, Injector, ApplicationRef, createComponent} from '@angular/core';
 import { CommonModule } from '@angular/common';
 import * as utils from './utils';
-import { ComponentFactoryResolver, ViewContainerRef } from '@angular/core';
+import { ViewContainerRef } from '@angular/core';
 import {StoreDevtoolsModule} from '@ngrx/store-devtools';
 import {Store, StoreModule} from '@ngrx/store';
 import * as StateConstants from '../state/state.const';
+
 
 // Define the map
 export const selectorComponentMap = new Map<string, any>([
@@ -16,6 +17,8 @@ const componentMapping: { [name: string]: any } = {
 };
 @NgModule({
   declarations: [
+
+
 
   ],
   exports: [
@@ -38,7 +41,7 @@ export class Custom1ModuleModule {
 
   public beforeSearchButton: any;
 
-  constructor(private componentFactoryResolver: ComponentFactoryResolver, private viewContainerRef:ViewContainerRef, private injector: Injector, private store : Store ) {
+  constructor(private appRef: ApplicationRef, private viewContainerRef:ViewContainerRef, private injector: Injector, private store : Store ) {
     console.log('Start constructor of Custom1ModuleModule:' );
     //console.log(this.componentFactoryResolver );
     //console.log(this.viewContainerRef);
@@ -64,26 +67,25 @@ export class Custom1ModuleModule {
     }
     if(componentType) {
 
+      try {
+        //return componentFactory.create(this.viewContainerRef.parentInjector);
+        const injector = Injector.create({
+          providers: [
+            {provide: Store, useValue: this.store},
+            {provide: ViewContainerRef, useValue: this.viewContainerRef},
+          ],
+          parent: this.viewContainerRef.injector
+        });
+        return createComponent(componentType, {environmentInjector: this.appRef.injector, elementInjector: injector})
+        // return componentFactory.create(injector);
+      } catch (e) {
+        console.error('Cannot get angular component:' + componentType, e);
         try {
-          const componentFactory = this.componentFactoryResolver.resolveComponentFactory(componentType);
-          //return componentFactory.create(this.viewContainerRef.parentInjector);
-          const injector = Injector.create({
-            providers: [
-              {provide: Store, useValue: this.store},
-              {provide: ComponentFactoryResolver, useValue: this.componentFactoryResolver},
-              {provide: ViewContainerRef, useValue: this.viewContainerRef},
-            ],
-            parent: this.viewContainerRef.parentInjector
-          });
-          return componentFactory.create(injector);
-        } catch (e) {
-          console.error('Cannot get angular component:' + componentType, e);
-          try {
-            return new componentType;
-          }catch (e1){
-            console.error('Cannot create angular component:' + componentType, e);
-          }
+          return new componentType;
+        }catch (e1){
+          console.error('Cannot create angular component:' + componentType, e);
         }
+      }
     }
 
   }
