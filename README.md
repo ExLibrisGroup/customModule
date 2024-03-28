@@ -51,7 +51,9 @@ npm install
 Step 3: 
 Adding Custom Components (cmd and ng)
 1.	 
+
 2.	
+
 3.	Create your custom component(s) in for custom1-module module.
 -- create first existed 
 ng generate component <Component for Custom> --module custom1-module
@@ -62,25 +64,30 @@ CREATE src/app/recommendations-component/recommendations-component.component.spe
 CREATE src/app/recommendations-component/recommendations-component.component.ts (278 bytes)
 CREATE src/app/recommendations-component/recommendations-component.component.scss (0 bytes)
 UPDATE src/app/custom1-module/custom1-module.module.ts (3279 bytes)
+
+Adding Custom Components (cmd and ng) Before and After target component
+ng generate component <targetComponent>-before --module custom1-module
+ng generate component <targetComponent>-after --module custom1-module
+
+
 4.	Connect your component(s) by selector in the selectorComponentMap in custom1-module.module.ts:
 // Define the map
 export const selectorComponentMap = new Map<string, any>([
-  ['nde-recommendations', RecommendationsComponent],
+  ['nde-recommendations-before', RecommendationsComponentBefore],
+ ['nde-recommendations-after', RecommendationsComponentAfter],
+ ['nde-recommendations', RecommendationsComponent],
   // Add more pairs as needed
 ]);
 const componentMapping: { [name: string]: any } = {
   RecommendationsComponent,
   };
 
-5.	Make customization design in <Component for Custom>.html, <Component for Custom>.ts, <Component for Custom>.scss
+6.	Make customization design in <Component for Custom>.html, <Component for Custom>.ts, <Component for Custom>.scss
 Example:
 src/app/recommendations-component/recommendations-component.component.html,
 src/app/recommendations-component/recommendations-component.component.ts,
 src/app/recommendations-component/recommendations-component.component.scss
 
-Adding Custom Components (cmd and ng) Before and After target component
-ng generate component <targetComponent>-before --module custom1-module
-ng generate component <targetComponent>-after --module custom1-module
 
 Examples:
  
