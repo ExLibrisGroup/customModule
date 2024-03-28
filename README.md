@@ -78,43 +78,45 @@ src/app/recommendations-component/recommendations-component.component.html,
 src/app/recommendations-component/recommendations-component.component.ts,
 src/app/recommendations-component/recommendations-component.component.scss
 
-
+Adding Custom Components (cmd and ng) Before and After target component
+ng generate component <targetComponent>-before --module custom1-module
+ng generate component <targetComponent>-after --module custom1-module
 
 Examples:
  
 
 List of Selectors of Components that extends BaseCustomComponent
-nde-full-display-container
-nde-full-display-service-container
-nde-full-display-details
-nde-full-display-links
-nde-get-it
-nde-tags
-nde-view-it
-nde-home-page
-nde-page-not-found
-nde-search-results-container
-nde-recommendations
-nde-search-results
-nde-search-result-container-item
-nde-record-almetrics
-nde-record-availability
-nde-record-checkbox
-nde-record-course
-nde-record-image
-nde-record-indications
-nde-record-main-details
-nde-record-summary
-nde-record-title
-nde-record-type
-nde-search-bar-filters
-nde-search-results-recommendations
-nde-copy-to-clipboard
-nde-citation-dialog
-nde-language-selector-container
-nde-language-selector-presenter
-nde-main-menu
-nde-logo
+•	nde-full-display-container
+•	nde-full-display-service-container
+•	nde-full-display-details
+•	nde-full-display-links
+•	nde-get-it
+•	nde-tags
+•	nde-view-it
+•	nde-home-page
+•	nde-page-not-found
+•	nde-search-results-container
+•	nde-recommendations
+•	nde-search-results
+•	nde-search-result-container-item
+•	nde-record-almetrics
+•	nde-record-availability
+•	nde-record-checkbox
+•	nde-record-course
+•	nde-record-image
+•	nde-record-indications
+•	nde-record-main-details
+•	nde-record-summary
+•	nde-record-title
+•	nde-record-type
+•	nde-search-bar-filters
+•	nde-search-results-recommendations
+•	nde-copy-to-clipboard
+•	nde-citation-dialog
+•	nde-language-selector-container
+•	nde-language-selector-presenter
+•	nde-main-menu
+•	nde-logo
 
 
 ## Build
