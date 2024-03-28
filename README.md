@@ -6,36 +6,55 @@ NDE Customization package
 
 Node.js and npm (Node Package Manager)
 1.	Verify Node.js and npm Installation:
-•	Open a terminal.
-•	Type node -v and press Enter to check for Node.js.
-•	Type npm -v and press Enter to check for npm.
-•	If Node.js and npm are installed, you'll see the version numbers. If not, you'll see an error indicating that Node.js or npm is not recognized.
-2.	Install Node.js and npm (if not installed):
-•	Visit the Node.js download page.
-•	Download the version for your operating system (npm is included with Node.js).
-•	Follow the installation instructions on the page.
+   
+  •	Open a terminal.
+
+  •	Type node -v and press Enter to check for Node.js.
+
+  •	Type npm -v and press Enter to check for npm.
+
+  •	If Node.js and npm are installed, you'll see the version numbers. If not, you'll see an error indicating that Node.js or npm is not recognized.
+
+4.	Install Node.js and npm (if not installed):
+   
+  •	Visit the Node.js download page.
+
+  •	Download the version for your operating system (npm is included with Node.js).
+
+  •	Follow the installation instructions on the page.
+
 Angular CLI
-1.	Verify Angular CLI Installation:
-•	Open a terminal.
-•	Type ng version and press Enter.
-•	If Angular CLI is installed, you'll see the version number and installed Angular packages. If not, you'll see an error indicating that Angular CLI is not recognized.
-2.	Install Angular CLI (if not installed):
-•	After installing Node.js and npm, you can install Angular CLI globally by running:
-npm install -g @angular/cli
-•	This command installs the Angular CLI to be used in all your Angular projects.
+
+  1.	Verify Angular CLI Installation:
+     
+    •	Open a terminal.
+
+    •	Type ng version and press Enter.
+
+    •	If Angular CLI is installed, you'll see the version number and installed Angular packages. If not, you'll see an error indicating that Angular CLI is not recognized.
+
+  3.	Install Angular CLI (if not installed):
+  4.	
+    •	After installing Node.js and npm, you can install Angular CLI globally by running:
+          npm install -g @angular/cli
+    	
+    •	This command installs the Angular CLI to be used in all your Angular projects.
  
 
 
 ## Development server
 
 Step 1: 
+
 Downloading the Project Zip File
+
 1.	Instructions for Downloading:
-•	Navigate to the https://github.com/ExLibrisGroup/customModule/
+   
+  •	Navigate to the https://github.com/ExLibrisGroup/customModule/
 
 
-•	Download ZIP: 
-•	Extract zip to development folder
+•	Download ZIP
+  •	Extract zip to development folder
 c:\env\custom-module\  - for example. 
 
 
@@ -51,6 +70,7 @@ npm install
 Step 3: 
 Adding Custom Components (cmd and ng)
 1.	 
+
 
 2.	
 
