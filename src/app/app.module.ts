@@ -7,10 +7,6 @@ import {Custom1ModuleModule} from "./custom1-module/custom1-module.module";
 import { StoreModule } from '@ngrx/store';
 import {StoreDevtoolsModule} from "@ngrx/store-devtools";
 import * as StateConstants from "./state/state.const";
-import {viewConfigFeatureName, viewConfigReducer} from "./state/view-config/viewConfig.reducer";
-import {userFeatureName, userReducer} from "./state/user/user.reducer";
-import {searchFeatureName, searchReducer} from "./state/search/search.reducer";
-import {fullDisplayFeatureName, fullDisplayReducer} from "./state/full-display/full-display.reducer";
 
 
 @NgModule({
@@ -21,12 +17,7 @@ import {fullDisplayFeatureName, fullDisplayReducer} from "./state/full-display/f
     BrowserModule,
     AppRoutingModule,
     Custom1ModuleModule,
-    StoreModule.forRoot({
-      [viewConfigFeatureName]: viewConfigReducer,
-      [userFeatureName]: userReducer,
-      [searchFeatureName]: searchReducer,
-      [fullDisplayFeatureName]: fullDisplayReducer
-    }, {}),
+    StoreModule.forRoot({}, {}),
     StoreDevtoolsModule.instrument({
       maxAge: StateConstants.MAX_STATE_ACTIONS_IN_HISTORY,
       logOnly: !isDevMode(),
