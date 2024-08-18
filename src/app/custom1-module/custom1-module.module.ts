@@ -43,16 +43,6 @@ export class Custom1ModuleModule {
 
   constructor(private appRef: ApplicationRef, private viewContainerRef:ViewContainerRef, private injector: Injector, private store : Store ) {
     console.log('Start constructor of Custom1ModuleModule:' );
-    //console.log(this.componentFactoryResolver );
-    //console.log(this.viewContainerRef);
-    //console.log(this.store );
-    // Resolve the factory for SearchButtonAfterComponent
-    //const componentFactory = this.componentFactoryResolver.resolveComponentFactory(SearchButtonAfterComponent);
-
-    // Create an instance of SearchButtonAfterComponent
-    //this.componentRef = componentFactory.create(this.viewContainerRef.parentInjector);
-
-
 
   }
 
@@ -77,7 +67,6 @@ export class Custom1ModuleModule {
           parent: this.viewContainerRef.injector
         });
         return createComponent(componentType, {environmentInjector: this.appRef.injector, elementInjector: injector})
-        // return componentFactory.create(injector);
       } catch (e) {
         console.error('Cannot get angular component:' + componentType, e);
         try {
