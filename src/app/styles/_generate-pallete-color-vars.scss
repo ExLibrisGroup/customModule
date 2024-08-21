@@ -1,0 +1,17 @@
+@mixin generateColorsVariablesFromPalette($prefix, $palette) {
+    nde-app-root {
+      @each $key, $value in $palette {
+        @if ($key != "contrast") {
+          $colorName: $prefix + "-" + $key;
+          $colorValue: $value;
+          --#{$colorName}: #{$colorValue};
+        }
+      }
+    }
+  }
+
+@mixin generate-color-variables($primary-palette, $accent-palette, $warn-palette) {
+    @include generateColorsVariablesFromPalette("primary", $primary-palette);
+    @include generateColorsVariablesFromPalette("accent", $accent-palette);
+    @include generateColorsVariablesFromPalette("warn", $warn-palette);
+  }

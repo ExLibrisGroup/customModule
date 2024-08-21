@@ -30,7 +30,13 @@
 							"src/assets"
 						],
 						"styles": [
-							"src/styles.scss"
+							"src/styles.scss",
+							{
+								"input":"src/app/styles/_customized-theme.scss",
+								"bundleName": "custom",
+								"inject": true
+							}
+					
 						],
 						"scripts": [],
 						"extraWebpackConfig": "webpack.config.js",
