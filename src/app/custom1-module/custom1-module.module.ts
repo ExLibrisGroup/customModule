@@ -13,8 +13,7 @@ export const selectorComponentMap = new Map<string, any>([
 ]);
 
 
-const componentMapping: { [name: string]: any } = {
-};
+
 @NgModule({
   declarations: [
 
@@ -52,9 +51,6 @@ export class Custom1ModuleModule {
    */
   public getComponentRef(componentName:string ){
     let componentType = selectorComponentMap.get(componentName);
-    if(!componentType){
-      componentType = componentMapping[componentName];
-    }
     if(componentType) {
 
       try {
