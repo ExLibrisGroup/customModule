@@ -1,6 +1,7 @@
-<<<<<<< HEAD
+
 # customModule
 NDE Customization package
+	This package offers options to enhance and extend the functionality of Primo’s New Discovery Experience NDE: add and develop your own components, custom theme template  and tailor tour discovery interface to your needs.
 =======
 # CustomModule
 
