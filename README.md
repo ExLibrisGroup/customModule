@@ -50,18 +50,19 @@ Downloading the Project Zip File
 
 1.	Instructions for Downloading:
    
-  •	Navigate to the https://github.com/ExLibrisGroup/customModule/
+	•	Navigate to the https://github.com/ExLibrisGroup/customModule/
 
 
-•	Download ZIP
-  •	Extract zip to development folder
-c:\env\custom-module\  - for example. 
+	•	Download ZIP
+	•	Extract zip to development folder
+		c:\env\custom-module\  - for example. 
 
 
 
-Step 2: Installing Dependencies
+Step 2: 
+Installing Dependencies
 1.	Inside the customModule directory, install the necessary npm packages:
-npm install
+	•	npm install
 
 
 
@@ -75,96 +76,95 @@ Adding Custom Components (cmd and ng)
 2.	
 
 3.	Create your custom component(s) in for custom1-module module.
--- create first existed 
-ng generate component <Component for Custom> --module custom1-module
-Example:
-c:\env\custom-module>ng generate component RecommendationsComponent --module custom1-module
-CREATE src/app/recommendations-component/recommendations-component.component.html (40 bytes)
-CREATE src/app/recommendations-component/recommendations-component.component.spec.ts (686 bytes)
-CREATE src/app/recommendations-component/recommendations-component.component.ts (278 bytes)
-CREATE src/app/recommendations-component/recommendations-component.component.scss (0 bytes)
-UPDATE src/app/custom1-module/custom1-module.module.ts (3279 bytes)
+	-- create first existed 
+	ng generate component <Component for Custom> --module custom1-module
+	Example:
+		c:\env\custom-module>ng generate component RecommendationsComponent --module custom1-module
+			CREATE src/app/recommendations-component/recommendations-component.component.html (40 bytes)
+			CREATE src/app/recommendations-component/recommendations-component.component.spec.ts (686 bytes)
+			CREATE src/app/recommendations-component/recommendations-component.component.ts (278 bytes)
+			CREATE src/app/recommendations-component/recommendations-component.component.scss (0 bytes)
+			UPDATE src/app/custom1-module/custom1-module.module.ts (3279 bytes)
 
-Adding Custom Components (cmd and ng) Before and After target component
-ng generate component <targetComponent>-before --module custom1-module
-ng generate component <targetComponent>-after --module custom1-module
+	Adding Custom Components (cmd and ng) Before and After target component
+		ng generate component <targetComponent>-before --module custom1-module
+		ng generate component <targetComponent>-after --module custom1-module
 
 
 4.	Connect your component(s) by selector in the selectorComponentMap in custom1-module.module.ts:
-// Define the map
-export const selectorComponentMap = new Map<string, any>([
-  ['nde-recommendations-before', RecommendationsComponentBefore],
- ['nde-recommendations-after', RecommendationsComponentAfter],
- ['nde-recommendations', RecommendationsComponent],
-  // Add more pairs as needed
-]);
-const componentMapping: { [name: string]: any } = {
-  RecommendationsComponent,
-  };
+	// Define the map
+		export const selectorComponentMap = new Map<string, any>([
+			['nde-recommendations-before', RecommendationsComponentBefore],
+			['nde-recommendations-after', RecommendationsComponentAfter],
+			['nde-recommendations', RecommendationsComponent],
+			// Add more pairs as needed
+			]);
+
 
 6.	Make customization design in <Component for Custom>.html, <Component for Custom>.ts, <Component for Custom>.scss
-Example:
-src/app/recommendations-component/recommendations-component.component.html,
-src/app/recommendations-component/recommendations-component.component.ts,
-src/app/recommendations-component/recommendations-component.component.scss
+	Example:
+		src/app/recommendations-component/recommendations-component.component.html,
+		src/app/recommendations-component/recommendations-component.component.ts,
+		src/app/recommendations-component/recommendations-component.component.scss
 
 
-Examples:
+	Examples:
  
 
 List of Selectors of Components that extends BaseCustomComponent
-•	nde-full-display-container
-•	nde-full-display-service-container
-•	nde-full-display-details
-•	nde-full-display-links
-•	nde-get-it
-•	nde-tags
-•	nde-view-it
-•	nde-home-page
-•	nde-page-not-found
-•	nde-search-results-container
-•	nde-recommendations
-•	nde-search-results
-•	nde-search-result-container-item
-•	nde-record-almetrics
-•	nde-record-availability
-•	nde-record-checkbox
-•	nde-record-course
-•	nde-record-image
-•	nde-record-indications
-•	nde-record-main-details
-•	nde-record-summary
-•	nde-record-title
-•	nde-record-type
-•	nde-search-bar-filters
-•	nde-search-results-recommendations
-•	nde-copy-to-clipboard
-•	nde-citation-dialog
-•	nde-language-selector-container
-•	nde-language-selector-presenter
-•	nde-main-menu
-•	nde-logo
+	•	nde-full-display-container
+	•	nde-full-display-service-container
+	•	nde-full-display-details
+	•	nde-full-display-links
+	•	nde-get-it
+	•	nde-tags
+	•	nde-view-it
+	•	nde-home-page
+	•	nde-page-not-found
+	•	nde-search-results-container
+	•	nde-recommendations
+	•	nde-search-results
+	•	nde-search-result-container-item
+	•	nde-record-almetrics
+	•	nde-record-availability
+	•	nde-record-checkbox
+	•	nde-record-course
+	•	nde-record-image
+	•	nde-record-indications
+	•	nde-record-main-details
+	•	nde-record-summary
+	•	nde-record-title
+	•	nde-record-type
+	•	nde-search-bar-filters
+	•	nde-search-results-recommendations
+	•	nde-copy-to-clipboard
+	•	nde-citation-dialog
+	•	nde-language-selector-container
+	•	nde-language-selector-presenter
+	•	nde-main-menu
+	•	nde-logo
 
 
 ## Build
 
 Step 4: Building the Project
-1.	Compile the project by running:
-npm run build
-2.	After a successful build, your compiled code will be in the dist/ directory.
+	1.	Compile the project by running:
+		npm run build
+	2.	After a successful build, your compiled code will be in the dist/ directory.
+
 Step 5: Packaging for Distribution
-1.	Rename the dist/custom-module folder to match the format INSTNAME-VIEWNAME where INSTNAME and VIEWNAME are specific to your installation.
-2.	Zip the renamed folder for distribution. 
+	1.	Rename the dist/custom-module folder to match the format INSTNAME-VIEWNAME where INSTNAME and VIEWNAME are specific to your installation.
+	2.	Zip the renamed folder for distribution. 
    
 
 
 ## Running unit tests
 
 Step 6: Upload package to view
-1.	Enter to Alma BO -> Discovery -> View List -> Edit -> Tab: Manage Customization Package -> Field: Customization Package
- 
-2.	 Save
-3.	 Go to FE and refresh
+	1.	Enter to Alma BO -> Discovery -> View List -> Edit -> Tab: Manage Customization Package -> Field: Customization Package
+	 
+	2.	 Save
+	3.	 Go to FE and refresh
 
 
 
