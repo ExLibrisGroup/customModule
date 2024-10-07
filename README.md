@@ -96,7 +96,10 @@ The NDE Customization package offers options to enhance and extend the functiona
 ---
 
 ### Step 4: Configuring Proxy for Local Development
-- **Update `proxy.conf.mjs` Configuration**:
+
+There are two options for setting up your local development environment: configuring a proxy or using customization enhancements.
+
+- **Option 1: Update `proxy.conf.mjs` Configuration**:
   - Set the URL of the server you want to test your code with by modifying the `proxy.conf.mjs` file in the `./proxy` directory:
     ```javascript
     // Configuration for the development proxy
@@ -111,8 +114,7 @@ The NDE Customization package offers options to enhance and extend the functiona
     npm run start:proxy
     ```
 
-- **Enhancements in Customization**:
-  - All NDE selectors are customizable, with exceptions that will be noted and addressed as identified. This provides extended flexibility in adapting the discovery interface.
+- **Option 2: Enhancements in Customization**:
   - **Local Custom Package Development**:
     - To work with your live environment using a custom package, add the following configuration:
       ```bash
@@ -124,6 +126,7 @@ The NDE Customization package offers options to enhance and extend the functiona
       localhost:4201/...
       ```
     - This setup allows for real-time testing and development that closely mirrors live environment conditions.
+
 
 
 ## Build the Project
