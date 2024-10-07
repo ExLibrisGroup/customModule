@@ -139,9 +139,40 @@ The NDE Customization package offers options to enhance and extend the functiona
 
 ---
 
+
+### Step 6: Configuring Proxy for Local Development
+- **Update `proxy.conf.mjs` Configuration**:
+  - Set the URL of the server you want to test your code with by modifying the `proxy.conf.mjs` file in the `./proxy` directory:
+    ```javascript
+    // Configuration for the development proxy
+    const environments = {
+      'example': 'https://myPrimoVE.com',
+    }
+
+    export const PROXY_TARGET = environments['example'];
+    ```
+  - Start the development server with the configured proxy by running:
+    ```bash
+    npm run start:proxy
+    ```
+
+- **Enhancements in Customization**:
+  - All NDE selectors are customizable, with exceptions that will be noted and addressed as identified. This provides extended flexibility in adapting the discovery interface.
+  - **Local Custom Package Development**:
+    - To work with your live environment using a custom package, add the following configuration:
+      ```bash
+      useLocalCustomPackage=true
+      ```
+    - This setting assumes that your local development environment is running on the default port `4201`.
+    - When starting your local development environment with the proxy enabled, configure your development customization package by specifying your local URL in the proxy configuration. Example:
+      ```plaintext
+      localhost:4201/...
+      ```
+    - This setup allows for real-time testing and development that closely mirrors live environment conditions.
+
 ## Running Unit Tests
 
-### Step 6: Upload Customization Package to Alma
+### Step 7: Upload Customization Package to Alma
 1. In Alma, navigate to **Discovery > View List > Edit**.
 2. Go to the **Manage Customization Package** tab.
 3. Upload your zipped package in the **Customization Package** field and save.
