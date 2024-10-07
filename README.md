@@ -157,6 +157,13 @@ The NDE Customization package offers options to enhance and extend the functiona
 4. Refresh the front-end to see your changes.
 
 
+---
+
+## Additional Resources
+
+### Live Demo Tutorial
+- **Customize Primo NDE UI**: Watch our live demo on YouTube for a visual guide on how to customize the Primo NDE UI:
+  [Customize Primo NDE UI: Live Demo](https://www.youtube.com/watch?v=z06l2hJYuLc)
 
 
 
