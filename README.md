@@ -88,38 +88,10 @@ The NDE Customization package offers options to enhance and extend the functiona
     - `src/app/recommendations-component/recommendations-component.component.ts`
     - `src/app/recommendations-component/recommendations-component.component.scss`
 
-### Component Selectors that Extend `BaseCustomComponent`:
-- `nde-full-display-container`
-- `nde-full-display-service-container`
-- `nde-full-display-details`
-- `nde-full-display-links`
-- `nde-get-it`
-- `nde-tags`
-- `nde-view-it`
-- `nde-home-page`
-- `nde-page-not-found`
-- `nde-search-results-container`
-- `nde-recommendations`
-- `nde-search-results`
-- `nde-search-result-container-item`
-- `nde-record-almetrics`
-- `nde-record-availability`
-- `nde-record-checkbox`
-- `nde-record-course`
-- `nde-record-image`
-- `nde-record-indications`
-- `nde-record-main-details`
-- `nde-record-summary`
-- `nde-record-title`
-- `nde-record-type`
-- `nde-search-bar-filters`
-- `nde-search-results-recommendations`
-- `nde-copy-to-clipboard`
-- `nde-citation-dialog`
-- `nde-language-selector-container`
-- `nde-language-selector-presenter`
-- `nde-main-menu`
-- `nde-logo`
+### Customization of Component Selectors
+
+- All components in the NDE are intended to be customizable. However, if you encounter a component that does not support customization, please open a support case with us. This helps ensure that we can address the issue and potentially add customization support for that component in future updates.
+
 
 ---
 
