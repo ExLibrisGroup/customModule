@@ -105,14 +105,30 @@ The NDE Customization package offers options to enhance and extend the functiona
 
 2. After a successful build, the compiled code will be in the `dist/` directory.
 
-### Step 5: Package for Distribution
-1. Rename the `dist/custom-module` folder to match the format `INSTNAME-VIEWNAME`, where `INSTNAME` and `VIEWNAME` are specific to your installation.
-2. Zip the renamed folder for distribution.
+### Step 5: Upload the Customization Package
 
----
+- **Automatic Packaging**:
+  - The build process automatically compiles and packages the project into a ZIP file named according to the `INST_ID` and `VIEW_ID` specified in the `build-settings.env` file located at:
+    ```
+    C:\env\nde\customModule-base\build-settings.env
+    ```
+  - Example configuration:
+    ```
+    INST_ID=01BC_INST
+    VIEW_ID=Auto1
+    ```
+  - The ZIP file, e.g., `01BC_INST-Auto1.zip`, is automatically created in the `dist/` directory after a successful build.
 
 
-### Step 6: Configuring Proxy for Local Development
+### Step 6: Upload Customization Package to Alma
+1. In Alma, navigate to **Discovery > View List > Edit**.
+2. Go to the **Manage Customization Package** tab.
+3. Upload your zipped package in the **Customization Package** field and save.
+4. Refresh the front-end to see your changes.
+
+
+
+### Step 7: Configuring Proxy for Local Development
 - **Update `proxy.conf.mjs` Configuration**:
   - Set the URL of the server you want to test your code with by modifying the `proxy.conf.mjs` file in the `./proxy` directory:
     ```javascript
@@ -142,13 +158,8 @@ The NDE Customization package offers options to enhance and extend the functiona
       ```
     - This setup allows for real-time testing and development that closely mirrors live environment conditions.
 
-## Running Unit Tests
 
-### Step 7: Upload Customization Package to Alma
-1. In Alma, navigate to **Discovery > View List > Edit**.
-2. Go to the **Manage Customization Package** tab.
-3. Upload your zipped package in the **Customization Package** field and save.
-4. Refresh the front-end to see your changes.
+
 
 ---
 
