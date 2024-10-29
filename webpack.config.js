@@ -39,10 +39,10 @@ module.exports = {
   plugins: [
     new CopyWebpackPlugin({
       patterns: [
-        { from: 'src/assets', to: 'assets', 
-		  noErrorOnMissing: true,
-		  globOptions: {             
-			ignore: [
+        { from: 'src/assets', to: 'assets',
+      noErrorOnMissing: true,
+      globOptions: {
+      ignore: [
               "**/.gitkeep", // Make sure this matches exactly the files you want to exclude
               "**/.*" // This pattern excludes all hidden files
             ] } } // Adjust the paths as needed
@@ -64,17 +64,16 @@ module.exports = {
 
         // },
 
-        shared: share({
-          "@angular/core": { singleton: true, strictVersion: true,  requiredVersion: '^16.1.3' },
-          "@angular/common": { singleton: true, strictVersion: true,  requiredVersion: '^16.1.3' },
-          "@angular/common/http": { singleton: true, strictVersion: true,  requiredVersion: '^16.1.3' },
-          "@angular/router": { singleton: true, strictVersion: true,  requiredVersion: '^16.1.3' },
-          '@ngrx/store': { singleton: true, eager: false, requiredVersion: 'auto' },
-          '@ngx-translate/core': { singleton: true, eager: false, requiredVersion: 'auto' },
-          '@angular/material': { singleton: true, eager: false, requiredVersion: 'auto' },
-          "@angular/material-moment-adapter": { singleton: true, strictVersion: true },
-          ...sharedMappings.getDescriptors()
-        })
+      shared: share({
+        "@angular/core": { singleton: true, strictVersion: false },
+        "@angular/common": { singleton: true, strictVersion: false },
+        "@angular/common/http": { singleton: true, strictVersion: false },
+        "@angular/router": { singleton: true, strictVersion: false },
+        '@ngrx/store': { singleton: true, eager: false },
+        '@ngx-translate/core': { singleton: true, eager: false},
+        '@angular/material': { singleton: true, eager: false },
+        ...sharedMappings.getDescriptors()
+      })
 
     }),
     sharedMappings.getPlugin()
