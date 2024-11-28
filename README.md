@@ -103,7 +103,7 @@ The NDE Customization package is currently available exclusively to Primo custom
 There are two options for setting up your local development environment: configuring a proxy or using customization enhancements.
 
 - **Option 1: Update `proxy.conf.mjs` Configuration**:
-  - Set the URL of the server you want to test your code with by modifying the `proxy.conf.mjs` file in the `./proxy` directory:
+  - Set the URL of the server you want to test your code with by modifying the `proxy.conf.mjs` file in the `./proxy` directory (NOTE: Make sure to include http:// or https:// in the URL):
     ```javascript
     // Configuration for the development proxy
     const environments = {
