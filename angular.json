@@ -85,7 +85,8 @@
 		  "options": {
 			"port": 4201,
 			"publicHost": "http://localhost:4201",
-			"extraWebpackConfig": "webpack.config.js"
+			"extraWebpackConfig": "webpack.config.js",
+      "disableHostCheck": true
 		  }
 		},
 		"extract-i18n": {
