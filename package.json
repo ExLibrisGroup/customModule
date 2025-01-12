@@ -4,6 +4,7 @@
   "scripts": {
     "ng": "ng",
     "start": "ng serve",
+    "start:proxy": "ng serve --proxy-config ./proxy/proxy.conf.mjs",
     "start:no-prebundle": "ng serve --prebundle=false",
     "build": "ng build",
     "watch": "ng build --watch --configuration development",
