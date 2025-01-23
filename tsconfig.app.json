@@ -5,8 +5,7 @@
     "types": []
   },
   "files": [
-    "src/main.ts",
-    "src/app/custom1-module/custom1-module.module.ts"
+    "src/main.ts"
   ],
   "include": [
     "src/**/*.d.ts"

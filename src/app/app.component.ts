@@ -1,5 +1,4 @@
 import { Component } from '@angular/core';
-import {Custom1ModuleModule} from "./custom1-module/custom1-module.module";
 
 @Component({
   selector: 'app-root',

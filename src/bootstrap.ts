@@ -1,14 +1,10 @@
-import { platformBrowserDynamic } from '@angular/platform-browser-dynamic';
-
+import "@angular/compiler";
 import { AppModule } from './app/app.module';
 import {bootstrap} from "@angular-architects/module-federation-tools";
 
-
-
-// platformBrowserDynamic().bootstrapModule(AppModule)
-//   .catch(err => console.error(err));
-
-bootstrap(AppModule, {
+export const appModule = bootstrap(AppModule, {
   production: false,
   appType: 'microfrontend'
-}).then(r => console.log('microfrontend bootstrap success', r));
+}).then(r => {console.log('custom remotote app bootstrap success', r); return r});
+
+

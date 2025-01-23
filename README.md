@@ -79,7 +79,7 @@ The NDE Customization package is currently available exclusively to Primo custom
     ng generate component <TargetComponent>-after --module custom1-module
     ```
 
-3. Update `selectorComponentMap` in `custom1-module.module.ts` to connect the newly created components:
+3. Update `selectorComponentMap` in `app.module.ts` to connect the newly created components:
     ```typescript
     export const selectorComponentMap = new Map<string, any>([
       ['nde-recommendations-before', RecommendationsComponentBefore],
