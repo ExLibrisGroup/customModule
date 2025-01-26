@@ -65,10 +65,14 @@ module.exports = {
         // },
 
       shared: share({
-
-
-        '@ngx-translate/core': { singleton: true, eager: false},
-        '@angular/material': { singleton: true, eager: false },
+        "@angular/core": { requiredVersion: "auto" },
+        "@angular/common": { requiredVersion: "auto" },
+        "@angular/router": { requiredVersion: "auto" },
+        "rxjs": { requiredVersion: "auto" },
+        "@angular/common/http": { requiredVersion: "auto" },
+        '@ngx-translate/core': { singleton: true},
+        '@angular/material': { singleton: true, requiredVersion: "auto" },
+        '@ngrx/store': { singleton: true},
         ...sharedMappings.getDescriptors()
       })
 

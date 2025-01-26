@@ -17,55 +17,51 @@ export const selectorComponentMap = new Map<string, any>([
   ['nde-search-result-item-container-before', BriefResultComponent]
 
 ]);
-
-@NgModule({
-  declarations: [
-    AppComponent,
-    RecommendationsComponent
-  ],
-  imports: [
-    BrowserModule,
-    StoreModule.forRoot(),
-    // StoreDevtoolsModule.instrument({
-    //   maxAge: StateConstants.MAX_STATE_ACTIONS_IN_HISTORY,
-    //   logOnly: !isDevMode(),
-    //   trace: true,
-    //   traceLimit: StateConstants.MAX_STACK_FRAMES_IN_HISTORY
-    // })
-  ],
-  providers: [],
-  bootstrap: []
-})
-export class AppModule implements DoBootstrap{
-  private webComponentSelectorMap = new Map<string,  NgElementConstructor<unknown>>();
-  constructor(private injector: Injector, private router: Router) {
-    router.dispose(); //this prevents the router from being initialized and interfering with the shell app router
-  }
-  ngDoBootstrap(appRef: ApplicationRef) {
-    console.log('Start ngDoBootstrap of AppModule:' );
-    for (const [key, value] of selectorComponentMap) {
-      const customElement = createCustomElement(value, {injector: this.injector});
-      this.webComponentSelectorMap.set(key, customElement);
+export const AppModule = (providers: any) => {
+   @NgModule({
+    declarations: [
+      AppComponent,
+      RecommendationsComponent
+    ],
+    imports: [
+      BrowserModule,
+    ],
+    providers: providers,
+    bootstrap: []
+  })
+  class AppModule implements DoBootstrap{
+    private webComponentSelectorMap = new Map<string,  NgElementConstructor<unknown>>();
+    constructor(private injector: Injector, private router: Router) {
+      router.dispose(); //this prevents the router from being initialized and interfering with the shell app router
     }
-  }
-
-  /**
-   * Use componentMapping, selectorComponentMap
-   * @param componentName
-   * @param injector
-   * @param hostComponentInstance
-   */
-
-  public getComponentRef(componentName:string, injector: Injector, hostComponentInstance: unknown) {
-    const customComponentFactory = selectorComponentMap.get(componentName);
-    if (customComponentFactory) {
-      const customInjector = Injector.create({
-        providers: [{provide: 'HOST_COMPONENT', useValue: hostComponentInstance}],
-        parent: this.injector
-      });
-      return createCustomElement(customComponentFactory, {injector: customInjector});
+    ngDoBootstrap(appRef: ApplicationRef) {
+      console.log('Start ngDoBootstrap of AppModule:' );
+      for (const [key, value] of selectorComponentMap) {
+        const customElement = createCustomElement(value, {injector: this.injector});
+        this.webComponentSelectorMap.set(key, customElement);
+      }
     }
 
-    return selectorComponentMap.get(componentName);
+    /**
+     * Use componentMapping, selectorComponentMap
+     * @param componentName
+     * @param injector
+     * @param hostComponentInstance
+     */
+
+    public getComponentRef(componentName:string, injector: Injector, hostComponentInstance: unknown) {
+      const customComponentFactory = selectorComponentMap.get(componentName);
+      if (customComponentFactory) {
+        const customInjector = Injector.create({
+          providers: [{provide: 'HOST_COMPONENT', useValue: hostComponentInstance}],
+          parent: this.injector
+        });
+        return createCustomElement(customComponentFactory, {injector: customInjector});
+      }
+
+      return selectorComponentMap.get(componentName);
+    }
   }
+  return AppModule
 }
+
