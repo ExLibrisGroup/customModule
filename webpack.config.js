@@ -55,7 +55,7 @@ module.exports = {
         name: "customModule",
         filename: "remoteEntry.js",
         exposes: {
-            './web-components': './src/bootstrap.ts',
+            './custom-module': './src/bootstrap.ts',
         },
 
         // For hosts (please adjust)
