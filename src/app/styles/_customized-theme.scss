@@ -8,6 +8,6 @@
 
 
 .custom-nde-theme{
-  @include mat.all-component-themes(m3-theme.$light-theme);
+  @include mat.all-component-colors(m3-theme.$light-theme);
   @include mat.system-level-colors(m3-theme.$light-theme);
 }

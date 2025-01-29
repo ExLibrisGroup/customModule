@@ -2,6 +2,7 @@ const ModuleFederationPlugin = require("webpack/lib/container/ModuleFederationPl
 const mf = require("@angular-architects/module-federation/webpack");
 const CopyWebpackPlugin = require('copy-webpack-plugin');
 const path = require("path");
+const webpack = require("webpack");
 const share = mf.share;
 
 const sharedMappings = new mf.SharedMappings();
@@ -48,6 +49,11 @@ module.exports = {
             ] } } // Adjust the paths as needed
       ]
     }),
+    // DISABLE ngDevMode as it is not needed in a remoteEntry work around for issue: https://github.com/angular-architects/module-federation-plugin/issues/458
+    new webpack.DefinePlugin({
+      ngDevMode: "undefined",
+    }),
+    // END DISABLE ngDevMode as it is not needed in a remoteEntry
     new ModuleFederationPlugin({
         library: { type: "module" },
 
@@ -70,6 +76,7 @@ module.exports = {
         "@angular/router": { requiredVersion: "auto" },
         "rxjs": { requiredVersion: "auto" },
         "@angular/common/http": { requiredVersion: "auto" },
+        '@angular/platform-browser': { requiredVersion: 'auto' },
         '@ngx-translate/core': { singleton: true},
         '@angular/material': { singleton: true, requiredVersion: "auto" },
         '@ngrx/store': { singleton: true},
