@@ -7,7 +7,7 @@ export const bootstrapRemoteApp = (bootstrapOptions: any) => {
     production: true,
     appType: 'microfrontend'
   }).then(r => {
-    console.log('custom remote app bootstrap success', r);
+    console.log('custom remote app bootstrap success!', r);
     return r
   });
 }
