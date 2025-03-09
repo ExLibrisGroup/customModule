@@ -1,0 +1,15 @@
+<div>
+    <p>Current component start</p>
+    <h2>{{ getTitle() }} ({{getMmsId()}})</h2>
+    <h3 [class.connected]="isConnected" [class.not-connected]="!isConnected">
+      {{ isConnected ? 'Connected' : 'Not Connected' }}
+    </h3>
+    <p>subject:{{ subject }}</p>
+    <p>desc:{{ getDesc() }}</p>
+    <p>format:{{ getFormat()  }}</p>  
+    <p>author:{{ getAuthor()  }}</p>    
+    <p>publisher:{{ getPublisher()  }}</p>    
+    <p>partof:{{ getAuthor()  }}</p>    
+    <p>creation Date:{{ getCreationDate()  }}</p>    
+    <p>Current component end</p>
+</div>

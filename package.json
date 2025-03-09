@@ -4,11 +4,13 @@
   "scripts": {
     "ng": "ng",
     "start": "ng serve",
+	"prestart": "node prebuild.js",
     "start:no-prebundle": "ng serve --prebundle=false",
     "build": "ng build",
     "watch": "ng build --watch --configuration development",
     "test": "ng test",
     "postbuild": "node postbuild.js",
+    "prebuild": "node prebuild.js",
     "run:all": "node node_modules/@angular-architects/module-federation/src/server/mf-dev-server.js"
   },
   "private": true,

@@ -2,7 +2,6 @@ import {ApplicationRef, DoBootstrap, Injector, ModuleWithProviders, NgModule} fr
 import {BrowserModule} from '@angular/platform-browser';
 import {AppComponent} from './app.component';
 import {createCustomElement, NgElementConstructor} from "@angular/elements";
-import {RecommendationsComponent} from "./custom1-module/recommendations/recommendations.component";
 import {Router} from "@angular/router";
 import {selectorComponentMap} from "./custom1-module/customComponentMappings";
 import {TranslateModule} from "@ngx-translate/core";
@@ -11,8 +10,7 @@ import {TranslateModule} from "@ngx-translate/core";
 export const AppModule = ({providers}: {providers:any}) => {
    @NgModule({
     declarations: [
-      AppComponent,
-      RecommendationsComponent
+      AppComponent
     ],
     imports: [
       BrowserModule,

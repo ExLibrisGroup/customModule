@@ -1,13 +1,130 @@
 
 @use '@angular/material' as mat;
 @use 'generate-pallete-color-vars' as nde-mixins;
-@use 'm3-theme';
 
 // Be sure that you only ever include this mixin once!
 @include mat.core();
 
+// Define your theme with color palettes, typography and density
+
+//$mat-theme-primary-palette: map-merge(mat.$cyan-palette, ( contrast: (100: #150c4a,)));
+//$mat-theme-primary: mat.define-palette(
+//    $mat-theme-primary-palette,
+//  $default: 100,
+//  $lighter: 100,
+//  $darker: 700,
+//  $text: 500
+//);
+//
+//$mat-theme-accent-palette: map-merge(mat.$teal-palette, ( 501: #4d77b6,contrast: (501: white,A100: white,A200: white,)));
+//$mat-theme-accent: mat.define-palette(
+//    $mat-theme-accent-palette,
+//  $default: 501,
+//  $lighter: A100,
+//  $darker: A200,
+//  $text: 600
+//);
+//
+//$mat-theme-warn-palette: map-merge(mat.$pink-palette, ( ));
+//$mat-theme-warn: mat.define-palette(
+//    $mat-theme-warn-palette,
+//  $default: A200,
+//  $lighter: 500,
+//  $darker: 500,
+//  $text: A700
+//);
+//
+//$mat-dark-theme-primary-palette: map-merge(mat.$lime-palette, ( contrast: (200: #030844,A100: rgba(0,0,0, 0.87),A700: rgba(0,0,0, 0.87),)));
+//$mat-dark-theme-primary: mat.define-palette(
+//    $mat-dark-theme-primary-palette,
+//  $default: 200,
+//  $lighter: A100,
+//  $darker: A700,
+//  $text: 700
+//);
+//
+//$mat-dark-theme-accent-palette: map-merge(mat.$green-palette, ( contrast: (A200: black,50: black,A400: black,)));
+//$mat-dark-theme-accent: mat.define-palette(
+//    $mat-dark-theme-accent-palette,
+//  $default: A200,
+//  $lighter: 50,
+//  $darker: A400,
+//  $text: A100
+//);
+//
+//$mat-dark-theme-warn-palette: map-merge(mat.$pink-palette, ( contrast: (A100: black,100: white,)));
+//$mat-dark-theme-warn: mat.define-palette(
+//    $mat-dark-theme-warn-palette,
+//  $default: A100,
+//  $lighter: 100,
+//  $darker: A700,
+//  $text: 100
+//);
+//
+//@import url('https://fonts.googleapis.com/css2?family=Rubik:wght@300&display=swap');
+//
+//$mat-typography: mat.define-typography-config(
+//  $font-family: 'Rubik',
+//  $display-4:     mat.define-typography-level($font-size: 96px, $font-weight: 300, $font-family: Rubik),
+//  $display-3:     mat.define-typography-level($font-size: 60px, $font-weight: 500, $font-family: Rubik),
+//  $display-2:     mat.define-typography-level($font-size: 48px, $font-weight: 500, $font-family: Rubik),
+//  $display-1:     mat.define-typography-level($font-size: 34px, $font-weight: 500, $font-family: Rubik),
+//  $headline:      mat.define-typography-level($font-size: 24px, $font-weight: 500, $font-family: Rubik),
+//  $title:         mat.define-typography-level($font-size: 20px, $font-weight: 500, $font-family: Rubik),
+//  $subheading-2:  mat.define-typography-level($font-size: 18px, $font-weight: 500, $font-family: Rubik),
+//  $subheading-1:  mat.define-typography-level($font-size: 20px, $font-weight: 500, $font-family: Rubik),
+//  $body-2:        mat.define-typography-level($font-size: 16px, $font-weight: 400, $font-family: Rubik),
+//  $body-1:        mat.define-typography-level($font-size: 18px, $font-weight: 400, $font-family: Rubik),
+//  $caption:       mat.define-typography-level($font-size: 16px, $font-weight: Medium, $font-family: Rubik),
+//  $button:        mat.define-typography-level($font-size: 16px, $font-weight: 500, $font-family: Rubik),
+//    // Line-height must be unit-less fraction of the font-size.
+//  $input:         mat.define-typography-level($font-size: inherit, $line-height: 1.125, $font-weight: 500, $font-family: Rubik),
+//);
+//
+//$mat-density: 0;
+//// @include mat.elevation(
+////   $zValue: 12,
+////   $color: #000,
+////   $opacity: 0.5
+//// );
+//
+//$mat-core-theme: mat.define-light-theme((
+//  color: (
+//    primary: $mat-theme-primary,
+//    accent: $mat-theme-accent,
+//    warn: $mat-theme-warn
+//  ),
+//  typography: $mat-typography,
+//  density: $mat-density
+//));
+//
+//$mat-dark-theme: mat.define-dark-theme((
+//  color: (
+//    primary: $mat-dark-theme-primary,
+//    accent: $mat-dark-theme-accent,
+//    warn: $mat-dark-theme-warn,
+//  )
+//));
+$primary-palette: mat.m2-define-palette(mat.$m2-pink-palette, 500);
+$accent-palette: mat.m2-define-palette(mat.$m2-amber-palette, A200, A100, A400);
+$warn-palette: mat.m2-define-palette(mat.$m2-red-palette, 500);
+
+$mat-custom-theme: mat.m2-define-light-theme((
+  color: (
+    primary: $primary-palette,
+    accent: $accent-palette,
+    warn: $warn-palette
+  ),
+  typography: mat.m2-define-typography-config(),
+  density: 0
+));
 
 .custom-nde-theme{
-  @include mat.all-component-colors(m3-theme.$light-theme);
-  @include mat.system-level-colors(m3-theme.$light-theme);
+  @include nde-mixins.generate-color-variables($primary-palette, $accent-palette, $warn-palette);
+  @include mat.all-component-themes($mat-custom-theme);
 }
+
+
+//.dark-theme {
+//  @include mat.all-component-colors($mat-dark-theme);
+//}
