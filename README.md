@@ -64,22 +64,16 @@ The NDE Customization package is currently available exclusively to Primo custom
 ## Code Scaffolding and Customization
 
 ### Step 3: Add Custom Components
-1. Create custom components within the `custom1-module` module by running:
+1. Create custom components by running:
     ```bash
-    ng generate component <ComponentName> --module custom1-module
+    ng generate component <ComponentName>
     ```
     Example:
     ```bash
-    ng generate component RecommendationsComponent --module custom1-module
-    ```
+    ng generate component RecommendationsComponent
+    ``` 
 
-2. To add components before and after a target component, use:
-    ```bash
-    ng generate component <TargetComponent>-before --module custom1-module
-    ng generate component <TargetComponent>-after --module custom1-module
-    ```
-
-3. Update `selectorComponentMap` in `app.module.ts` to connect the newly created components:
+2. Update `selectorComponentMap` in `customComponentMappings.ts` to connect the newly created components:
     ```typescript
     export const selectorComponentMap = new Map<string, any>([
       ['nde-recommendations-before', RecommendationsComponentBefore],
@@ -89,7 +83,7 @@ The NDE Customization package is currently available exclusively to Primo custom
     ]);
     ```
 
-4. Customize the component’s `.html`, `.ts`, and `.scss` files as needed:
+3. Customize the component’s `.html`, `.ts`, and `.scss` files as needed:
     - `src/app/recommendations-component/recommendations-component.component.html`
     - `src/app/recommendations-component/recommendations-component.component.ts`
     - `src/app/recommendations-component/recommendations-component.component.scss`
