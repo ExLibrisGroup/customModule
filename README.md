@@ -4,7 +4,7 @@
 The NDE Customization package offers options to enhance and extend the functionality of Primo’s New Discovery Experience (NDE). You can add and develop your own components, customize theme templates, and tailor the discovery interface to your specific needs.
 
 **Note:**
-<mark>This branch includes updates to Angular 18 and other improvements that will be compatible with future version of the NDE. Probably January 2025 release. We will merge this branch to the main one when it is compatible with released version of NDE.</mark>
+<mark>This branch includes updates and other improvements that will be compatible with the April 2025 release of NDE. We will merge this branch to the main one when it is compatible with released version of NDE.</mark>
 
 **Note:**
 The NDE Customization package is currently available exclusively to Primo customers who have early access to the New Discovery Experience (NDE). Further availability will be announced in upcoming releases.
