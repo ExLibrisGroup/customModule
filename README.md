@@ -127,6 +127,110 @@ There are two options for setting up your local development environment: configu
       ```
     - This setup allows for real-time testing and development that closely mirrors live environment conditions.
 
+## Optional Configuration with `build-settings.env`
+
+The `build-settings.env` file allows you to configure additional options to tailor the build output and behavior of the custom module.
+
+### Supported Environment Variables
+
+#### `ADDON_NAME`
+
+This option allows renaming the internal bootstrap and output files to distinguish different add-on modules.
+																																
+				 
+											  
+						  
+										 
+	 
+
+Example:
+```env
+ADDON_NAME=thirdpartyaddon
+```
+																	  
+		   
+					   
+	   
+
+When set:
+- `bootstrap.ts` → `bootstrapthirdpartyaddon.ts`
+- `main.ts` dynamically loads: `import('./bootstrapthirdpartyaddon')`
+- Webpack exposes:
+								
+		 
+																										 
+																																																 
+  ```ts
+  exposes: {
+    './thirdpartyaddon': './src/bootstrapthirdpartyaddon.ts'
+  }
+  ```
+
+> 💡 Use this to create multiple federated modules or differentiate builds for different consumers.
+
+#### `ASSET_BASE_URL`
+
+Defines the base URL for assets.
+
+Example:
+```env
+ASSET_BASE_URL=http://il-urm08.corp.exlibrisgroup.com:4202/
+				 
+```
+
+Generated:
+```ts
+// src/app/state/asset-base.generated.ts
+export const assetBaseUrl = 'http://il-urm08.corp.exlibrisgroup.com:4202/';
+```
+
+Use in code:
+```ts
+import { assetBaseUrl } from 'src/app/state/asset-base.generated';
+const img = `${assetBaseUrl}images/logo.png`;
+```
+
+---
+																																														   
+	   
+												   
+	   
+						  
+	   
+					 
+				 
+	   
+																														  
+
+## Using the `autoAssetSrc` Directive
+
+The `autoAssetSrc` directive automatically prepends `ASSET_BASE_URL` to your `[src]` attribute.
+
+### Example:
+```html
+<img autoAssetSrc [src]="'images/logo.png'" />
+```
+
+With:
+```env
+ASSET_BASE_URL=http://il-urm08.corp.exlibrisgroup.com:4202/
+```
+
+Results in:
+```html
+<img src="http://il-urm08.corp.exlibrisgroup.com:4202/images/logo.png" />
+```
+
+### Supported Elements:
+- `<img>`
+- `<source>`
+- `<video>`
+- `<audio>`
+
+> ✅ Always use `[src]="'relative/path'"` to ensure proper asset URL injection.
+
+---
+
 
 
 ## Build the Project
