@@ -4,7 +4,7 @@
 The NDE Customization package offers options to enhance and extend the functionality of Primo’s New Discovery Experience (NDE). You can add and develop your own components, customize theme templates, and tailor the discovery interface to your specific needs.
 
 **Note:**
-<mark>This branch includes updates to Angular 18 and other improvements that will be compatible with future version of the NDE. Probably January 2025 release. We will merge this branch to the main one when it is compatible with released version of NDE.</mark>
+<mark>This branch includes updates and other improvements that will be compatible with the April 2025 release of NDE. We will merge this branch to the main one when it is compatible with released version of NDE.</mark>
 
 **Note:**
 The NDE Customization package is currently available exclusively to Primo customers who have early access to the New Discovery Experience (NDE). Further availability will be announced in upcoming releases.
@@ -64,22 +64,16 @@ The NDE Customization package is currently available exclusively to Primo custom
 ## Code Scaffolding and Customization
 
 ### Step 3: Add Custom Components
-1. Create custom components within the `custom1-module` module by running:
+1. Create custom components by running:
     ```bash
-    ng generate component <ComponentName> --module custom1-module
+    ng generate component <ComponentName>
     ```
     Example:
     ```bash
-    ng generate component RecommendationsComponent --module custom1-module
-    ```
+    ng generate component RecommendationsComponent
+    ``` 
 
-2. To add components before and after a target component, use:
-    ```bash
-    ng generate component <TargetComponent>-before --module custom1-module
-    ng generate component <TargetComponent>-after --module custom1-module
-    ```
-
-3. Update `selectorComponentMap` in `app.module.ts` to connect the newly created components:
+2. Update `selectorComponentMap` in `customComponentMappings.ts` to connect the newly created components:
     ```typescript
     export const selectorComponentMap = new Map<string, any>([
       ['nde-recommendations-before', RecommendationsComponentBefore],
@@ -89,7 +83,7 @@ The NDE Customization package is currently available exclusively to Primo custom
     ]);
     ```
 
-4. Customize the component’s `.html`, `.ts`, and `.scss` files as needed:
+3. Customize the component’s `.html`, `.ts`, and `.scss` files as needed:
     - `src/app/recommendations-component/recommendations-component.component.html`
     - `src/app/recommendations-component/recommendations-component.component.ts`
     - `src/app/recommendations-component/recommendations-component.component.scss`
@@ -133,8 +127,206 @@ There are two options for setting up your local development environment: configu
       ```
     - This setup allows for real-time testing and development that closely mirrors live environment conditions.
 
+## Optional Configuration with `build-settings.env`
+
+The `build-settings.env` file allows you to configure additional options to tailor the build output and behavior of the custom module.
+
+### Supported Environment Variables
+
+#### `ADDON_NAME`
+
+This option allows renaming the internal bootstrap and output files to distinguish different add-on modules.
+																																
+				 
+											  
+						  
+										 
+	 
+
+Example:
+```env
+ADDON_NAME=thirdpartyaddon
+```
+																	  
+		   
+					   
+	   
+
+When set:
+- `bootstrap.ts` → `bootstrapthirdpartyaddon.ts`
+- `main.ts` dynamically loads: `import('./bootstrapthirdpartyaddon')`
+- Webpack exposes:
+								
+		 
+																										 
+																																																 
+  ```ts
+  exposes: {
+    './thirdpartyaddon': './src/bootstrapthirdpartyaddon.ts'
+  }
+  ```
+
+> 💡 Use this to create multiple federated modules or differentiate builds for different consumers.
+
+#### `ASSET_BASE_URL`
+
+Defines the base URL for assets.
+
+Example:
+```env
+ASSET_BASE_URL=http://il-urm08.corp.exlibrisgroup.com:4202/
+				 
+```
+
+Generated:
+```ts
+// src/app/state/asset-base.generated.ts
+export const assetBaseUrl = 'http://il-urm08.corp.exlibrisgroup.com:4202/';
+```
+
+Use in code:
+```ts
+import { assetBaseUrl } from 'src/app/state/asset-base.generated';
+const img = `${assetBaseUrl}images/logo.png`;
+```
 
 
+This value is used to prefix asset paths in HTML templates and services. It allows assets to be hosted on a dedicated or remote server.
+
+#### 📁 Example: Folder Structure
+
+```
+src/
+└── assets/
+    └── images/
+        ├── addon_test1_logo.jpg
+        ├── add_on_test_shine_blicks_precise.gif
+        └── addon_test1_watermark_background.jpg
+```
+
+#### ✅ Usage in HTML Template with `autoAssetSrc` Directive
+
+```html
+<img autoAssetSrc [src]="'assets/images/addon_test1_logo.jpg'" alt="Logo" />
+<img autoAssetSrc [src]="'assets/images/add_on_test_shine_blicks_precise.gif'" alt="Shiny Effect" />
+<div class="bg" [ngStyle]="{ 'background-image': 'url(' + assetBaseUrl + 'assets/images/addon_test1_watermark_background.jpg)' }"></div>
+```
+
+These image paths will automatically resolve to:
+```
+http://il-urm08.corp.exlibrisgroup.com:4202/assets/images/your_image.jpg
+```
+
+This enables full separation of frontend code and assets deployment.
+---
+																																														   
+	   
+												   
+	   
+						  
+	   
+					 
+				 
+	   
+																														  
+
+## Using the `autoAssetSrc` Directive
+
+The `autoAssetSrc` directive automatically prepends `ASSET_BASE_URL` to your `[src]` attribute.
+
+### Example:
+```html
+<img autoAssetSrc [src]="'assets/images/logo.png'" />
+```
+
+With:
+```env
+ASSET_BASE_URL=http://il-urm08.corp.exlibrisgroup.com:4202/
+```
+
+Results in:
+```html
+<img src="http://il-urm08.corp.exlibrisgroup.com:4202/assets/images/logo.png" />
+```
+
+### Supported Elements:
+- `<img>`
+- `<source>`
+- `<video>`
+- `<audio>`
+
+> ✅ Always use `[src]="'relative/path'"` to ensure proper asset URL injection.
+
+---
+
+
+
+
+---
+
+## Recommended Development Environment
+
+To ensure smooth development, debugging, and code management, we recommend setting up your environment with the following tools:
+
+### 🖥️ IDEs and Editors
+
+- **Visual Studio Code (VSCode)** – Highly recommended  
+  [Download VSCode](https://code.visualstudio.com/)
+  - Recommended Extensions:
+    - `Angular Language Service`
+    - `ESLint` or `TSLint`
+    - `Prettier - Code formatter`
+    - `Path Intellisense`
+    - `Material Icon Theme` (optional for better visuals)
+
+- **WebStorm**  
+  A powerful alternative with built-in Angular and TypeScript support.  
+  [Download WebStorm](https://www.jetbrains.com/webstorm/)
+
+- **IntelliJ IDEA**  
+  A full-featured IDE by JetBrains. Ideal if you’re also working with Java backend.  
+  [Download IntelliJ IDEA](https://www.jetbrains.com/idea/)
+
+- **Eclipse IDE**  
+  Suitable for full-stack development including Angular with the right plugins.  
+  [Download Eclipse](https://www.eclipse.org/downloads/)
+
+---
+
+### 🔧 Tools & Utilities
+
+- **Node Version Manager (nvm)**  
+  Manage multiple versions of Node.js easily:
+  ```bash
+  curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.7/install.sh | bash
+  ```
+
+- **Angular CLI**
+  ```bash
+  npm install -g @angular/cli
+  ```
+
+- **Git GUI Clients**
+  - GitHub Desktop
+  - Sourcetree
+  - GitKraken
+
+---
+
+### 🔍 Debugging & Testing
+
+- Use **Chrome Developer Tools** for runtime inspection.
+- Install **Augury Extension** (Angular DevTools) for inspecting Angular components.
+
+---
+
+### 🧪 Optional Tools
+
+- **Postman** – For testing API requests.
+- **Docker** – For isolated build environments.
+- **Nx** – Monorepo tool (if planning multiple apps/libraries).
+
+---
 ## Build the Project
 
 ### Step 5: Build the Project
