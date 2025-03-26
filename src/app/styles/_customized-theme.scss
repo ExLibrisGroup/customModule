@@ -1,6 +1,5 @@
 @use '@angular/material' as mat;
-@use 'generate-pallete-color-vars' as nde-mixins;
-@use 'm3-theme';
+@use 'm3-theme' as m3-theme;
 
 .custom-nde-theme{
   @include mat.all-component-colors(m3-theme.$light-theme);
