@@ -190,6 +190,34 @@ import { assetBaseUrl } from 'src/app/state/asset-base.generated';
 const img = `${assetBaseUrl}images/logo.png`;
 ```
 
+
+This value is used to prefix asset paths in HTML templates and services. It allows assets to be hosted on a dedicated or remote server.
+
+#### 📁 Example: Folder Structure
+
+```
+src/
+└── assets/
+    └── images/
+        ├── addon_test1_logo.jpg
+        ├── add_on_test_shine_blicks_precise.gif
+        └── addon_test1_watermark_background.jpg
+```
+
+#### ✅ Usage in HTML Template with `autoAssetSrc` Directive
+
+```html
+<img autoAssetSrc [src]="'assets/images/addon_test1_logo.jpg'" alt="Logo" />
+<img autoAssetSrc [src]="'assets/images/add_on_test_shine_blicks_precise.gif'" alt="Shiny Effect" />
+<div class="bg" [ngStyle]="{ 'background-image': 'url(' + assetBaseUrl + 'assets/images/addon_test1_watermark_background.jpg)' }"></div>
+```
+
+These image paths will automatically resolve to:
+```
+http://il-urm08.corp.exlibrisgroup.com:4202/assets/images/your_image.jpg
+```
+
+This enables full separation of frontend code and assets deployment.
 ---
 																																														   
 	   
@@ -208,7 +236,7 @@ The `autoAssetSrc` directive automatically prepends `ASSET_BASE_URL` to your `[s
 
 ### Example:
 ```html
-<img autoAssetSrc [src]="'images/logo.png'" />
+<img autoAssetSrc [src]="'assets/images/logo.png'" />
 ```
 
 With:
@@ -218,7 +246,7 @@ ASSET_BASE_URL=http://il-urm08.corp.exlibrisgroup.com:4202/
 
 Results in:
 ```html
-<img src="http://il-urm08.corp.exlibrisgroup.com:4202/images/logo.png" />
+<img src="http://il-urm08.corp.exlibrisgroup.com:4202/assets/images/logo.png" />
 ```
 
 ### Supported Elements:
@@ -233,6 +261,72 @@ Results in:
 
 
 
+
+---
+
+## Recommended Development Environment
+
+To ensure smooth development, debugging, and code management, we recommend setting up your environment with the following tools:
+
+### 🖥️ IDEs and Editors
+
+- **Visual Studio Code (VSCode)** – Highly recommended  
+  [Download VSCode](https://code.visualstudio.com/)
+  - Recommended Extensions:
+    - `Angular Language Service`
+    - `ESLint` or `TSLint`
+    - `Prettier - Code formatter`
+    - `Path Intellisense`
+    - `Material Icon Theme` (optional for better visuals)
+
+- **WebStorm**  
+  A powerful alternative with built-in Angular and TypeScript support.  
+  [Download WebStorm](https://www.jetbrains.com/webstorm/)
+
+- **IntelliJ IDEA**  
+  A full-featured IDE by JetBrains. Ideal if you’re also working with Java backend.  
+  [Download IntelliJ IDEA](https://www.jetbrains.com/idea/)
+
+- **Eclipse IDE**  
+  Suitable for full-stack development including Angular with the right plugins.  
+  [Download Eclipse](https://www.eclipse.org/downloads/)
+
+---
+
+### 🔧 Tools & Utilities
+
+- **Node Version Manager (nvm)**  
+  Manage multiple versions of Node.js easily:
+  ```bash
+  curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.7/install.sh | bash
+  ```
+
+- **Angular CLI**
+  ```bash
+  npm install -g @angular/cli
+  ```
+
+- **Git GUI Clients**
+  - GitHub Desktop
+  - Sourcetree
+  - GitKraken
+
+---
+
+### 🔍 Debugging & Testing
+
+- Use **Chrome Developer Tools** for runtime inspection.
+- Install **Augury Extension** (Angular DevTools) for inspecting Angular components.
+
+---
+
+### 🧪 Optional Tools
+
+- **Postman** – For testing API requests.
+- **Docker** – For isolated build environments.
+- **Nx** – Monorepo tool (if planning multiple apps/libraries).
+
+---
 ## Build the Project
 
 ### Step 5: Build the Project
