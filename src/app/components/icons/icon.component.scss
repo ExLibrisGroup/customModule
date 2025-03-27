@@ -1,0 +1,13 @@
+.sys-primary {
+  path {
+    fill: var(--sys-primary);
+    stroke: var(--sys-primary);
+  }
+}
+
+.sys-error {
+  path {
+    fill: var(--sys-error);
+    stroke: var(--sys-error);
+  }
+}
