@@ -1,0 +1,18 @@
+<!-- <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 16 16" fill="none"
+    fit="" preserveAspectRation="xMidYMid meet" focusable="false">
+    <use [attr.xlink:href]="'../../../assets/icons/' + name + '.svg#' + name"
+      [attr.href]="'../../../assets/icons/' + name + '.svg#' + name"></use>
+  </svg> -->
+
+@switch (name()) {
+@case ("open-book-icon") {
+<span class="icon book-icon">
+  <open-book-icon [color]="color()"></open-book-icon>
+</span>
+}
+@case ("pdf-download-icon") {
+<span class="icon pdf-icon">
+  <pdf-download-icon [color]="color()"></pdf-download-icon>
+</span>
+}
+}
