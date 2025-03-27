@@ -1,10 +1,11 @@
 import { Component, input } from '@angular/core';
-import { ButtonInfo } from '../third-iron-adapter/third-iron-adapter.component';
+import { ButtonInfo } from '../../third-iron-adapter/third-iron-adapter.component';
+import { SvgIconComponent } from '../svg-icon/svg-icon.component';
 
 @Component({
   selector: 'custom-single-button',
   standalone: true,
-  imports: [],
+  imports: [SvgIconComponent],
   templateUrl: './single-button.component.html',
   styleUrl: './single-button.component.scss',
 })
