@@ -95,7 +95,48 @@ The NDE Customization package is currently available exclusively to Primo custom
 
 ---
 
-### Step 4: Configuring Proxy for Local Development
+### Step 4: Creating your own color theme
+
+The NDE theming is based on Angular Material. 
+We allow via the view configuration to choose between a number of pre built themes.
+
+![img.png](readme files/prebuilt-themes.png)
+
+If you want to create your own theme instead of using one of our options follow these steps:
+
+1. Create a material 3 theme by running:
+    ```bash
+    ng generate @angular/material:m3-theme
+    ``` 
+   You will be prompted to answer a number of questions like so:
+  ```
+? What HEX color should be used to generate the M3 theme? It will represent your primary color palette. (ex. #ffffff) #1eba18
+? What HEX color should be used represent the secondary color palette? (Leave blank to use generated colors from Material)
+? What HEX color should be used represent the tertiary color palette? (Leave blank to use generated colors from Material)
+? What HEX color should be used represent the neutral color palette? (Leave blank to use generated colors from Material)
+? What is the directory you want to place the generated theme file in? (Enter the relative path such as 'src/app/styles/' or leave blank to generate at your project root) src/app/styles/
+? Do you want to use system-level variables in the theme? System-level variables make dynamic theming easier through CSS custom properties, but increase the bundle size. yes
+? Choose light, dark, or both to generate the corresponding themes light
+
+```
+- Note that it is imporant to answer yes when asked if you want to use system-level variables.
+
+- Also note that I'm only entering the primary color and not secondary or tertiary. They will be selected automatically based on my primary color.
+
+Once this script completes successfully you will recieve this message: 
+
+`CREATE src/app/styles/m3-theme.scss (2710 bytes)`
+
+To apply the theme go to `_customized-theme.scss` and uncomment the following lines:
+```
+.custom-nde-theme{
+  @include mat.all-component-colors(m3-theme.$light-theme);
+  @include mat.system-level-colors(m3-theme.$light-theme);
+}
+```
+---
+
+### Step 5: Configuring Proxy for Local Development
 
 There are two options for setting up your local development environment: configuring a proxy or using customization enhancements.
 
