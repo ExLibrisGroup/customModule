@@ -100,7 +100,7 @@ The NDE Customization package is currently available exclusively to Primo custom
 The NDE theming is based on Angular Material. 
 We allow via the view configuration to choose between a number of pre built themes.
 
-![img.png](readme files/prebuilt-themes.png)
+![img.png](./readme files/prebuilt-themes.png)
 
 If you want to create your own theme instead of using one of our options follow these steps:
 
