@@ -1,7 +1,9 @@
 @use '@angular/material' as mat;
 @use 'm3-theme' as m3-theme;
 
-.custom-nde-theme{
-  @include mat.all-component-colors(m3-theme.$light-theme);
-  @include mat.system-level-colors(m3-theme.$light-theme);
-}
+//uncomment the following lines in order to apply your own theme
+
+//.custom-nde-theme{
+//  @include mat.all-component-colors(m3-theme.$light-theme);
+//  @include mat.system-level-colors(m3-theme.$light-theme);
+//}
