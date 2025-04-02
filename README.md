@@ -1,6 +1,7 @@
 # CustomModule
 
 ### Overview
+
 The NDE Customization package offers options to enhance and extend the functionality of Primo’s New Discovery Experience (NDE). You can add and develop your own components, customize theme templates, and tailor the discovery interface to your specific needs.
 
 **Note:**
@@ -14,84 +15,93 @@ The NDE Customization package is currently available exclusively to Primo custom
 ## Prerequisites
 
 ### Node.js and npm (Node Package Manager)
+
 1. **Verify Node.js and npm Installation:**
-    - Open a terminal.
-    - Run the following commands to check if Node.js and npm are installed:
-        ```bash
-        node -v
-        npm -v
-        ```
-    - If installed, you will see version numbers. If not, you will see an error.
+
+   - Open a terminal.
+   - Run the following commands to check if Node.js and npm are installed:
+     ```bash
+     node -v
+     npm -v
+     ```
+   - If installed, you will see version numbers. If not, you will see an error.
 
 2. **Install Node.js and npm (if not installed):**
-    - Visit the [Node.js download page](https://nodejs.org/en/download/).
-    - Download the appropriate version for your operating system (npm is included with Node.js).
-    - Follow the installation instructions.
+   - Visit the [Node.js download page](https://nodejs.org/en/download/).
+   - Download the appropriate version for your operating system (npm is included with Node.js).
+   - Follow the installation instructions.
 
 ### Angular CLI
 
 1. **Verify Angular CLI Installation:**
-    - Open a terminal.
-    - Run the following command:
-        ```bash
-        ng version
-        ```
-    - If Angular CLI is installed, you will see the version and installed Angular packages.
+
+   - Open a terminal.
+   - Run the following command:
+     ```bash
+     ng version
+     ```
+   - If Angular CLI is installed, you will see the version and installed Angular packages.
 
 2. **Install Angular CLI (if not installed):**
-    - After installing Node.js and npm, install Angular CLI globally by running:
-        ```bash
-        npm install -g @angular/cli
-        ```
+   - After installing Node.js and npm, install Angular CLI globally by running:
+     ```bash
+     npm install -g @angular/cli
+     ```
 
 ---
 
 ## Development Server Setup
 
 ### Step 1: Download the Project
+
 1. Navigate to the GitHub repository: [https://github.com/ExLibrisGroup/customModule](https://github.com/ExLibrisGroup/customModule).
 2. Download the ZIP file of the project.
 3. Extract the ZIP file to your desired development folder (e.g., `c:\env\custom-module\`).
 
 ### Step 2: Install Dependencies
+
 1. Inside the `customModule` directory, install the necessary npm packages:
-    ```bash
-    npm install
-    ```
+   ```bash
+   npm install
+   ```
 
 ---
 
 ## Code Scaffolding and Customization
 
 ### Step 3: Add Custom Components
+
 1. Create custom components by running:
-    ```bash
-    ng generate component <ComponentName>
-    ```
-    Example:
-    ```bash
-    ng generate component RecommendationsComponent
-    ``` 
+
+   ```bash
+   ng generate component <ComponentName>
+   ```
+
+   Example:
+
+   ```bash
+   ng generate component RecommendationsComponent
+   ```
 
 2. Update `selectorComponentMap` in `customComponentMappings.ts` to connect the newly created components:
-    ```typescript
-    export const selectorComponentMap = new Map<string, any>([
-      ['nde-recommendations-before', RecommendationsComponentBefore],
-      ['nde-recommendations-after', RecommendationsComponentAfter],
-      ['nde-recommendations', RecommendationsComponent],
-      // Add more pairs as needed
-    ]);
-    ```
+
+   ```typescript
+   export const selectorComponentMap = new Map<string, any>([
+     ["nde-recommendations-before", RecommendationsComponentBefore],
+     ["nde-recommendations-after", RecommendationsComponentAfter],
+     ["nde-recommendations", RecommendationsComponent],
+     // Add more pairs as needed
+   ]);
+   ```
 
 3. Customize the component’s `.html`, `.ts`, and `.scss` files as needed:
-    - `src/app/recommendations-component/recommendations-component.component.html`
-    - `src/app/recommendations-component/recommendations-component.component.ts`
-    - `src/app/recommendations-component/recommendations-component.component.scss`
+   - `src/app/recommendations-component/recommendations-component.component.html`
+   - `src/app/recommendations-component/recommendations-component.component.ts`
+   - `src/app/recommendations-component/recommendations-component.component.scss`
 
 ### Customization of Component Selectors
 
 - All components in the NDE are intended to be customizable. However, if you encounter a component that does not support customization, please open a support case with us. This helps ensure that we can address the issue and potentially add customization support for that component in future updates.
-
 
 ---
 
@@ -100,15 +110,18 @@ The NDE Customization package is currently available exclusively to Primo custom
 There are two options for setting up your local development environment: configuring a proxy or using customization enhancements.
 
 - **Option 1: Update `proxy.conf.mjs` Configuration**:
+
   - Set the URL of the server you want to test your code with by modifying the `proxy.conf.mjs` file in the `./proxy` directory:
+
     ```javascript
     // Configuration for the development proxy
     const environments = {
-      'example': 'https://myPrimoVE.com',
-    }
+      example: "https://myPrimoVE.com",
+    };
 
-    export const PROXY_TARGET = environments['example'];
+    export const PROXY_TARGET = environments["example"];
     ```
+
   - Start the development server with the configured proxy by running:
     ```bash
     npm run start:proxy
@@ -136,30 +149,18 @@ The `build-settings.env` file allows you to configure additional options to tail
 #### `ADDON_NAME`
 
 This option allows renaming the internal bootstrap and output files to distinguish different add-on modules.
-																																
-				 
-											  
-						  
-										 
-	 
 
 Example:
+
 ```env
 ADDON_NAME=thirdpartyaddon
 ```
-																	  
-		   
-					   
-	   
 
 When set:
+
 - `bootstrap.ts` → `bootstrapthirdpartyaddon.ts`
 - `main.ts` dynamically loads: `import('./bootstrapthirdpartyaddon')`
 - Webpack exposes:
-								
-		 
-																										 
-																																																 
   ```ts
   exposes: {
     './thirdpartyaddon': './src/bootstrapthirdpartyaddon.ts'
@@ -173,55 +174,52 @@ When set:
 Defines the base URL for assets.
 
 Example:
+
 ```env
 ASSET_BASE_URL=http://il-urm08.corp.exlibrisgroup.com:4202/
-				 
+
 ```
 
 Generated:
+
 ```ts
 // src/app/state/asset-base.generated.ts
-export const assetBaseUrl = 'http://il-urm08.corp.exlibrisgroup.com:4202/';
+export const assetBaseUrl = "http://il-urm08.corp.exlibrisgroup.com:4202/";
 ```
 
 Use in code:
+
 ```ts
-import { assetBaseUrl } from 'src/app/state/asset-base.generated';
+import { assetBaseUrl } from "src/app/state/asset-base.generated";
 const img = `${assetBaseUrl}images/logo.png`;
 ```
 
 ---
-																																														   
-	   
-												   
-	   
-						  
-	   
-					 
-				 
-	   
-																														  
 
 ## Using the `autoAssetSrc` Directive
 
 The `autoAssetSrc` directive automatically prepends `ASSET_BASE_URL` to your `[src]` attribute.
 
 ### Example:
+
 ```html
 <img autoAssetSrc [src]="'images/logo.png'" />
 ```
 
 With:
+
 ```env
 ASSET_BASE_URL=http://il-urm08.corp.exlibrisgroup.com:4202/
 ```
 
 Results in:
+
 ```html
 <img src="http://il-urm08.corp.exlibrisgroup.com:4202/images/logo.png" />
 ```
 
 ### Supported Elements:
+
 - `<img>`
 - `<source>`
 - `<video>`
@@ -231,18 +229,17 @@ Results in:
 
 ---
 
-
-
 ## Build the Project
 
 ### Step 5: Build the Project
+
 1. Compile the project:
-    ```bash
-    npm run build
-    ```
+
+   ```bash
+   npm run build
+   ```
 
 2. After a successful build, the compiled code will be in the `dist/` directory.
-
 
 - **Automatic Packaging**:
   - The build process automatically compiles and packages the project into a ZIP file named according to the `INST_ID` and `VIEW_ID` specified in the `build-settings.env` file located at:
@@ -256,26 +253,35 @@ Results in:
     ```
   - The ZIP file, e.g., `DEMO_INST-Auto1.zip`, is automatically created in the `dist/` directory after a successful build.
 
-
 ### Step 6: Upload Customization Package to Alma
+
 1. In Alma, navigate to **Discovery > View List > Edit**.
 2. Go to the **Manage Customization Package** tab.
 3. Upload your zipped package in the **Customization Package** field and save.
 4. Refresh the front-end to see your changes.
-
 
 ---
 
 ## Additional Resources
 
 ### Live Demo Tutorial
+
 - **Customize Primo NDE UI**: Watch our live demo on YouTube for a visual guide on how to customize the Primo NDE UI:
   [Customize Primo NDE UI: Live Demo](https://www.youtube.com/watch?v=z06l2hJYuLc)
-
-
 
 ---
 
 ## Conclusion
+
 By following these steps, you can customize and extend the NDE interface using the `CustomModule` package. If you have any questions or run into issues, refer to the project documentation or the ExLibris support.
 
+---
+
+# Third Iron Primo NDE Adapter
+
+### Adding new icons
+
+1. To add new icons, bring in the .svg file into `/src/assets/icons`. Edit the svg file to have a `color` prop that is dynamically set (see the other svg files for examples).
+2. a new icon component needs to be created in `/src/app/components/icons` and imported in `svg-icon.component.ts`.
+3. A new case for the switch statement in the svg-icon component template file `svg-icon.component.html` also needs to be added.
+4. Also, for icon positioning, make sure to add a class to the svg-icon component's style file (`svg-icon.component.scss`) specific to the new icon or extend existing style classes.
