@@ -46,7 +46,7 @@ The NDE Customization package is currently available exclusively to Primo custom
 
 ---
 
-## Development Server Setup
+## Development server setup and startup
 
 ### Step 1: Download the Project
 1. Navigate to the GitHub repository: [https://github.com/ExLibrisGroup/customModule](https://github.com/ExLibrisGroup/customModule).
@@ -59,11 +59,45 @@ The NDE Customization package is currently available exclusively to Primo custom
     npm install
     ```
 
+### Step 3: Configuring proxy for and starting local development server
+
+There are two options for setting up your local development environment: configuring a proxy or using parameter on your NDE URL.
+
+- **Option 1: Update `proxy.conf.mjs` Configuration**:
+  - Set the URL of the server you want to test your code with by modifying the `proxy.conf.mjs` file in the `./proxy` directory:
+    ```javascript
+    // Configuration for the development proxy
+    const environments = {
+      'example': 'https://myPrimoVE.com',
+    }
+
+    export const PROXY_TARGET = environments['example'];
+    ```
+  - Start the development server with the configured proxy by running:
+    ```bash
+    npm run start:proxy
+    ```
+  - Open your browser on port 4201 to see your changes. e.g: http://localhost:4201/nde/home?vid=EXLDEV1_INST:NDE&lang=en
+
+  
+- **Option 2: Parameter on NDE URL**:
+    - Start your development server by running
+      ```bash
+      npm run start
+      ```
+    -  Add the following query parameter to your NDE URL:
+      ```
+      useLocalCustomPackage=true
+      ```
+      For example: `https://sqa-na02.alma.exlibrisgroup.com/nde/home?vid=EXLDEV1_INST:NDE&useLocalCustomPackage=true`
+    - This setting assumes that your local development environment is running on the default port `4201`.
+
+  
 ---
 
 ## Code Scaffolding and Customization
 
-### Step 3: Add Custom Components
+### Add Custom Components
 1. Create custom components by running:
     ```bash
     ng generate component <ComponentName>
@@ -88,14 +122,59 @@ The NDE Customization package is currently available exclusively to Primo custom
     - `src/app/recommendations-component/recommendations-component.component.ts`
     - `src/app/recommendations-component/recommendations-component.component.scss`
 
-### Customization of Component Selectors
+
 
 - All components in the NDE are intended to be customizable. However, if you encounter a component that does not support customization, please open a support case with us. This helps ensure that we can address the issue and potentially add customization support for that component in future updates.
+
+### Accessing host component instance
+
+You can get the instance of the component your custom component is hooked to by adding this property to your component class:
+
+```angular2html
+@Input() private hostComponent!: any;
+```
+
+### Accessing app state
+
+- You can gain access to the app state which is stored on an NGRX store by injecting the Store service to your component:
+
+```angular2html
+private store = inject(Store);
+```
+
+- Create selectors. For example: 
+
+```angular2html
+const selectUserFeature = createFeatureSelector<{isLoggedIn: boolean}>('user');
+const selectIsLoggedIn = createSelector(selectUserFeature, state => state.isLoggedIn);
+```
+
+- Apply selector to the store to get state as Signal:
+
+```angular2html
+isLoggedIn = this.store.selectSignal(selectIsLoggedIn);
+```
+
+Or as Observable:
+
+```angular2html
+isLoggedIn$ = this.store.select(selectIsLoggedIn);
+```
+
+### Translating from code tables 
+
+You can translate codes in your custom component by using ngx-translate (https://github.com/ngx-translate/core).
+
+- If you are using a stand alone component you will need to add the TranslateModule to your component imports list.
+- In your components HTML you can translate a label like so:
+```angular2html
+<span>This is some translated code: {{'delivery.code.ext_not_restricted' | translate}}</span>
+```
 
 
 ---
 
-### Step 4: Creating your own color theme
+## Creating your own color theme
 
 The NDE theming is based on Angular Material. 
 We allow via the view configuration to choose between a number of pre built themes.
@@ -137,37 +216,6 @@ To apply the theme go to `_customized-theme.scss` and uncomment the following li
 ```
 ---
 
-### Step 5: Configuring Proxy for Local Development
-
-There are two options for setting up your local development environment: configuring a proxy or using customization enhancements.
-
-- **Option 1: Update `proxy.conf.mjs` Configuration**:
-  - Set the URL of the server you want to test your code with by modifying the `proxy.conf.mjs` file in the `./proxy` directory:
-    ```javascript
-    // Configuration for the development proxy
-    const environments = {
-      'example': 'https://myPrimoVE.com',
-    }
-
-    export const PROXY_TARGET = environments['example'];
-    ```
-  - Start the development server with the configured proxy by running:
-    ```bash
-    npm run start:proxy
-    ```
-
-- **Option 2: Enhancements in Customization**:
-  - **Local Custom Package Development**:
-    - To work with your live environment using a custom package, add the following configuration:
-      ```bash
-      useLocalCustomPackage=true
-      ```
-    - This setting assumes that your local development environment is running on the default port `4201`.
-    - When starting your local development environment with the proxy enabled, configure your development customization package by specifying your local URL in the proxy configuration. Example:
-      ```plaintext
-      localhost:4201/...
-      ```
-    - This setup allows for real-time testing and development that closely mirrors live environment conditions.
 
 ## Optional Configuration with `build-settings.env`
 
