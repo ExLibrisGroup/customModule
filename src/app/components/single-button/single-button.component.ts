@@ -1,6 +1,6 @@
 import { Component, input } from '@angular/core';
-import { ButtonInfo } from '../../third-iron-adapter/third-iron-adapter.component';
 import { SvgIconComponent } from '../svg-icon/svg-icon.component';
+import { ButtonInfo } from 'src/app/types/buttonInfo.types';
 
 @Component({
   selector: 'custom-single-button',

@@ -5,7 +5,7 @@
   <span class="mdc-button__label">
     <span>{{buttonInfo().buttonText}}</span>
   </span>
-  <custom-svg-icon name="open-book-icon" color="sys-primary"></custom-svg-icon>
+  <custom-svg-icon [name]="buttonInfo().icon" [color]="buttonInfo().color"></custom-svg-icon>
   <!-- <custom-svg-icon name="pdf-download-icon" color="sys-error"></custom-svg-icon> -->
   <span class="mat-focus-indicator"></span>
   <span class="mat-mdc-button-touch-target"></span>
