@@ -1,6 +1,8 @@
 import { Component, input } from '@angular/core';
 import { OpenBookIconComponent } from '../icons/open-book-icon.component';
 import { PdfDownloadIconComponent } from '../icons/pdf-download-icon.component';
+import { ArticleLinkIconComponent } from '../icons/article-link-icon.component';
+import { ArticleAlertIconComponent } from '../icons/article-alert-icon.component';
 
 // :: Note - Adding a new icon ::
 // To add new icons, a new icon component needs to be created and imported here.
@@ -11,7 +13,12 @@ import { PdfDownloadIconComponent } from '../icons/pdf-download-icon.component';
 @Component({
   selector: 'custom-svg-icon',
   standalone: true,
-  imports: [OpenBookIconComponent, PdfDownloadIconComponent],
+  imports: [
+    OpenBookIconComponent,
+    PdfDownloadIconComponent,
+    ArticleLinkIconComponent,
+    ArticleAlertIconComponent,
+  ],
   templateUrl: './svg-icon.component.html',
   styleUrl: './svg-icon.component.scss',
 })

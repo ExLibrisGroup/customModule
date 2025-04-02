@@ -1,9 +1,3 @@
-<!-- <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 16 16" fill="none"
-    fit="" preserveAspectRation="xMidYMid meet" focusable="false">
-    <use [attr.xlink:href]="'../../../assets/icons/' + name + '.svg#' + name"
-      [attr.href]="'../../../assets/icons/' + name + '.svg#' + name"></use>
-  </svg> -->
-
 @switch (name()) {
 @case ("open-book-icon") {
 <span class="icon book-icon">
@@ -15,4 +9,21 @@
   <pdf-download-icon [color]="color()"></pdf-download-icon>
 </span>
 }
+@case ("article-link-icon") {
+<span class="icon article-link-icon">
+  <article-link-icon [color]="color()"></article-link-icon>
+</span>
 }
+@case ("article-alert-icon") {
+<span class="icon article-alert-icon">
+  <article-alert-icon [color]="color()"></article-alert-icon>
+</span>
+}
+}
+
+<!-- possible dynamic loading of svg? -->
+<!-- <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 16 16" fill="none"
+    fit="" preserveAspectRation="xMidYMid meet" focusable="false">
+    <use [attr.xlink:href]="'../../../assets/icons/' + name + '.svg#' + name"
+      [attr.href]="'../../../assets/icons/' + name + '.svg#' + name"></use>
+  </svg> -->
