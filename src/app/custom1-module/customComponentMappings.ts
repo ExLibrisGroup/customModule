@@ -2,5 +2,6 @@ import { ThirdIronAdapterComponent } from '../third-iron-adapter/third-iron-adap
 
 // Define the map
 export const selectorComponentMap = new Map<string, any>([
-  ['nde-search-results-top-bar-after', ThirdIronAdapterComponent],
+  // ['nde-search-results-top-bar-after', ThirdIronAdapterComponent],
+  ['nde-online-availability', ThirdIronAdapterComponent],
 ]);
