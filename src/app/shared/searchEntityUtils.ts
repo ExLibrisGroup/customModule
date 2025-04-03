@@ -1,3 +1,4 @@
+import { ButtonType } from '../third-iron-adapter/third-iron-adapter.component';
 import { ButtonInfo } from '../types/buttonInfo.types';
 import { SearchEntity } from '../types/searchEntity.types';
 
@@ -119,8 +120,10 @@ export const getButtonInfo = (entity: SearchEntity): ButtonInfo => {
   return {
     ariaLabel: 'test',
     buttonText: `DOI: ${getDoi(entity)}`,
-    url: 'https://libkey.io/libraries/322/articles/540512060/full-text-file?utm_source=api_193',
-    icon: 'pdf-download-icon',
     color: 'sys-primary',
+    icon: 'pdf-download-icon',
+    url: 'https://libkey.io/libraries/322/articles/540512060/full-text-file?utm_source=api_193',
   };
 };
+
+// export const getButtonType = (entity: SearchEntity): ButtonType => {};

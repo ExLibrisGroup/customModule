@@ -12,6 +12,19 @@ import { ButtonInfo } from 'src/app/types/buttonInfo.types';
 export class SingleButtonComponent {
   buttonInfo = input.required<ButtonInfo>();
 
+  onClick(event: MouseEvent) {
+    // We’ve seen some discovery services intercept basic a href links, and have
+    // been encouraged to intercept clicks more closely. We should continue
+    // intercepting clicks like this unless we hear feedback from discovery
+    // service vendors that this is no longer desired or necessary.
+    event.preventDefault();
+    event.stopPropagation();
+
+    window.open(this.buttonInfo().url, '_blank');
+
+    return false;
+  }
+
   // ariaLabel = input.required<string>();
   // buttonText = input.required<string>();
   // url = input.required<string>();

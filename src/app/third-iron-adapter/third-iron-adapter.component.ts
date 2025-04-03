@@ -2,27 +2,20 @@ import { Component, inject, OnInit, signal, input, Input } from '@angular/core';
 import { createFeatureSelector, createSelector, Store } from '@ngrx/store';
 import { map, Observable, toArray } from 'rxjs';
 import { SingleButtonComponent } from '../components/single-button/single-button.component';
-import {
-  getButtonInfo,
-  getIssn,
-  getDoi,
-  isOpenAccess,
-  shouldEnhance,
-} from '../shared/searchEntityUtils';
+import { getButtonInfo, shouldEnhance } from '../shared/searchEntityUtils';
 import { SearchEntity } from '../types/searchEntity.types';
 import { ButtonInfo } from '../types/buttonInfo.types';
-// import { ButtonInfo } from 'src/app/types/buttonInfo.types';
 
 type SearchItemsState = { entities: Record<string, SearchEntity> };
 // type FullDisplayStater = { selectedRecordId: string };
 
-// TODO rename these assets?
-// enum ImageUrl {
-//   BrowzineBook = 'https://assets.thirdiron.com/images/integrations/browzine-open-book-icon.svg',
-//   PDF = 'https://assets.thirdiron.com/images/integrations/browzine-pdf-download-icon.svg',
-//   ArticleAlert = 'https://assets.thirdiron.com/images/integrations/browzine-retraction-watch-icon.svg',
-//   ArticleDefault = 'https://assets.thirdiron.com/images/integrations/browzine-article-link-icon.svg',
-// }
+export enum ButtonType {
+  DirectToPDF = 'DirectToPDF',
+  ArticleLink = 'ArticleLink',
+  Retraction = 'Retraction',
+  ExpressionOfConcern = 'ExpressionOfConcern',
+  ProblematicJournal = 'ProblematicJournal',
+}
 
 const DEFAULT_BUTTON_INFO = {
   ariaLabel: '',
@@ -78,12 +71,12 @@ export class ThirdIronAdapterComponent {
     });
   }
 
-  enhance = (searchResult: SearchEntity): ButtonInfo => {
+  enhance = (searchResult: SearchEntity) => {
     if (!shouldEnhance(searchResult)) {
-      return DEFAULT_BUTTON_INFO;
+      return;
     }
 
     console.log('searchResult', searchResult);
-    return (this.buttonInfo = getButtonInfo(searchResult));
+    this.buttonInfo = getButtonInfo(searchResult);
   };
 }

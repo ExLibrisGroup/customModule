@@ -1,7 +1,8 @@
 <!-- Basic "Available Online" button -->
 @if(buttonInfo().buttonText !== '') {
 <button type="button" class="ti-custom-button mat-body-medium mdc-button mat-mdc-button mat-mdc-button-base"
-  mat-ripple-loader-class-name="mat-mdc-button-ripple" [attr.aria-label]="buttonInfo().ariaLabel">
+  mat-ripple-loader-class-name="mat-mdc-button-ripple" (click)="onClick($event)"
+  [attr.aria-label]="buttonInfo().ariaLabel">
   <span class="mat-mdc-button-persistent-ripple mdc-button__ripple"></span>
   <span class="mdc-button__label">
     <span>{{buttonInfo().buttonText}}</span>
