@@ -112,6 +112,8 @@ There are two options for setting up your local development environment: configu
     export const selectorComponentMap = new Map<string, any>([
       ['nde-recommendations-before', RecommendationsComponentBefore],
       ['nde-recommendations-after', RecommendationsComponentAfter],
+      ['nde-recommendations-top', RecommendationsComponentTop],
+      ['nde-recommendations-buttom', RecommendationsComponentButtom], 	  
       ['nde-recommendations', RecommendationsComponent],
       // Add more pairs as needed
     ]);
@@ -217,110 +219,62 @@ To apply the theme go to `_customized-theme.scss` and uncomment the following li
 ---
 
 
-## Optional Configuration with `build-settings.env`
 
-The `build-settings.env` file allows you to configure additional options to tailor the build output and behavior of the custom module.
+## Developing an Add-On for the NDE UI
 
-### Supported Environment Variables
+The NDE UI supports loading of custom modules at runtime and also provides infrastructure to dynamically load add-ons developed by vendors, consortia, or community members. This enables seamless integration, allowing institutions to configure and deploy external add-ons through **Add-On Configuration in Alma**.
 
-#### `ADDON_NAME`
+The NDE UI add-on framework allows various stakeholders to develop and integrate custom functionality:
 
-This option allows renaming the internal bootstrap and output files to distinguish different add-on modules.
-																																
-				 
-											  
-						  
-										 
-	 
+- **Vendors** can create and host services that institutions can seamlessly incorporate into their environment.
+- **Institutions and consortia** can develop and share custom components, enabling consistency and collaboration across multiple libraries.
 
-Example:
-```env
-ADDON_NAME=thirdpartyaddon
-```
-																	  
-		   
-					   
-	   
+Library staff can easily add, configure, and manage these add-ons through Alma, following guidelines provided by the stakeholders. These typically include:
 
-When set:
-- `bootstrap.ts` → `bootstrapthirdpartyaddon.ts`
-- `main.ts` dynamically loads: `import('./bootstrapthirdpartyaddon')`
-- Webpack exposes:
-								
-		 
-																										 
-																																																 
-  ```ts
-  exposes: {
-    './thirdpartyaddon': './src/bootstrapthirdpartyaddon.ts'
-  }
-  ```
+- **Add-on Name** – The identifier used in Alma’s configuration.
+- **Add-on URL** – The location where the add-on is hosted (static folder to load the add-on at runtime).
+- **Configuration Parameters** – JSON-based config parameters to be referenced at runtime by the add-on.
 
-> 💡 Use this to create multiple federated modules or differentiate builds for different consumers.
+![Add-on Overview](./readme-files/addon-overview.png)
 
-#### `ASSET_BASE_URL`
-
-Defines the base URL for assets.
-
-Example:
-```env
-ASSET_BASE_URL=http://il-urm08.corp.exlibrisgroup.com:4202/
-				 
-```
-
-Generated:
-```ts
-// src/app/state/asset-base.generated.ts
-export const assetBaseUrl = 'http://il-urm08.corp.exlibrisgroup.com:4202/';
-```
-
-Use in code:
-```ts
-import { assetBaseUrl } from 'src/app/state/asset-base.generated';
-const img = `${assetBaseUrl}images/logo.png`;
-```
-
-
-This value is used to prefix asset paths in HTML templates and services. It allows assets to be hosted on a dedicated or remote server.
-
-#### 📁 Example: Folder Structure
-
-```
-src/
-└── assets/
-    └── images/
-        ├── addon_test1_logo.jpg
-        ├── add_on_test_shine_blicks_precise.gif
-        └── addon_test1_watermark_background.jpg
-```
-
-#### ✅ Usage in HTML Template with `autoAssetSrc` Directive
-
-```html
-<img autoAssetSrc [src]="'assets/images/addon_test1_logo.jpg'" alt="Logo" />
-<img autoAssetSrc [src]="'assets/images/add_on_test_shine_blicks_precise.gif'" alt="Shiny Effect" />
-<div class="bg" [ngStyle]="{ 'background-image': 'url(' + assetBaseUrl + 'assets/images/addon_test1_watermark_background.jpg)' }"></div>
-```
-
-These image paths will automatically resolve to:
-```
-http://il-urm08.corp.exlibrisgroup.com:4202/assets/images/your_image.jpg
-```
-
-This enables full separation of frontend code and assets deployment.
 ---
-																																														   
-	   
-												   
-	   
-						  
-	   
-					 
-				 
-	   
-																														  
 
-## Using the `autoAssetSrc` Directive
+## Guidelines for Developing an Add-On
+
+You can download the custom module and modify it to function as an add-on.
+
+### Set Add-on Name
+
+This section below should remain the same.
+
+![Set Addon Name](./readme-files/set-addon-name.png)
+
+![Example Configuration JSON](./readme-files/example-config-json.png)
+
+---
+
+The add-on infrastructure provides a way to access institution-specific configuration parameters. Institutions can upload their configuration settings in JSON format, which your add-on can reference dynamically within its components.
+
+### 🔧 Accessing Add-On Configuration Parameters
+
+To access the module parameters from your configuration file, inject the `LookupService` in your component and use `getModuleParam()`:
+
+```ts
+constructor(private lookupService: LookupService) {}
+
+ngOnInit() {
+  const paramValue = this.lookupService.getModuleParam('yourParamKey');
+}
+```
+
+> 📘 `yourParamKey` should match the keys defined in your Alma Add-on JSON configuration.
+
+---
+
+If your add-on includes assets such as images, you can ensure a complete separation between the frontend code and asset deployment. To achieve this, set `ASSET_BASE_URL` to point to your designated static folder, allowing your add-on to reference assets independently of the core application.
+
+![Access Assets via ASSET_BASE_URL](./readme-files/access-assets.png)
+
 
 The `autoAssetSrc` directive automatically prepends `ASSET_BASE_URL` to your `[src]` attribute.
 
