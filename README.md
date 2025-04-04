@@ -50,7 +50,7 @@ The NDE Customization package is currently available exclusively to Primo custom
 
 ---
 
-## Development Server Setup
+## Development server setup and startup
 
 ### Step 1: Download the Project
 
@@ -65,12 +65,45 @@ The NDE Customization package is currently available exclusively to Primo custom
    npm install
    ```
 
+### Step 3: Configuring proxy for and starting local development server
+
+There are two options for setting up your local development environment: configuring a proxy or using parameter on your NDE URL.
+
+- **Option 1: Update `proxy.conf.mjs` Configuration**:
+  - Set the URL of the server you want to test your code with by modifying the `proxy.conf.mjs` file in the `./proxy` directory:
+    ```javascript
+    // Configuration for the development proxy
+    const environments = {
+      'example': 'https://myPrimoVE.com',
+    }
+
+    export const PROXY_TARGET = environments['example'];
+    ```
+  - Start the development server with the configured proxy by running:
+    ```bash
+    npm run start:proxy
+    ```
+  - Open your browser on port 4201 to see your changes. e.g: http://localhost:4201/nde/home?vid=EXLDEV1_INST:NDE&lang=en
+
+  
+- **Option 2: Parameter on NDE URL**:
+    - Start your development server by running
+      ```bash
+      npm run start
+      ```
+    -  Add the following query parameter to your NDE URL:
+      ```
+      useLocalCustomPackage=true
+      ```
+      For example: `https://sqa-na02.alma.exlibrisgroup.com/nde/home?vid=EXLDEV1_INST:NDE&useLocalCustomPackage=true`
+    - This setting assumes that your local development environment is running on the default port `4201`.
+
+  
 ---
 
 ## Code Scaffolding and Customization
 
-### Step 3: Add Custom Components
-
+### Add Custom Components
 1. Create custom components by running:
 
    ```bash
@@ -99,46 +132,100 @@ The NDE Customization package is currently available exclusively to Primo custom
    - `src/app/recommendations-component/recommendations-component.component.ts`
    - `src/app/recommendations-component/recommendations-component.component.scss`
 
-### Customization of Component Selectors
+
 
 - All components in the NDE are intended to be customizable. However, if you encounter a component that does not support customization, please open a support case with us. This helps ensure that we can address the issue and potentially add customization support for that component in future updates.
 
+### Accessing host component instance
+
+You can get the instance of the component your custom component is hooked to by adding this property to your component class:
+
+```angular2html
+@Input() private hostComponent!: any;
+```
+
+### Accessing app state
+
+- You can gain access to the app state which is stored on an NGRX store by injecting the Store service to your component:
+
+```angular2html
+private store = inject(Store);
+```
+
+- Create selectors. For example: 
+
+```angular2html
+const selectUserFeature = createFeatureSelector<{isLoggedIn: boolean}>('user');
+const selectIsLoggedIn = createSelector(selectUserFeature, state => state.isLoggedIn);
+```
+
+- Apply selector to the store to get state as Signal:
+
+```angular2html
+isLoggedIn = this.store.selectSignal(selectIsLoggedIn);
+```
+
+Or as Observable:
+
+```angular2html
+isLoggedIn$ = this.store.select(selectIsLoggedIn);
+```
+
+### Translating from code tables 
+
+You can translate codes in your custom component by using ngx-translate (https://github.com/ngx-translate/core).
+
+- If you are using a stand alone component you will need to add the TranslateModule to your component imports list.
+- In your components HTML you can translate a label like so:
+```angular2html
+<span>This is some translated code: {{'delivery.code.ext_not_restricted' | translate}}</span>
+```
+
+
 ---
 
-### Step 4: Configuring Proxy for Local Development
+## Creating your own color theme
 
-There are two options for setting up your local development environment: configuring a proxy or using customization enhancements.
+The NDE theming is based on Angular Material. 
+We allow via the view configuration to choose between a number of pre built themes.
 
-- **Option 1: Update `proxy.conf.mjs` Configuration**:
+![prebuilt theme image](./readme-files/prebuilt-themes.png "prebuilt themes configuration")
 
-  - Set the URL of the server you want to test your code with by modifying the `proxy.conf.mjs` file in the `./proxy` directory:
 
-    ```javascript
-    // Configuration for the development proxy
-    const environments = {
-      example: "https://myPrimoVE.com",
-    };
+If you want to create your own theme instead of using one of our options follow these steps:
 
-    export const PROXY_TARGET = environments["example"];
-    ```
-
-  - Start the development server with the configured proxy by running:
+1. Create a material 3 theme by running:
     ```bash
-    npm run start:proxy
-    ```
+    ng generate @angular/material:m3-theme
+    ``` 
+   You will be prompted to answer a number of questions like so:
+  ```
+? What HEX color should be used to generate the M3 theme? It will represent your primary color palette. (ex. #ffffff) #1eba18
+? What HEX color should be used represent the secondary color palette? (Leave blank to use generated colors from Material)
+? What HEX color should be used represent the tertiary color palette? (Leave blank to use generated colors from Material)
+? What HEX color should be used represent the neutral color palette? (Leave blank to use generated colors from Material)
+? What is the directory you want to place the generated theme file in? (Enter the relative path such as 'src/app/styles/' or leave blank to generate at your project root) src/app/styles/
+? Do you want to use system-level variables in the theme? System-level variables make dynamic theming easier through CSS custom properties, but increase the bundle size. yes
+? Choose light, dark, or both to generate the corresponding themes light
 
-- **Option 2: Enhancements in Customization**:
-  - **Local Custom Package Development**:
-    - To work with your live environment using a custom package, add the following configuration:
-      ```bash
-      useLocalCustomPackage=true
-      ```
-    - This setting assumes that your local development environment is running on the default port `4201`.
-    - When starting your local development environment with the proxy enabled, configure your development customization package by specifying your local URL in the proxy configuration. Example:
-      ```plaintext
-      localhost:4201/...
-      ```
-    - This setup allows for real-time testing and development that closely mirrors live environment conditions.
+```
+- Note that it is imporant to answer yes when asked if you want to use system-level variables.
+
+- Also note that I'm only entering the primary color and not secondary or tertiary. They will be selected automatically based on my primary color.
+
+Once this script completes successfully you will recieve this message: 
+
+`CREATE src/app/styles/m3-theme.scss (2710 bytes)`
+
+To apply the theme go to `_customized-theme.scss` and uncomment the following lines:
+```
+.custom-nde-theme{
+  @include mat.all-component-colors(m3-theme.$light-theme);
+  @include mat.system-level-colors(m3-theme.$light-theme);
+}
+```
+---
+
 
 ## Optional Configuration with `build-settings.env`
 
@@ -194,6 +281,34 @@ import { assetBaseUrl } from "src/app/state/asset-base.generated";
 const img = `${assetBaseUrl}images/logo.png`;
 ```
 
+
+This value is used to prefix asset paths in HTML templates and services. It allows assets to be hosted on a dedicated or remote server.
+
+#### 📁 Example: Folder Structure
+
+```
+src/
+└── assets/
+    └── images/
+        ├── addon_test1_logo.jpg
+        ├── add_on_test_shine_blicks_precise.gif
+        └── addon_test1_watermark_background.jpg
+```
+
+#### ✅ Usage in HTML Template with `autoAssetSrc` Directive
+
+```html
+<img autoAssetSrc [src]="'assets/images/addon_test1_logo.jpg'" alt="Logo" />
+<img autoAssetSrc [src]="'assets/images/add_on_test_shine_blicks_precise.gif'" alt="Shiny Effect" />
+<div class="bg" [ngStyle]="{ 'background-image': 'url(' + assetBaseUrl + 'assets/images/addon_test1_watermark_background.jpg)' }"></div>
+```
+
+These image paths will automatically resolve to:
+```
+http://il-urm08.corp.exlibrisgroup.com:4202/assets/images/your_image.jpg
+```
+
+This enables full separation of frontend code and assets deployment.
 ---
 
 ## Using the `autoAssetSrc` Directive
@@ -203,7 +318,7 @@ The `autoAssetSrc` directive automatically prepends `ASSET_BASE_URL` to your `[s
 ### Example:
 
 ```html
-<img autoAssetSrc [src]="'images/logo.png'" />
+<img autoAssetSrc [src]="'assets/images/logo.png'" />
 ```
 
 With:
@@ -215,7 +330,7 @@ ASSET_BASE_URL=http://il-urm08.corp.exlibrisgroup.com:4202/
 Results in:
 
 ```html
-<img src="http://il-urm08.corp.exlibrisgroup.com:4202/images/logo.png" />
+<img src="http://il-urm08.corp.exlibrisgroup.com:4202/assets/images/logo.png" />
 ```
 
 ### Supported Elements:
@@ -229,6 +344,74 @@ Results in:
 
 ---
 
+
+
+
+---
+
+## Recommended Development Environment
+
+To ensure smooth development, debugging, and code management, we recommend setting up your environment with the following tools:
+
+### 🖥️ IDEs and Editors
+
+- **Visual Studio Code (VSCode)** – Highly recommended  
+  [Download VSCode](https://code.visualstudio.com/)
+  - Recommended Extensions:
+    - `Angular Language Service`
+    - `ESLint` or `TSLint`
+    - `Prettier - Code formatter`
+    - `Path Intellisense`
+    - `Material Icon Theme` (optional for better visuals)
+
+- **WebStorm**  
+  A powerful alternative with built-in Angular and TypeScript support.  
+  [Download WebStorm](https://www.jetbrains.com/webstorm/)
+
+- **IntelliJ IDEA**  
+  A full-featured IDE by JetBrains. Ideal if you’re also working with Java backend.  
+  [Download IntelliJ IDEA](https://www.jetbrains.com/idea/)
+
+- **Eclipse IDE**  
+  Suitable for full-stack development including Angular with the right plugins.  
+  [Download Eclipse](https://www.eclipse.org/downloads/)
+
+---
+
+### 🔧 Tools & Utilities
+
+- **Node Version Manager (nvm)**  
+  Manage multiple versions of Node.js easily:
+  ```bash
+  curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.7/install.sh | bash
+  ```
+
+- **Angular CLI**
+  ```bash
+  npm install -g @angular/cli
+  ```
+
+- **Git GUI Clients**
+  - GitHub Desktop
+  - Sourcetree
+  - GitKraken
+
+---
+
+### 🔍 Debugging & Testing
+
+- Use **Chrome Developer Tools** for runtime inspection.
+- Install **Augury Extension** (Angular DevTools) for inspecting Angular components.
+
+---
+
+### 🧪 Optional Tools
+
+- **Postman** – For testing API requests.
+- **Docker** – For isolated build environments.
+- **Nx** – Monorepo tool (if planning multiple apps/libraries).
+
+---
 ## Build the Project
 
 ### Step 5: Build the Project
