@@ -97,7 +97,7 @@ There are two options for setting up your local development environment: configu
 
 ## Code Scaffolding and Customization
 
-### Add Custom Components
+### Step 4: Add Custom Components
 1. Create custom components by running:
     ```bash
     ng generate component <ComponentName>
