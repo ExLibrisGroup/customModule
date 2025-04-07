@@ -2,9 +2,11 @@ import { Component, inject, OnInit, signal, input, Input } from '@angular/core';
 import { createFeatureSelector, createSelector, Store } from '@ngrx/store';
 import { map, Observable, toArray } from 'rxjs';
 import { SingleButtonComponent } from '../components/single-button/single-button.component';
-import { getButtonInfo, shouldEnhance } from '../shared/searchEntityUtils';
+import { shouldEnhance } from '../shared/searchEntityUtils';
 import { SearchEntity } from '../types/searchEntity.types';
 import { ButtonInfo } from '../types/buttonInfo.types';
+import { ButtonInfoService } from '../services/button-info.service';
+import { AsyncPipe } from '@angular/common';
 
 type SearchItemsState = { entities: Record<string, SearchEntity> };
 // type FullDisplayStater = { selectedRecordId: string };
@@ -17,7 +19,12 @@ export enum ButtonType {
   ProblematicJournal = 'ProblematicJournal',
 }
 
-const DEFAULT_BUTTON_INFO = {
+export enum EntityType {
+  Article = 'article',
+  Journal = 'journal',
+}
+
+export const DEFAULT_BUTTON_INFO = {
   ariaLabel: '',
   buttonText: '',
   url: '',
@@ -33,7 +40,7 @@ const selectSearchEntities = createSelector(
 @Component({
   selector: 'custom-third-iron-adapter',
   standalone: true,
-  imports: [SingleButtonComponent],
+  imports: [SingleButtonComponent, AsyncPipe],
   templateUrl: './third-iron-adapter.component.html',
   styleUrl: './third-iron-adapter.component.scss',
 })
@@ -41,11 +48,15 @@ export class ThirdIronAdapterComponent {
   @Input() private hostComponent!: any;
   // hostComponent = input.required<any>();
 
-  public buttonInfo: ButtonInfo = DEFAULT_BUTTON_INFO;
+  //public buttonInfo: ButtonInfo = DEFAULT_BUTTON_INFO;
+  buttonInfo$!: Observable<any>;
 
   searchItemsState$: Observable<SearchItemsState> | undefined;
   public store = inject(Store);
   searchEntities$: Observable<Record<string, SearchEntity>> | undefined;
+
+  constructor(private buttonInfoService: ButtonInfoService) {}
+
   ngOnInit() {
     // Start the process for determining if a button should be displayed and with what info
     this.enhance(this.hostComponent.searchResult);
@@ -77,6 +88,6 @@ export class ThirdIronAdapterComponent {
     }
 
     console.log('searchResult', searchResult);
-    this.buttonInfo = getButtonInfo(searchResult);
+    this.buttonInfo$ = this.buttonInfoService.getButtonInfo(searchResult);
   };
 }
