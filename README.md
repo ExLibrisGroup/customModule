@@ -95,7 +95,7 @@ There are two options for setting up your local development environment: configu
   
 ---
 
-## Code Scaffolding and Customization
+## Step 4: Code Scaffolding and Customization
 
 ### Add Custom Components
 1. Create custom components by running:
