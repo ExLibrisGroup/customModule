@@ -1,5 +1,4 @@
-import { ButtonType } from '../third-iron-adapter/third-iron-adapter.component';
-import { ButtonInfo } from '../types/buttonInfo.types';
+import { EntityType } from '../third-iron-adapter/third-iron-adapter.component';
 import { SearchEntity } from '../types/searchEntity.types';
 
 export const isOpenAccess = (entity: SearchEntity): boolean => {
@@ -115,15 +114,20 @@ export const getDoi = (result: SearchEntity): string => {
   return encodeURIComponent(doi);
 };
 
-// TODO - load info instead of hardcorded
-export const getButtonInfo = (entity: SearchEntity): ButtonInfo => {
-  return {
-    ariaLabel: 'test',
-    buttonText: `DOI: ${getDoi(entity)}`,
-    color: 'sys-primary',
-    icon: 'pdf-download-icon',
-    url: 'https://libkey.io/libraries/322/articles/540512060/full-text-file?utm_source=api_193',
-  };
-};
+export const getEntityType = (entity: SearchEntity): EntityType | undefined => {
+  let type;
 
-// export const getButtonType = (entity: SearchEntity): ButtonType => {};
+  if (isJournal(entity) && getIssn(entity)) {
+    type = EntityType.Journal;
+  }
+
+  if (isArticle(entity) && getDoi(entity)) {
+    type = EntityType.Article;
+  }
+
+  if (isArticle(entity) && !getDoi(entity) && getIssn(entity)) {
+    type = EntityType.Journal;
+  }
+
+  return type;
+};
