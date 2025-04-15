@@ -2,35 +2,14 @@ import { Component, inject, OnInit, signal, input, Input } from '@angular/core';
 import { createFeatureSelector, createSelector, Store } from '@ngrx/store';
 import { map, Observable, toArray } from 'rxjs';
 import { SingleButtonComponent } from '../components/single-button/single-button.component';
-import { shouldEnhance } from '../shared/searchEntityUtils';
 import { SearchEntity } from '../types/searchEntity.types';
 import { ButtonInfo } from '../types/buttonInfo.types';
+import { SearchEntityService } from '../services/search-entity.service';
 import { ButtonInfoService } from '../services/button-info.service';
 import { AsyncPipe } from '@angular/common';
 
 type SearchItemsState = { entities: Record<string, SearchEntity> };
 // type FullDisplayStater = { selectedRecordId: string };
-
-export enum ButtonType {
-  DirectToPDF = 'DirectToPDF',
-  ArticleLink = 'ArticleLink',
-  Retraction = 'Retraction',
-  ExpressionOfConcern = 'ExpressionOfConcern',
-  ProblematicJournal = 'ProblematicJournal',
-}
-
-export enum EntityType {
-  Article = 'article',
-  Journal = 'journal',
-}
-
-export const DEFAULT_BUTTON_INFO = {
-  ariaLabel: '',
-  buttonText: '',
-  url: '',
-  icon: '',
-  color: '',
-};
 
 const selectSearchState = createFeatureSelector<SearchItemsState>('Search');
 const selectSearchEntities = createSelector(
@@ -43,19 +22,23 @@ const selectSearchEntities = createSelector(
   imports: [SingleButtonComponent, AsyncPipe],
   templateUrl: './third-iron-adapter.component.html',
   styleUrl: './third-iron-adapter.component.scss',
+  providers: [SearchEntityService],
 })
 export class ThirdIronAdapterComponent {
   @Input() private hostComponent!: any;
   // hostComponent = input.required<any>();
 
   //public buttonInfo: ButtonInfo = DEFAULT_BUTTON_INFO;
-  buttonInfo$!: Observable<any>;
+  buttonInfo$!: Observable<ButtonInfo>;
 
   searchItemsState$: Observable<SearchItemsState> | undefined;
   public store = inject(Store);
   searchEntities$: Observable<Record<string, SearchEntity>> | undefined;
 
-  constructor(private buttonInfoService: ButtonInfoService) {}
+  constructor(
+    private buttonInfoService: ButtonInfoService,
+    private searchEntityService: SearchEntityService
+  ) {}
 
   ngOnInit() {
     // Start the process for determining if a button should be displayed and with what info
@@ -83,7 +66,7 @@ export class ThirdIronAdapterComponent {
   }
 
   enhance = (searchResult: SearchEntity) => {
-    if (!shouldEnhance(searchResult)) {
+    if (!this.searchEntityService.shouldEnhance(searchResult)) {
       return;
     }
 

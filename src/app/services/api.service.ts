@@ -10,8 +10,6 @@ export class ApiService {
   private apiUrl = 'https://public-api.thirdiron.com/public/v1/libraries/322';
   private apiKey = 'dc14dee7-f4f3-4617-bd84-be027c3830c0';
 
-  // private http = inject(HttpClient);
-
   constructor(private http: HttpClient) {}
 
   getArticle(doi: string): Observable<any> {
