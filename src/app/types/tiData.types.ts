@@ -1,6 +1,19 @@
 export type ApiResult = {
-  data: Data | Data[];
+  body: ResponseBody;
+  meta?: MetaObject;
+  ok: boolean;
+  status: number;
+  type: number;
+  url: string;
+};
+
+export type ResponseBody = {
+  data: Data;
   included: object | object[];
+};
+
+export type MetaObject = {
+  avoidUnpaywall?: boolean;
 };
 
 export type Data = {
@@ -11,6 +24,7 @@ export type Data = {
   coverImageUrl?: string;
   expressionOfConcernNoticeUrl?: string;
   fullTextFile?: string;
+  unpaywallUsable?: boolean;
   problematicJournalArticleNoticeUrl?: string;
   retractionNoticeUrl?: string;
 };

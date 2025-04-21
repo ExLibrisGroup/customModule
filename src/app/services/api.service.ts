@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
-import { Observable } from 'rxjs';
+import { HttpClient, HttpErrorResponse } from '@angular/common/http';
+import { catchError, Observable, throwError } from 'rxjs';
 
 @Injectable({
   providedIn: 'root',
@@ -17,16 +17,36 @@ export class ApiService {
       this.apiUrl
     }/articles/doi/${doi}?include=journal,library${this.appendAccessToken()}`;
 
-    return this.http.get(endpoint);
+    return this.http
+      .get(endpoint, { observe: 'response' })
+      .pipe(catchError(this.handleError));
   }
 
   getJournal(issn: string): Observable<any> {
-    return this.http.get(
-      `${this.apiUrl}/search?issns=${issn}${this.appendAccessToken()}`
-    );
+    const endpoint = `${
+      this.apiUrl
+    }/search?issns=${issn}${this.appendAccessToken()}`;
+    return this.http
+      .get(endpoint, { observe: 'response' })
+      .pipe(catchError(this.handleError));
   }
 
   appendAccessToken() {
     return `&access_token=${this.apiKey}`;
+  }
+
+  private handleError(error: HttpErrorResponse) {
+    // Return an observable with a user-facing error message.
+    console.error(
+      `Backend returned code ${error.status}, body was: `,
+      error.error
+    );
+
+    return throwError(
+      () =>
+        new Error(
+          'Something bad in fetching data from the TI API happened; please try again later.'
+        )
+    );
   }
 }

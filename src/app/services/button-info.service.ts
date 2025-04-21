@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { ApiService } from './api.service';
 import { SearchEntityService } from './search-entity.service';
+import { UnpaywallService } from './unpaywall.service';
 import { SearchEntity } from '../types/searchEntity.types';
 import { ButtonInfo } from '../types/buttonInfo.types';
 import { map, Observable, Observer } from 'rxjs';
@@ -23,7 +24,8 @@ export const DEFAULT_BUTTON_INFO = {
 export class ButtonInfoService {
   constructor(
     private apiService: ApiService,
-    private searchEntityService: SearchEntityService
+    private searchEntityService: SearchEntityService,
+    private unpaywallService: UnpaywallService
   ) {}
 
   getButtonInfo(entity: SearchEntity): Observable<ButtonInfo> {
@@ -53,11 +55,11 @@ export class ButtonInfoService {
     }
   }
 
-  transformRes(response: any, type: EntityType): ButtonInfo {
+  transformRes(response: ApiResult, type: EntityType): ButtonInfo {
     const data = this.getData(response);
     const journal = this.getIncludedJournal(response);
 
-    const displayInfo = this.displayWaterfall(type, data, journal);
+    const displayInfo = this.displayWaterfall(response, type, data, journal);
     console.log('displayInfo', displayInfo);
 
     return displayInfo;
@@ -70,7 +72,18 @@ export class ButtonInfoService {
     // };
   }
 
+  /**
+   *
+   * The waterfall is as follows:
+   * - Retraction
+   * -- EOC
+   * ---- Problematic Journal
+   * ------ Direct PDF link
+   * -------- Article link
+   * ---------- Unpaywall
+   */
   displayWaterfall(
+    tiArticleOrJournalResponse: ApiResult,
     type: EntityType,
     data: Data,
     journal: Journal | null
@@ -89,14 +102,10 @@ export class ButtonInfoService {
 
     // const coverImageUrl = getCoverImageUrl(scope, data, journal);
     // const defaultCoverImage = isDefaultCoverImage(coverImageUrl);
-    // const unpaywallUsable = getUnpaywallUsable(scope, data);
 
-    // console.log('retractionUrl:', articleRetractionUrl);
-    // console.log('directToPDFUrl:', directToPDFUrl);
-    // console.log('articleLinkUrl:', articleLinkUrl);
-
-    // TODO - add unpaywall functionality
-    // var unpaywallUsable = getUnpaywallUsable(scope, data);
+    console.log('retractionUrl:', articleRetractionUrl);
+    console.log('directToPDFUrl:', directToPDFUrl);
+    console.log('articleLinkUrl:', articleLinkUrl);
 
     let buttonType = ButtonType.None;
 
@@ -138,6 +147,20 @@ export class ButtonInfoService {
       this.showArticleLink()
     ) {
       buttonType = ButtonType.ArticleLink;
+    }
+
+    // Check unpaywall
+    else if (
+      tiArticleOrJournalResponse.status === 404 ||
+      (type === EntityType.Article &&
+        !directToPDFUrl &&
+        !articleLinkUrl &&
+        this.unpaywallService.getUnpaywallUsable(type, data))
+    ) {
+      // this.unpaywallService.unpaywallWaterfall(
+      //   tiArticleOrJournalResponse,
+      //   type
+      // );
     }
 
     console.log('buttonType', buttonType);
@@ -185,17 +208,18 @@ export class ButtonInfoService {
   getData(response: ApiResult) {
     let data = {};
 
-    if (Array.isArray(response.data)) {
+    if (Array.isArray(response.body.data)) {
       data =
-        response.data
+        response.body.data
           .filter(function (journal: any) {
             return journal?.browzineEnabled === true;
           })
           .pop() || [];
     } else {
-      data = response.data;
+      data = response.body.data;
     }
 
+    console.log('RESPONSE::', response);
     console.log('DATA::', data);
 
     return data;
@@ -204,10 +228,10 @@ export class ButtonInfoService {
   getIncludedJournal(response: ApiResult): Journal | null {
     let journal = null;
 
-    if (response.included) {
-      journal = Array.isArray(response.included)
-        ? response.included[0]
-        : response.included;
+    if (response.body.included) {
+      journal = Array.isArray(response.body.included)
+        ? response.body.included[0]
+        : response.body.included;
     }
 
     return journal;
@@ -242,7 +266,7 @@ export class ButtonInfoService {
   getDirectToPDFUrl(type: EntityType, data: Data): string {
     let directToPDFUrl = '';
 
-    if (type === EntityType.Journal) {
+    if (type === EntityType.Article) {
       if (data?.fullTextFile) {
         directToPDFUrl = data.fullTextFile;
       }
