@@ -1,0 +1,8 @@
+@if(buttonText() !== '') {
+<button mat-flat-button type="button" id="ti-custom-button" (click)="onClick($event)" [attr.aria-label]="ariaLabel()">
+  <span class="ti-custom-button-text">
+    <span>{{buttonText()}}</span>
+    <custom-svg-icon [name]=" icon()" [color]="color()"></custom-svg-icon>
+  </span>
+</button>
+}

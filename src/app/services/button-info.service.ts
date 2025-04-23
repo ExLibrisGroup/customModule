@@ -63,13 +63,6 @@ export class ButtonInfoService {
     console.log('displayInfo', displayInfo);
 
     return displayInfo;
-    // return {
-    //   ariaLabel: '',
-    //   buttonText: `DOI: ${response.data?.doi || '?'}`,
-    //   color: 'sys-primary',
-    //   icon: '',
-    //   url: 'https://libkey.io/libraries/322/articles/540512060/full-text-file?utm_source=api_193',
-    // };
   }
 
   /**
@@ -81,6 +74,7 @@ export class ButtonInfoService {
    * ------ Direct PDF link
    * -------- Article link
    * ---------- Unpaywall
+   * - Browzine link check
    */
   displayWaterfall(
     tiArticleOrJournalResponse: ApiResult,
@@ -108,6 +102,7 @@ export class ButtonInfoService {
     console.log('articleLinkUrl:', articleLinkUrl);
 
     let buttonType = ButtonType.None;
+    let showBrowzineButton = false;
 
     // Alert type buttons //
     if (
@@ -167,6 +162,8 @@ export class ButtonInfoService {
     let buttonText = '';
     let icon = '';
     let linkUrl = '';
+    let browzineButtonText = '';
+    let browzineUrl = '';
 
     switch (buttonType) {
       case ButtonType.Retraction:
@@ -196,12 +193,36 @@ export class ButtonInfoService {
         break;
     }
 
+    // Browzine Journal link check
+    if (
+      browzineWebLink &&
+      browzineEnabled &&
+      type === EntityType.Journal &&
+      this.showJournalBrowZineWebLinkText()
+    ) {
+      showBrowzineButton = true;
+    }
+
+    // Browzine Article in context link check
+    if (
+      browzineWebLink &&
+      browzineEnabled &&
+      type === EntityType.Article &&
+      (directToPDFUrl || articleLinkUrl) &&
+      this.showArticleBrowZineWebLinkText()
+    ) {
+      showBrowzineButton = true;
+    }
+
     return {
       ariaLabel: buttonText || '',
       buttonText: buttonText || '',
       color: 'sys-primary',
+      entityType: type,
       icon: icon || '',
       url: linkUrl,
+      browzineUrl: browzineWebLink,
+      showBrowzineButton,
     };
   }
 
@@ -353,7 +374,7 @@ export class ButtonInfoService {
   // TODO - load from config //
   // MOVE TO primo-config.service ?? //
   showDirectToPDFLink(): boolean {
-    let featureEnabled = true;
+    let featureEnabled = true; // set back to false once implemented
     // var config = browzine.articlePDFDownloadLinkEnabled;
     // var prefixConfig = browzine.primoArticlePDFDownloadLinkEnabled;
 
@@ -373,7 +394,7 @@ export class ButtonInfoService {
   }
 
   showArticleLink(): boolean {
-    let featureEnabled = true;
+    let featureEnabled = true; // set back to false once implemented
     // let config = browzine.articleLinkEnabled;
 
     // if (typeof config === "undefined" || config === null || config === true) {
@@ -385,7 +406,7 @@ export class ButtonInfoService {
 
   // TODO - load from config //
   showFormatChoice(): boolean {
-    let featureEnabled = true;
+    let featureEnabled = true; // set back to false once implemented
     // var config = browzine.showFormatChoice;
 
     // if (config === true) {
@@ -397,7 +418,7 @@ export class ButtonInfoService {
 
   // TODO - load from config //
   showRetractionWatch(): boolean {
-    let featureEnabled = true;
+    let featureEnabled = true; // set back to false once implemented
     // let config = browzine.articleRetractionWatchEnabled;
 
     // if (typeof config === "undefined" || config === null || config === true) {
@@ -408,10 +429,32 @@ export class ButtonInfoService {
   }
 
   showExpressionOfConcern(): boolean {
-    let featureEnabled = false;
+    let featureEnabled = true; // set back to false once implemented
     // let config = browzine.articleExpressionOfConcernEnabled;
 
     // if (typeof config === "undefined" || config === null || config === true) {
+    //   featureEnabled = true;
+    // }
+
+    return featureEnabled;
+  }
+
+  showJournalBrowZineWebLinkText() {
+    let featureEnabled = true; // set back to false once implemented
+    // let config = browzine.journalBrowZineWebLinkTextEnabled;
+
+    // if (typeof config === 'undefined' || config === null || config === true) {
+    //   featureEnabled = true;
+    // }
+
+    return featureEnabled;
+  }
+
+  showArticleBrowZineWebLinkText() {
+    let featureEnabled = true; // set back to false once implemented
+    // let config = browzine.articleBrowZineWebLinkTextEnabled;
+
+    // if (typeof config === 'undefined' || config === null || config === true) {
     //   featureEnabled = true;
     // }
 
