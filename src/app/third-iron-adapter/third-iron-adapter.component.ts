@@ -1,7 +1,8 @@
 import { Component, inject, OnInit, signal, input, Input } from '@angular/core';
 import { createFeatureSelector, createSelector, Store } from '@ngrx/store';
 import { map, Observable, toArray } from 'rxjs';
-import { SingleButtonComponent } from '../components/single-button/single-button.component';
+import { BaseButtonComponent } from '../components/base-button/base-button.component';
+import { BrowzineButtonComponent } from '../components/browzine-button/browzine-button.component';
 import { SearchEntity } from '../types/searchEntity.types';
 import { ButtonInfo } from '../types/buttonInfo.types';
 import { SearchEntityService } from '../services/search-entity.service';
@@ -19,7 +20,7 @@ const selectSearchEntities = createSelector(
 @Component({
   selector: 'custom-third-iron-adapter',
   standalone: true,
-  imports: [SingleButtonComponent, AsyncPipe],
+  imports: [BaseButtonComponent, BrowzineButtonComponent, AsyncPipe],
   templateUrl: './third-iron-adapter.component.html',
   styleUrl: './third-iron-adapter.component.scss',
   providers: [SearchEntityService],

@@ -1,9 +1,11 @@
 @if(buttonInfo$ | async; as buttonInfo){
 <span>
-  <custom-single-button [buttonInfo]="buttonInfo" class="ti-single-button" />
+  <custom-base-button class="ti-single-button" [ariaLabel]="buttonInfo.ariaLabel" [color]="buttonInfo.color"
+    [icon]="buttonInfo.icon" [url]="buttonInfo.url" [buttonText]="buttonInfo.buttonText">
+  </custom-base-button>
+  @if(buttonInfo.showBrowzineButton && buttonInfo.browzineUrl) {
+  <custom-browzine-button class="ti-single-button" [buttonInfo]="buttonInfo"
+    class="ti-single-button"></custom-browzine-button>
+  }
 </span>
 }
-
-<!-- <span style="margin-left: 10px;">
-  <custom-single-button [buttonInfo]="buttonInfo" />
-</span> -->
