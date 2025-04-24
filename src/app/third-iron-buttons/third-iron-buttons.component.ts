@@ -18,14 +18,14 @@ const selectSearchEntities = createSelector(
   (state) => state.entities
 );
 @Component({
-  selector: 'custom-third-iron-adapter',
+  selector: 'custom-third-iron-buttons',
   standalone: true,
   imports: [BaseButtonComponent, BrowzineButtonComponent, AsyncPipe],
-  templateUrl: './third-iron-adapter.component.html',
-  styleUrl: './third-iron-adapter.component.scss',
+  templateUrl: './third-iron-buttons.component.html',
+  styleUrl: './third-iron-buttons.component.scss',
   providers: [SearchEntityService],
 })
-export class ThirdIronAdapterComponent {
+export class ThirdIronButtonsComponent {
   @Input() private hostComponent!: any;
   // hostComponent = input.required<any>();
 
