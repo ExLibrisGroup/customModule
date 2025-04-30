@@ -56,12 +56,10 @@ export class ButtonInfoService {
   }
 
   transformRes(response: ApiResult, type: EntityType): ButtonInfo {
-    const data = this.getData(response);
-    const journal = this.getIncludedJournal(response);
+    const data = this.apiService.getData(response);
+    const journal = this.apiService.getIncludedJournal(response);
 
     const displayInfo = this.displayWaterfall(response, type, data, journal);
-    console.log('displayInfo', displayInfo);
-
     return displayInfo;
   }
 
@@ -84,22 +82,16 @@ export class ButtonInfoService {
   ): ButtonInfo {
     const browzineWebLink = this.getBrowZineWebLink(data);
     const browzineEnabled = this.getBrowZineEnabled(type, data, journal);
-    const coverImageUrl = this.getCoverImageUrl(type, data, journal);
-    const defaultCoverImage = this.isDefaultCoverImage(coverImageUrl);
     const directToPDFUrl = this.getDirectToPDFUrl(type, data);
     const articleLinkUrl = this.getArticleLinkUrl(type, data);
-
     const articleRetractionUrl = this.getArticleRetractionUrl(type, data);
     const articleEocNoticeUrl = this.getArticleEOCNoticeUrl(type, data);
     const problematicJournalArticleNoticeUrl =
       this.getProblematicJournalArticleNoticeUrl(type, data);
 
-    // const coverImageUrl = getCoverImageUrl(scope, data, journal);
-    // const defaultCoverImage = isDefaultCoverImage(coverImageUrl);
-
-    console.log('retractionUrl:', articleRetractionUrl);
-    console.log('directToPDFUrl:', directToPDFUrl);
-    console.log('articleLinkUrl:', articleLinkUrl);
+    // console.log('retractionUrl:', articleRetractionUrl);
+    // console.log('directToPDFUrl:', directToPDFUrl);
+    // console.log('articleLinkUrl:', articleLinkUrl);
 
     let buttonType = ButtonType.None;
     let showBrowzineButton = false;
@@ -158,12 +150,9 @@ export class ButtonInfoService {
       // );
     }
 
-    console.log('buttonType', buttonType);
     let buttonText = '';
     let icon = '';
     let linkUrl = '';
-    let browzineButtonText = '';
-    let browzineUrl = '';
 
     switch (buttonType) {
       case ButtonType.Retraction:
@@ -226,38 +215,6 @@ export class ButtonInfoService {
     };
   }
 
-  getData(response: ApiResult) {
-    let data = {};
-
-    if (Array.isArray(response.body.data)) {
-      data =
-        response.body.data
-          .filter(function (journal: any) {
-            return journal?.browzineEnabled === true;
-          })
-          .pop() || [];
-    } else {
-      data = response.body.data;
-    }
-
-    console.log('RESPONSE::', response);
-    console.log('DATA::', data);
-
-    return data;
-  }
-
-  getIncludedJournal(response: ApiResult): Journal | null {
-    let journal = null;
-
-    if (response.body.included) {
-      journal = Array.isArray(response.body.included)
-        ? response.body.included[0]
-        : response.body.included;
-    }
-
-    return journal;
-  }
-
   getBrowZineWebLink(data: Data): string {
     return data?.browzineWebLink ? data.browzineWebLink : '';
   }
@@ -306,34 +263,6 @@ export class ButtonInfoService {
     }
 
     return articleLinkUrl;
-  }
-
-  getCoverImageUrl(
-    type: EntityType,
-    data: Data,
-    journal: Journal | null
-  ): string {
-    let coverImageUrl = '';
-
-    if (type === EntityType.Journal) {
-      if (data && data.coverImageUrl) {
-        coverImageUrl = data.coverImageUrl;
-      }
-    }
-
-    if (type === EntityType.Article) {
-      if (journal && journal.coverImageUrl) {
-        coverImageUrl = journal.coverImageUrl;
-      }
-    }
-
-    return coverImageUrl;
-  }
-
-  isDefaultCoverImage(coverImageUrl: string): boolean {
-    return !!(
-      coverImageUrl && coverImageUrl.toLowerCase().indexOf('default') > -1
-    );
   }
 
   getArticleRetractionUrl(type: EntityType, data: Data): string {
