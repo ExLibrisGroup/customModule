@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { catchError, Observable, throwError } from 'rxjs';
+import { ApiResult, Journal } from '../types/tiData.types';
 
 @Injectable({
   providedIn: 'root',
@@ -33,6 +34,38 @@ export class ApiService {
 
   appendAccessToken() {
     return `&access_token=${this.apiKey}`;
+  }
+
+  getData(response: ApiResult) {
+    let data = {};
+
+    if (Array.isArray(response.body.data)) {
+      data =
+        response.body.data
+          .filter(function (journal: any) {
+            return journal?.browzineEnabled === true;
+          })
+          .pop() || [];
+    } else {
+      data = response.body.data;
+    }
+
+    // console.log('RESPONSE::', response);
+    // console.log('DATA::', data);
+
+    return data;
+  }
+
+  getIncludedJournal(response: ApiResult): Journal | null {
+    let journal = null;
+
+    if (response.body.included) {
+      journal = Array.isArray(response.body.included)
+        ? response.body.included[0]
+        : response.body.included;
+    }
+
+    return journal;
   }
 
   private handleError(error: HttpErrorResponse) {
