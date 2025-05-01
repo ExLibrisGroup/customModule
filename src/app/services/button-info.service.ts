@@ -5,7 +5,7 @@ import { UnpaywallService } from './unpaywall.service';
 import { SearchEntity } from '../types/searchEntity.types';
 import { ButtonInfo } from '../types/buttonInfo.types';
 import { map, Observable, Observer } from 'rxjs';
-import { ApiResult, Data, Journal } from '../types/tiData.types';
+import { ApiResult, ArticleData, JournalData } from '../types/tiData.types';
 import { EntityType } from '../shared/entity-type.enum';
 import { IconType } from '../shared/icon-type.enum';
 import { ButtonType } from '../shared/button-type.enum';
@@ -13,9 +13,11 @@ import { ButtonType } from '../shared/button-type.enum';
 export const DEFAULT_BUTTON_INFO = {
   ariaLabel: '',
   buttonText: '',
-  url: '',
-  icon: '',
   color: '',
+  entityType: EntityType.Unknown,
+  icon: '',
+  url: '',
+  showBrowzineButton: false,
 };
 
 @Injectable({
@@ -59,6 +61,12 @@ export class ButtonInfoService {
     const data = this.apiService.getData(response);
     const journal = this.apiService.getIncludedJournal(response);
 
+    // If our response object data isn't an Article and isn't a Journal,
+    // we can't proceed, so return the default empty button info
+    if (!this.apiService.isArticle(data) && !this.apiService.isJournal(data)) {
+      return DEFAULT_BUTTON_INFO;
+    }
+
     const displayInfo = this.displayWaterfall(response, type, data, journal);
     return displayInfo;
   }
@@ -77,8 +85,8 @@ export class ButtonInfoService {
   displayWaterfall(
     tiArticleOrJournalResponse: ApiResult,
     type: EntityType,
-    data: Data,
-    journal: Journal | null
+    data: ArticleData | JournalData,
+    journal: JournalData | null
   ): ButtonInfo {
     const browzineWebLink = this.getBrowZineWebLink(data);
     const browzineEnabled = this.getBrowZineEnabled(type, data, journal);
@@ -215,18 +223,18 @@ export class ButtonInfoService {
     };
   }
 
-  getBrowZineWebLink(data: Data): string {
+  getBrowZineWebLink(data: ArticleData | JournalData): string {
     return data?.browzineWebLink ? data.browzineWebLink : '';
   }
 
   getBrowZineEnabled(
     type: EntityType,
-    data: Data,
-    journal: Journal | null
+    data: ArticleData | JournalData,
+    journal: JournalData | null
   ): boolean {
     let browzineEnabled = false;
 
-    if (type === EntityType.Journal) {
+    if (type === EntityType.Journal && this.apiService.isJournal(data)) {
       if (data?.browzineEnabled) {
         browzineEnabled = data.browzineEnabled;
       }
@@ -241,10 +249,10 @@ export class ButtonInfoService {
     return browzineEnabled;
   }
 
-  getDirectToPDFUrl(type: EntityType, data: Data): string {
+  getDirectToPDFUrl(type: EntityType, data: ArticleData | JournalData): string {
     let directToPDFUrl = '';
 
-    if (type === EntityType.Article) {
+    if (type === EntityType.Article && this.apiService.isArticle(data)) {
       if (data?.fullTextFile) {
         directToPDFUrl = data.fullTextFile;
       }
@@ -253,10 +261,10 @@ export class ButtonInfoService {
     return directToPDFUrl;
   }
 
-  getArticleLinkUrl(type: EntityType, data: Data): string {
+  getArticleLinkUrl(type: EntityType, data: ArticleData | JournalData): string {
     let articleLinkUrl = '';
 
-    if (type === EntityType.Article) {
+    if (type === EntityType.Article && this.apiService.isArticle(data)) {
       if (data && data.contentLocation) {
         articleLinkUrl = data.contentLocation;
       }
@@ -265,10 +273,13 @@ export class ButtonInfoService {
     return articleLinkUrl;
   }
 
-  getArticleRetractionUrl(type: EntityType, data: Data): string {
+  getArticleRetractionUrl(
+    type: EntityType,
+    data: ArticleData | JournalData
+  ): string {
     let articleRetractionUrl = '';
 
-    if (type === EntityType.Article) {
+    if (type === EntityType.Article && this.apiService.isArticle(data)) {
       if (data && data.retractionNoticeUrl) {
         articleRetractionUrl = data.retractionNoticeUrl;
       }
@@ -277,10 +288,13 @@ export class ButtonInfoService {
     return articleRetractionUrl;
   }
 
-  getArticleEOCNoticeUrl(type: EntityType, data: Data): string {
+  getArticleEOCNoticeUrl(
+    type: EntityType,
+    data: ArticleData | JournalData
+  ): string {
     let articleEocNoticeUrl = '';
 
-    if (type === EntityType.Article) {
+    if (type === EntityType.Article && this.apiService.isArticle(data)) {
       if (data && data.expressionOfConcernNoticeUrl) {
         articleEocNoticeUrl = data.expressionOfConcernNoticeUrl;
       }
@@ -288,10 +302,13 @@ export class ButtonInfoService {
     return articleEocNoticeUrl;
   }
 
-  getProblematicJournalArticleNoticeUrl(type: EntityType, data: Data): string {
+  getProblematicJournalArticleNoticeUrl(
+    type: EntityType,
+    data: ArticleData | JournalData
+  ): string {
     let problematicJournalArticleNoticeUrl = '';
 
-    if (type === EntityType.Article) {
+    if (type === EntityType.Article && this.apiService.isArticle(data)) {
       if (data && data.problematicJournalArticleNoticeUrl) {
         problematicJournalArticleNoticeUrl =
           data.problematicJournalArticleNoticeUrl;

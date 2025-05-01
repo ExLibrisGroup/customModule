@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { catchError, Observable, throwError } from 'rxjs';
-import { ApiResult, Journal } from '../types/tiData.types';
+import { ApiResult, ArticleData, JournalData } from '../types/tiData.types';
 
 @Injectable({
   providedIn: 'root',
@@ -36,7 +36,7 @@ export class ApiService {
     return `&access_token=${this.apiKey}`;
   }
 
-  getData(response: ApiResult) {
+  getData(response: ApiResult): ArticleData | JournalData | {} {
     let data = {};
 
     if (Array.isArray(response.body.data)) {
@@ -56,7 +56,7 @@ export class ApiService {
     return data;
   }
 
-  getIncludedJournal(response: ApiResult): Journal | null {
+  getIncludedJournal(response: ApiResult): JournalData | null {
     let journal = null;
 
     if (response.body.included) {
@@ -66,6 +66,15 @@ export class ApiService {
     }
 
     return journal;
+  }
+
+  // Type Guard functions
+  // TypeScript docs: https://www.typescriptlang.org/docs/handbook/2/narrowing.html#using-type-predicates
+  isArticle(data: JournalData | ArticleData | {}): data is ArticleData {
+    return (data as ArticleData).doi !== undefined;
+  }
+  isJournal(data: JournalData | ArticleData | {}): data is JournalData {
+    return (data as JournalData).issn !== undefined;
   }
 
   private handleError(error: HttpErrorResponse) {

@@ -1,18 +1,19 @@
 import { Injectable } from '@angular/core';
 import { SearchEntity } from '../types/searchEntity.types';
-import { ButtonInfo } from '../types/buttonInfo.types';
 import { map, Observable, Observer } from 'rxjs';
 import { SearchEntityService } from './search-entity.service';
 import { EntityType } from '../shared/entity-type.enum';
 import { ApiService } from './api.service';
-import { ApiResult, Data, Journal } from '../types/tiData.types';
+import { ApiResult, ArticleData, JournalData } from '../types/tiData.types';
 
 export const DEFAULT_JOURNAL_COVER_INFO = {
   ariaLabel: '',
   buttonText: '',
-  url: '',
-  icon: '',
   color: '',
+  entityType: EntityType.Unknown,
+  icon: '',
+  url: '',
+  showBrowzineButton: false,
 };
 
 @Injectable({
@@ -55,30 +56,19 @@ export class JournalCoverService {
     const data = this.apiService.getData(response);
     const journal = this.apiService.getIncludedJournal(response);
 
+    // If our response object data isn't an Article and isn't a Journal,
+    // we can't proceed, so return empty string
+    if (!this.apiService.isArticle(data) && !this.apiService.isJournal(data)) {
+      return '';
+    }
+
     const coverImageUrl = this.getCoverImageUrl(type, data, journal);
     const defaultCoverImage = this.isDefaultCoverImage(coverImageUrl);
 
-    console.log('journal cover url', coverImageUrl);
+    // console.log('journal cover url', coverImageUrl);
 
     if (coverImageUrl && !defaultCoverImage && this.showJournalCoverImages()) {
       return coverImageUrl;
-      // (function poll() {
-      //   var elementParent = getElementParent(element);
-      //   var coverImages = elementParent.querySelectorAll(
-      //     'prm-search-result-thumbnail-container img'
-      //   );
-      //   if (
-      //     coverImages &&
-      //     coverImages[0] &&
-      //     coverImages[0].className.indexOf('fan-img') > -1
-      //   ) {
-      //     Array.prototype.forEach.call(coverImages, function (coverImage) {
-      //       coverImage.src = coverImageUrl;
-      //     });
-      //   } else {
-      //     requestAnimationFrame(poll);
-      //   }
-      // })();
     }
 
     return '';
@@ -86,12 +76,12 @@ export class JournalCoverService {
 
   private getCoverImageUrl(
     type: EntityType,
-    data: Data,
-    journal: Journal | null
+    data: ArticleData | JournalData,
+    journal: JournalData | null
   ): string {
     let coverImageUrl = '';
 
-    if (type === EntityType.Journal) {
+    if (type === EntityType.Journal && this.apiService.isJournal(data)) {
       if (data && data.coverImageUrl) {
         coverImageUrl = data.coverImageUrl;
       }

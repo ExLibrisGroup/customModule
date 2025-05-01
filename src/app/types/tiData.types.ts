@@ -1,35 +1,48 @@
-export type ApiResult = {
+export interface ApiResult {
   body: ResponseBody;
   meta?: MetaObject;
   ok: boolean;
   status: number;
-  type: number;
+  type?: number;
   url: string;
-};
+}
 
-export type ResponseBody = {
-  data: Data;
-  included: object | object[];
-};
+export interface ResponseBody {
+  data: ArticleData | JournalData;
+  included?: JournalData | JournalData[];
+}
 
-export type MetaObject = {
+export interface MetaObject {
   avoidUnpaywall?: boolean;
-};
+}
 
-export type Data = {
-  journal?: Journal | Journal[];
+export interface ArticleData {
+  authors: string;
+  availableThroughBrowzine: boolean;
+  bestIntegratorLink: string;
   browzineWebLink?: string;
-  browzineEnabled?: boolean;
-  contentLocation?: string;
-  coverImageUrl?: string;
+  contentLocation: string;
+  date: string;
+  doi: string;
   expressionOfConcernNoticeUrl?: string;
-  fullTextFile?: string;
-  unpaywallUsable?: boolean;
+  fullTextFile: string;
+  id: number;
+  inPress: boolean;
+  openAccess: boolean;
+  title: string;
+  type: string;
+  unpaywallUsable: boolean;
   problematicJournalArticleNoticeUrl?: string;
   retractionNoticeUrl?: string;
-};
+}
 
-export type Journal = {
-  browzineEnabled?: boolean;
-  coverImageUrl?: string;
-};
+export interface JournalData {
+  browzineEnabled: boolean;
+  browzineWebLink?: string;
+  coverImageUrl: string;
+  id: string;
+  issn: string;
+  sjrValue: string;
+  title: string;
+  type: string;
+}
