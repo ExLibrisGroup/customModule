@@ -8,7 +8,7 @@ export interface ApiResult {
 }
 
 export interface ResponseBody {
-  data: ArticleData | JournalData;
+  data: ArticleData | JournalData[];
   included?: JournalData | JournalData[];
 }
 
