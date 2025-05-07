@@ -40,9 +40,10 @@ export interface JournalData {
   browzineEnabled: boolean;
   browzineWebLink?: string;
   coverImageUrl: string;
-  id: string;
+  externalLink?: string;
+  id: number;
   issn: string;
-  sjrValue: string;
+  sjrValue: number;
   title: string;
   type: string;
 }

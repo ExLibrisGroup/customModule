@@ -97,10 +97,6 @@ export class ButtonInfoService {
     const problematicJournalArticleNoticeUrl =
       this.getProblematicJournalArticleNoticeUrl(type, data);
 
-    // console.log('retractionUrl:', articleRetractionUrl);
-    // console.log('directToPDFUrl:', directToPDFUrl);
-    // console.log('articleLinkUrl:', articleLinkUrl);
-
     let buttonType = ButtonType.None;
     let showBrowzineButton = false;
 
@@ -199,6 +195,12 @@ export class ButtonInfoService {
     ) {
       showBrowzineButton = true;
     }
+
+    // console.log('***browzineWebLink', browzineWebLink);
+    // console.log('***browzineEnabled', browzineEnabled);
+    // console.log('***type', type);
+    // console.log('***directToPDFUrl', directToPDFUrl);
+    // console.log('***articleLinkUrl', articleLinkUrl);
 
     // Browzine Article in context link check
     if (
@@ -318,7 +320,7 @@ export class ButtonInfoService {
   }
 
   // TODO - load from config //
-  // MOVE TO primo-config.service ?? //
+  // TODO - MOVE TO primo-config.service //
   showDirectToPDFLink(): boolean {
     let featureEnabled = true; // set back to false once implemented
     // var config = browzine.articlePDFDownloadLinkEnabled;

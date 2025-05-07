@@ -1,20 +1,20 @@
-export type SearchEntity = {
+export interface SearchEntity {
   pnx: PNX;
-};
+}
 
-export type PNX = {
+export interface PNX {
   addata: AdData;
   display: Display;
-};
+}
 
-export type Display = {
+export interface Display {
   title: string[];
   type: string[];
-  oa: string[] | undefined;
-};
+  oa?: string[];
+}
 
-export type AdData = {
-  issn: string[];
-  eissn: string[];
-  doi: string[];
-};
+export interface AdData {
+  issn?: string[];
+  eissn?: string[];
+  doi?: string[];
+}

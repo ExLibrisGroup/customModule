@@ -71,7 +71,7 @@ export class ThirdIronButtonsComponent {
       return;
     }
 
-    console.log('searchResult', searchResult);
+    // console.log('button component searchResult', searchResult);
     this.buttonInfo$ = this.buttonInfoService.getButtonInfo(searchResult);
   };
 }
