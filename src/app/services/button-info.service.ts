@@ -4,15 +4,17 @@ import { SearchEntityService } from './search-entity.service';
 import { UnpaywallService } from './unpaywall.service';
 import { SearchEntity } from '../types/searchEntity.types';
 import { ButtonInfo } from '../types/buttonInfo.types';
-import { map, Observable, Observer } from 'rxjs';
+import { firstValueFrom, map, mergeMap, Observable, Observer } from 'rxjs';
 import { ApiResult, ArticleData, JournalData } from '../types/tiData.types';
 import { EntityType } from '../shared/entity-type.enum';
 import { IconType } from '../shared/icon-type.enum';
 import { ButtonType } from '../shared/button-type.enum';
+import { UnpaywallResponse } from '../types/unpaywall.types';
 
 export const DEFAULT_BUTTON_INFO = {
   ariaLabel: '',
   buttonText: '',
+  buttonType: ButtonType.None,
   color: '',
   entityType: EntityType.Unknown,
   icon: '',
@@ -41,34 +43,74 @@ export class ButtonInfoService {
     // make API call for article or journal
     if (entityType) {
       if (entityType === EntityType.Article) {
-        return this.apiService
-          .getArticle(this.searchEntityService.getDoi(entity))
-          .pipe(map((res) => this.transformRes(res, entityType)));
+        const doi = this.searchEntityService.getDoi(entity);
+        return this.apiService.getArticle(doi).pipe(
+          mergeMap((res): Observable<ButtonInfo> => {
+            // return this.displayWaterfall(res, entityType);
+
+            const buttonInfo = this.displayWaterfall(res, entityType);
+
+            console.log('getButtonInfo:::', buttonInfo);
+
+            const data = this.apiService.getData(res);
+            const avoidUnpaywallPublisherLinks = !!(
+              this.apiService.isArticle(data) &&
+              data?.avoidUnpaywallPublisherLinks
+            );
+
+            // Possibly make Unpaywall call
+            if (
+              this.shouldMakeUnpaywallCall(
+                res,
+                entityType,
+                buttonInfo.buttonType
+              ) &&
+              doi
+            ) {
+              return this.apiService.getUnpaywall(doi).pipe(
+                map((unpaywallRes) => {
+                  const unpaywallButtonInfo =
+                    this.unpaywallService.unpaywallWaterfall(
+                      unpaywallRes,
+                      avoidUnpaywallPublisherLinks
+                    );
+
+                  console.log('unpaywallButtonInfo:::', unpaywallButtonInfo);
+
+                  if (
+                    unpaywallButtonInfo.url &&
+                    unpaywallButtonInfo.url !== ''
+                  ) {
+                    return unpaywallButtonInfo;
+                  } else {
+                    return buttonInfo;
+                  }
+                })
+              );
+            }
+
+            const buttonInfo$: Observable<ButtonInfo> = new Observable(
+              (obs: Observer<ButtonInfo>) => {
+                buttonInfo;
+              }
+            );
+
+            console.log('getButtonInfo returning:::', buttonInfo$);
+            return buttonInfo$;
+          })
+        );
       }
       if (entityType === EntityType.Journal) {
+        const issn = this.searchEntityService.getIssn(entity);
         return this.apiService
-          .getJournal(this.searchEntityService.getIssn(entity))
-          .pipe(map((res) => this.transformRes(res, entityType)));
+          .getJournal(issn)
+          .pipe(map((res) => this.displayWaterfall(res, entityType)));
       }
       // if not article or journal, just return empty button info
       return observable;
     } else {
       return observable;
     }
-  }
-
-  transformRes(response: ApiResult, type: EntityType): ButtonInfo {
-    const data = this.apiService.getData(response);
-    const journal = this.apiService.getIncludedJournal(response);
-
-    // If our response object data isn't an Article and isn't a Journal,
-    // we can't proceed, so return the default empty button info
-    if (!this.apiService.isArticle(data) && !this.apiService.isJournal(data)) {
-      return DEFAULT_BUTTON_INFO;
-    }
-
-    const displayInfo = this.displayWaterfall(response, type, data, journal);
-    return displayInfo;
   }
 
   /**
@@ -79,15 +121,19 @@ export class ButtonInfoService {
    * ---- Problematic Journal
    * ------ Direct PDF link
    * -------- Article link
-   * ---------- Unpaywall
    * - Browzine link check
    */
-  displayWaterfall(
-    tiArticleOrJournalResponse: ApiResult,
-    type: EntityType,
-    data: ArticleData | JournalData,
-    journal: JournalData | null
-  ): ButtonInfo {
+  displayWaterfall(response: ApiResult, type: EntityType): ButtonInfo {
+    // console.log(':::displayWaterfall API Response:::', response);
+    const data = this.apiService.getData(response);
+    const journal = this.apiService.getIncludedJournal(response);
+
+    // If our response object data isn't an Article and isn't a Journal,
+    // we can't proceed, so return the default empty button info
+    if (!this.apiService.isArticle(data) && !this.apiService.isJournal(data)) {
+      return DEFAULT_BUTTON_INFO;
+    }
+
     const browzineWebLink = this.getBrowZineWebLink(data);
     const browzineEnabled = this.getBrowZineEnabled(type, data, journal);
     const directToPDFUrl = this.getDirectToPDFUrl(type, data);
@@ -99,6 +145,9 @@ export class ButtonInfoService {
 
     let buttonType = ButtonType.None;
     let showBrowzineButton = false;
+    let buttonText = '';
+    let icon = '';
+    let linkUrl = '';
 
     // Alert type buttons //
     if (
@@ -107,17 +156,26 @@ export class ButtonInfoService {
       this.showRetractionWatch()
     ) {
       buttonType = ButtonType.Retraction;
+      buttonText = 'Retracted Article'; // TODO - add config: browzine.articleRetractionWatchText
+      icon = IconType.ArticleAlert;
+      linkUrl = articleRetractionUrl;
     } else if (
       articleEocNoticeUrl &&
       type === EntityType.Article &&
       this.showExpressionOfConcern()
     ) {
       buttonType = ButtonType.ExpressionOfConcern;
+      buttonText = 'Expression of Concern'; // TODO - add config: browzine.articleExpressionOfConcernText
+      icon = IconType.ArticleAlert;
+      linkUrl = articleEocNoticeUrl;
     } else if (
       problematicJournalArticleNoticeUrl &&
       type === EntityType.Article
     ) {
       buttonType = ButtonType.ProblematicJournalArticle;
+      buttonText = 'Problematic Journal'; // TODO - add config: browzine.problematicJournalText
+      icon = IconType.ArticleAlert;
+      linkUrl = problematicJournalArticleNoticeUrl;
     }
 
     // DirectToPDF
@@ -127,6 +185,9 @@ export class ButtonInfoService {
       this.showDirectToPDFLink()
     ) {
       buttonType = ButtonType.DirectToPDF;
+      buttonText = 'Download PDF'; // TODO - add config: browzine.articlePDFDownloadLinkText || browzine.primoArticlePDFDownloadLinkText
+      icon = IconType.DownloadPDF;
+      linkUrl = directToPDFUrl;
     }
 
     // ArticleLink
@@ -138,52 +199,9 @@ export class ButtonInfoService {
       this.showArticleLink()
     ) {
       buttonType = ButtonType.ArticleLink;
-    }
-
-    // Check unpaywall
-    else if (
-      tiArticleOrJournalResponse.status === 404 ||
-      (type === EntityType.Article &&
-        !directToPDFUrl &&
-        !articleLinkUrl &&
-        this.unpaywallService.getUnpaywallUsable(type, data))
-    ) {
-      // this.unpaywallService.unpaywallWaterfall(
-      //   tiArticleOrJournalResponse,
-      //   type
-      // );
-    }
-
-    let buttonText = '';
-    let icon = '';
-    let linkUrl = '';
-
-    switch (buttonType) {
-      case ButtonType.Retraction:
-        buttonText = 'Retracted Article'; // TODO - add config: browzine.articleRetractionWatchText
-        icon = IconType.ArticleAlert;
-        linkUrl = articleRetractionUrl;
-        break;
-      case ButtonType.ExpressionOfConcern:
-        buttonText = 'Expression of Concern'; // TODO - add config: browzine.articleExpressionOfConcernText
-        icon = IconType.ArticleAlert;
-        linkUrl = articleEocNoticeUrl;
-        break;
-      case ButtonType.ProblematicJournalArticle:
-        buttonText = 'Problematic Journal'; // TODO - add config: browzine.problematicJournalText
-        icon = IconType.ArticleAlert;
-        linkUrl = problematicJournalArticleNoticeUrl;
-        break;
-      case ButtonType.DirectToPDF:
-        buttonText = 'Download PDF'; // TODO - add config: browzine.articlePDFDownloadLinkText || browzine.primoArticlePDFDownloadLinkText
-        icon = IconType.DownloadPDF;
-        linkUrl = directToPDFUrl;
-        break;
-      case ButtonType.ArticleLink:
-        buttonText = 'Read Article'; // TODO - add config: browzine.articleLinkText
-        icon = IconType.ArticleLink;
-        linkUrl = articleLinkUrl;
-        break;
+      buttonText = 'Read Article'; // TODO - add config: browzine.articleLinkText
+      icon = IconType.ArticleLink;
+      linkUrl = articleLinkUrl;
     }
 
     // Browzine Journal link check
@@ -196,12 +214,6 @@ export class ButtonInfoService {
       showBrowzineButton = true;
     }
 
-    // console.log('***browzineWebLink', browzineWebLink);
-    // console.log('***browzineEnabled', browzineEnabled);
-    // console.log('***type', type);
-    // console.log('***directToPDFUrl', directToPDFUrl);
-    // console.log('***articleLinkUrl', articleLinkUrl);
-
     // Browzine Article in context link check
     if (
       browzineWebLink &&
@@ -213,9 +225,18 @@ export class ButtonInfoService {
       showBrowzineButton = true;
     }
 
+    // console.log('***browzineWebLink', browzineWebLink);
+    // console.log('***browzineEnabled', browzineEnabled);
+    // console.log('***showBrowzineButton', showBrowzineButton);
+    // console.log('***type', type);
+    // console.log('***directToPDFUrl', directToPDFUrl);
+    // console.log('***ButtonType', buttonType);
+    // console.log('***linkUrl', linkUrl);
+
     return {
       ariaLabel: buttonText || '',
       buttonText: buttonText || '',
+      buttonType,
       color: 'sys-primary',
       entityType: type,
       icon: icon || '',
@@ -317,6 +338,101 @@ export class ButtonInfoService {
       }
     }
     return problematicJournalArticleNoticeUrl;
+  }
+
+  private shouldMakeUnpaywallCall(
+    response: ApiResult,
+    entityType: EntityType,
+    buttonType: ButtonType
+  ): boolean {
+    const data = this.apiService.getData(response);
+
+    // If we aren't dealing with an Article, don't continue with Unpaywall call
+    if (!this.apiService.isArticle(data)) {
+      return false;
+    }
+
+    // If unpaywall config is not enabled, don't continue with Unpaywall call
+    if (!this.isUnpaywallEnabled()) {
+      return false;
+    }
+
+    // if we have an alert type button (retraction, EOC, problematic journal),
+    // don't continue with Unpaywall call
+    if (this.isAlertButton(buttonType)) {
+      return false;
+    }
+
+    const shouldAvoidUnpaywall = this.shouldAvoidUnpaywall(response);
+    const isUnpaywallUsable = this.getUnpaywallUsable(entityType, data);
+    const directToPDFUrl = this.getDirectToPDFUrl(entityType, data);
+    const articleLinkUrl = this.getArticleLinkUrl(entityType, data);
+
+    if (
+      response.status === 404 ||
+      (!directToPDFUrl &&
+        !articleLinkUrl &&
+        !shouldAvoidUnpaywall &&
+        isUnpaywallUsable)
+    ) {
+      console.log('SHOULD MAKE UNPAYWALL CALL');
+      return true;
+    }
+    console.log('DO NOT MAKE UNPAYWALL CALL');
+    return false;
+  }
+
+  private shouldAvoidUnpaywall(response: ApiResult) {
+    if (
+      response.hasOwnProperty('meta') &&
+      response?.meta?.hasOwnProperty('avoidUnpaywall')
+    ) {
+      return response.meta.avoidUnpaywall;
+    } else {
+      return false;
+    }
+  }
+
+  private getUnpaywallUsable(
+    type: EntityType,
+    data: ArticleData | JournalData
+  ) {
+    if (type !== EntityType.Article || this.apiService.isJournal(data)) {
+      return false;
+    }
+    if (
+      !data ||
+      (this.apiService.isArticle(data) &&
+        !data.hasOwnProperty('unpaywallUsable'))
+    ) {
+      return true;
+    }
+    return data.unpaywallUsable;
+  }
+
+  private isUnpaywallEnabled() {
+    return (
+      // TODO - load from config
+      // browzine.articlePDFDownloadViaUnpaywallEnabled ||
+      // browzine.articleLinkViaUnpaywallEnabled ||
+      // browzine.articleAcceptedManuscriptPDFViaUnpaywallEnabled ||
+      // browzine.articleAcceptedManuscriptArticleLinkViaUnpaywallEnabled
+      true
+    );
+  }
+
+  private isAlertButton(buttonType: ButtonType): boolean {
+    let isAlertType = false;
+
+    switch (buttonType) {
+      case ButtonType.Retraction:
+      case ButtonType.ExpressionOfConcern:
+      case ButtonType.ProblematicJournalArticle:
+        isAlertType = true;
+        break;
+    }
+
+    return isAlertType;
   }
 
   // TODO - load from config //

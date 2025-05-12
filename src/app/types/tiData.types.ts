@@ -19,6 +19,7 @@ export interface MetaObject {
 export interface ArticleData {
   authors: string;
   availableThroughBrowzine: boolean;
+  avoidUnpaywallPublisherLinks?: boolean;
   bestIntegratorLink: string;
   browzineWebLink?: string;
   contentLocation: string;

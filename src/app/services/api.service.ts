@@ -1,7 +1,12 @@
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpErrorResponse } from '@angular/common/http';
+import {
+  HttpClient,
+  HttpErrorResponse,
+  HttpResponse,
+} from '@angular/common/http';
 import { catchError, Observable, throwError } from 'rxjs';
 import { ApiResult, ArticleData, JournalData } from '../types/tiData.types';
+import { UnpaywallData } from '../types/unpaywall.types';
 
 @Injectable({
   providedIn: 'root',
@@ -18,6 +23,7 @@ export class ApiService {
       this.apiUrl
     }/articles/doi/${doi}?include=journal,library${this.appendAccessToken()}`;
 
+    console.log('http getArticle', endpoint);
     return this.http
       .get(endpoint, { observe: 'response' })
       .pipe(catchError(this.handleError));
@@ -32,8 +38,16 @@ export class ApiService {
       .pipe(catchError(this.handleError));
   }
 
-  appendAccessToken() {
-    return `&access_token=${this.apiKey}`;
+  getUnpaywall(doi: string): Observable<HttpResponse<Object>> {
+    // TODO - load from config
+    // var email = browzine.unpaywallEmailAddressKey;
+    const email = 'info@thirdiron.com';
+
+    const endpoint = `https://api.unpaywall.org/v2/${doi}?email=${email}`;
+    console.log('http getUnpaywall', endpoint);
+    return this.http
+      .get(endpoint, { observe: 'response' })
+      .pipe(catchError(this.handleError));
   }
 
   getData(response: ApiResult): ArticleData | JournalData | {} {
@@ -75,6 +89,10 @@ export class ApiService {
   }
   isJournal(data: JournalData | ArticleData | {}): data is JournalData {
     return (data as JournalData).issn !== undefined;
+  }
+
+  private appendAccessToken() {
+    return `&access_token=${this.apiKey}`;
   }
 
   private handleError(error: HttpErrorResponse) {
