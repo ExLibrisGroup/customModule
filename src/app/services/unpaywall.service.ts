@@ -1,8 +1,6 @@
 import { Injectable } from '@angular/core';
 import { EntityType } from '../shared/entity-type.enum';
-import { ApiService } from './api.service';
-import { map, Observable, Observer } from 'rxjs';
-import { UnpaywallData, UnpaywallResponse } from '../types/unpaywall.types';
+import { UnpaywallData } from '../types/unpaywall.types';
 import { ButtonType } from '../shared/button-type.enum';
 import { IconType } from '../shared/icon-type.enum';
 import { ButtonInfo } from '../types/buttonInfo.types';
@@ -15,7 +13,7 @@ export class UnpaywallService {
   constructor() {}
 
   unpaywallWaterfall(
-    unpaywallResponse: any, //UnpaywallResponse
+    unpaywallResponse: any,
     avoidUnpaywallPublisherLinks: boolean
   ): ButtonInfo {
     let buttonType: ButtonType = ButtonType.None;
@@ -73,64 +71,18 @@ export class UnpaywallService {
         icon = IconType.ArticleLink;
       }
 
+      console.log('buttonType', buttonType);
+      console.log('url', unpaywallUrl);
+
       return {
-        ariaLabel: buttonText || '',
-        buttonText: buttonText || '',
+        ariaLabel: buttonText,
+        buttonText: buttonText,
         buttonType,
         color: 'sys-primary',
         entityType: EntityType.Article,
-        icon: icon || '',
+        icon: icon,
         url: unpaywallUrl,
       };
-
-      //   if (template) {
-      //     var element = getElement(scope);
-
-      //     (function poll() {
-      //       var elementParent = getElementParent(element);
-      //       var availabilityLine = elementParent.querySelector(
-      //         'prm-search-result-availability-line .layout-align-start-start'
-      //       );
-
-      //       if (availabilityLine) {
-      //         availabilityLine.insertAdjacentHTML('afterbegin', template);
-      //       } else {
-      //         requestAnimationFrame(poll);
-      //       }
-      //     })();
-      //   }
-
-      //   if (!showLinkResolverLink() && template) {
-      //     var element = getElement(scope);
-
-      //     (function poll() {
-      //       var elementParent = getElementParent(element);
-      //       var contentLinkElement = elementParent.querySelector(
-      //         'prm-search-result-availability-line .layout-align-start-start .layout-row'
-      //       );
-
-      //       if (contentLinkElement) {
-      //         contentLinkElement.remove();
-      //       } else {
-      //         requestAnimationFrame(poll);
-      //       }
-      //     })();
-      //   }
-
-      //   if (template) {
-      //     var element = getElement(scope);
-
-      //     (function poll() {
-      //       var elementParent = getElementParent(element);
-      //       var quickLinkElement = elementParent.querySelector('prm-quick-link');
-
-      //       if (quickLinkElement) {
-      //         quickLinkElement.remove();
-      //       } else {
-      //         requestAnimationFrame(poll);
-      //       }
-      //     })();
-      //   }
     }
     return DEFAULT_BUTTON_INFO;
   }

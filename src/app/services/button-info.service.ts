@@ -4,7 +4,7 @@ import { SearchEntityService } from './search-entity.service';
 import { UnpaywallService } from './unpaywall.service';
 import { SearchEntity } from '../types/searchEntity.types';
 import { ButtonInfo } from '../types/buttonInfo.types';
-import { firstValueFrom, map, mergeMap, Observable, Observer } from 'rxjs';
+import { map, mergeMap, Observable, of } from 'rxjs';
 import { ApiResult, ArticleData, JournalData } from '../types/tiData.types';
 import { EntityType } from '../shared/entity-type.enum';
 import { IconType } from '../shared/icon-type.enum';
@@ -33,11 +33,6 @@ export class ButtonInfoService {
   ) {}
 
   getButtonInfo(entity: SearchEntity): Observable<ButtonInfo> {
-    const observable: Observable<ButtonInfo> = new Observable(
-      (obs: Observer<ButtonInfo>) => {
-        DEFAULT_BUTTON_INFO;
-      }
-    );
     const entityType = this.searchEntityService.getEntityType(entity);
 
     // make API call for article or journal
@@ -45,71 +40,45 @@ export class ButtonInfoService {
       if (entityType === EntityType.Article) {
         const doi = this.searchEntityService.getDoi(entity);
         return this.apiService.getArticle(doi).pipe(
-          mergeMap((res): Observable<ButtonInfo> => {
-            // return this.displayWaterfall(res, entityType);
-
-            const buttonInfo = this.displayWaterfall(res, entityType);
-
-            console.log('getButtonInfo:::', buttonInfo);
-
-            const data = this.apiService.getData(res);
-            const avoidUnpaywallPublisherLinks = !!(
-              this.apiService.isArticle(data) &&
-              data?.avoidUnpaywallPublisherLinks
-            );
-
-            // Possibly make Unpaywall call
-            if (
+          // pass article response into display waterfall to get buttonInfo object
+          map(
+            (
+              articleResponse
+            ): { articleResponse: ApiResult; buttonInfo: ButtonInfo } =>
+              this.displayWaterfall(articleResponse, entityType)
+          ),
+          // based on buttonInfo object, determine if we need to fallback to Unpaywall
+          mergeMap(
+            ({ articleResponse, buttonInfo }): Observable<ButtonInfo> =>
               this.shouldMakeUnpaywallCall(
-                res,
+                articleResponse,
                 entityType,
                 buttonInfo.buttonType
-              ) &&
-              doi
-            ) {
-              return this.apiService.getUnpaywall(doi).pipe(
-                map((unpaywallRes) => {
-                  const unpaywallButtonInfo =
-                    this.unpaywallService.unpaywallWaterfall(
-                      unpaywallRes,
-                      avoidUnpaywallPublisherLinks
-                    );
-
-                  console.log('unpaywallButtonInfo:::', unpaywallButtonInfo);
-
-                  if (
-                    unpaywallButtonInfo.url &&
-                    unpaywallButtonInfo.url !== ''
-                  ) {
-                    return unpaywallButtonInfo;
-                  } else {
-                    return buttonInfo;
-                  }
-                })
-              );
-            }
-
-            const buttonInfo$: Observable<ButtonInfo> = new Observable(
-              (obs: Observer<ButtonInfo>) => {
-                buttonInfo;
-              }
-            );
-
-            console.log('getButtonInfo returning:::', buttonInfo$);
-            return buttonInfo$;
-          })
+              ) && doi
+                ? // fallback to Unpaywall
+                  this.makeUnpaywallCall(articleResponse, buttonInfo, doi)
+                : // no fallback, just return buttonInfo from display waterfall
+                  of(buttonInfo)
+          )
         );
       }
       if (entityType === EntityType.Journal) {
         const issn = this.searchEntityService.getIssn(entity);
-        return this.apiService
-          .getJournal(issn)
-          .pipe(map((res) => this.displayWaterfall(res, entityType)));
+        return this.apiService.getJournal(issn).pipe(
+          map((journalResponse) => {
+            const waterfallResponse = this.displayWaterfall(
+              journalResponse,
+              entityType
+            );
+            return waterfallResponse.buttonInfo;
+          })
+        );
       }
       // if not article or journal, just return empty button info
-      return observable;
+      // 'of' creates an Observable from the given value
+      return of(DEFAULT_BUTTON_INFO);
     } else {
-      return observable;
+      return of(DEFAULT_BUTTON_INFO);
     }
   }
 
@@ -123,15 +92,21 @@ export class ButtonInfoService {
    * -------- Article link
    * - Browzine link check
    */
-  displayWaterfall(response: ApiResult, type: EntityType): ButtonInfo {
-    // console.log(':::displayWaterfall API Response:::', response);
+  private displayWaterfall(
+    response: ApiResult,
+    type: EntityType
+  ): { articleResponse: ApiResult; buttonInfo: ButtonInfo } {
     const data = this.apiService.getData(response);
     const journal = this.apiService.getIncludedJournal(response);
+    const defaultReturn = {
+      articleResponse: response,
+      buttonInfo: DEFAULT_BUTTON_INFO,
+    };
 
     // If our response object data isn't an Article and isn't a Journal,
     // we can't proceed, so return the default empty button info
     if (!this.apiService.isArticle(data) && !this.apiService.isJournal(data)) {
-      return DEFAULT_BUTTON_INFO;
+      return defaultReturn;
     }
 
     const browzineWebLink = this.getBrowZineWebLink(data);
@@ -225,15 +200,10 @@ export class ButtonInfoService {
       showBrowzineButton = true;
     }
 
-    // console.log('***browzineWebLink', browzineWebLink);
-    // console.log('***browzineEnabled', browzineEnabled);
-    // console.log('***showBrowzineButton', showBrowzineButton);
-    // console.log('***type', type);
-    // console.log('***directToPDFUrl', directToPDFUrl);
     // console.log('***ButtonType', buttonType);
     // console.log('***linkUrl', linkUrl);
 
-    return {
+    const buttonInfo = {
       ariaLabel: buttonText || '',
       buttonText: buttonText || '',
       buttonType,
@@ -244,13 +214,17 @@ export class ButtonInfoService {
       browzineUrl: browzineWebLink,
       showBrowzineButton,
     };
+    return {
+      buttonInfo,
+      articleResponse: response,
+    };
   }
 
-  getBrowZineWebLink(data: ArticleData | JournalData): string {
+  private getBrowZineWebLink(data: ArticleData | JournalData): string {
     return data?.browzineWebLink ? data.browzineWebLink : '';
   }
 
-  getBrowZineEnabled(
+  private getBrowZineEnabled(
     type: EntityType,
     data: ArticleData | JournalData,
     journal: JournalData | null
@@ -272,7 +246,10 @@ export class ButtonInfoService {
     return browzineEnabled;
   }
 
-  getDirectToPDFUrl(type: EntityType, data: ArticleData | JournalData): string {
+  private getDirectToPDFUrl(
+    type: EntityType,
+    data: ArticleData | JournalData
+  ): string {
     let directToPDFUrl = '';
 
     if (type === EntityType.Article && this.apiService.isArticle(data)) {
@@ -284,7 +261,10 @@ export class ButtonInfoService {
     return directToPDFUrl;
   }
 
-  getArticleLinkUrl(type: EntityType, data: ArticleData | JournalData): string {
+  private getArticleLinkUrl(
+    type: EntityType,
+    data: ArticleData | JournalData
+  ): string {
     let articleLinkUrl = '';
 
     if (type === EntityType.Article && this.apiService.isArticle(data)) {
@@ -296,7 +276,7 @@ export class ButtonInfoService {
     return articleLinkUrl;
   }
 
-  getArticleRetractionUrl(
+  private getArticleRetractionUrl(
     type: EntityType,
     data: ArticleData | JournalData
   ): string {
@@ -311,7 +291,7 @@ export class ButtonInfoService {
     return articleRetractionUrl;
   }
 
-  getArticleEOCNoticeUrl(
+  private getArticleEOCNoticeUrl(
     type: EntityType,
     data: ArticleData | JournalData
   ): string {
@@ -325,7 +305,7 @@ export class ButtonInfoService {
     return articleEocNoticeUrl;
   }
 
-  getProblematicJournalArticleNoticeUrl(
+  private getProblematicJournalArticleNoticeUrl(
     type: EntityType,
     data: ArticleData | JournalData
   ): string {
@@ -418,6 +398,33 @@ export class ButtonInfoService {
       // browzine.articleAcceptedManuscriptPDFViaUnpaywallEnabled ||
       // browzine.articleAcceptedManuscriptArticleLinkViaUnpaywallEnabled
       true
+    );
+  }
+
+  private makeUnpaywallCall(
+    articleResponse: ApiResult,
+    buttonInfo: ButtonInfo,
+    doi: string
+  ): Observable<ButtonInfo> {
+    return this.apiService.getUnpaywall(doi).pipe(
+      map((unpaywallRes) => {
+        const data = this.apiService.getData(articleResponse);
+        const avoidUnpaywallPublisherLinks = !!(
+          this.apiService.isArticle(data) && data?.avoidUnpaywallPublisherLinks
+        );
+
+        const unpaywallButtonInfo = this.unpaywallService.unpaywallWaterfall(
+          unpaywallRes,
+          avoidUnpaywallPublisherLinks
+        );
+
+        if (unpaywallButtonInfo.url && unpaywallButtonInfo.url !== '') {
+          return unpaywallButtonInfo;
+        } else {
+          // original button info from Article Response
+          return buttonInfo;
+        }
+      })
     );
   }
 

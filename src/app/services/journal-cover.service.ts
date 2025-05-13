@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { SearchEntity } from '../types/searchEntity.types';
-import { map, Observable, Observer } from 'rxjs';
+import { map, Observable, Observer, of } from 'rxjs';
 import { SearchEntityService } from './search-entity.service';
 import { EntityType } from '../shared/entity-type.enum';
 import { ApiService } from './api.service';
@@ -26,11 +26,6 @@ export class JournalCoverService {
   ) {}
 
   getJournalCoverUrl(entity: SearchEntity): Observable<string> {
-    const observable: Observable<string> = new Observable(
-      (obs: Observer<string>) => {
-        ('');
-      }
-    );
     const entityType = this.searchEntityService.getEntityType(entity);
 
     // make API call for article or journal
@@ -46,9 +41,10 @@ export class JournalCoverService {
           .pipe(map((res) => this.transformRes(res, entityType)));
       }
       // if not article or journal, just return empty button info
-      return observable;
+      // 'of' creates an Observable
+      return of('');
     } else {
-      return observable;
+      return of('');
     }
   }
 
