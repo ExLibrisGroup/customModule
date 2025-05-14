@@ -44,19 +44,19 @@ export class ButtonInfoService {
           map(
             (
               articleResponse
-            ): { articleResponse: ApiResult; buttonInfo: ButtonInfo } =>
+            ): { response: ApiResult; buttonInfo: ButtonInfo } =>
               this.displayWaterfall(articleResponse, entityType)
           ),
           // based on buttonInfo object, determine if we need to fallback to Unpaywall
           mergeMap(
-            ({ articleResponse, buttonInfo }): Observable<ButtonInfo> =>
+            ({ response: articleRes, buttonInfo }): Observable<ButtonInfo> =>
               this.shouldMakeUnpaywallCall(
-                articleResponse,
+                articleRes,
                 entityType,
                 buttonInfo.buttonType
               ) && doi
                 ? // fallback to Unpaywall
-                  this.makeUnpaywallCall(articleResponse, buttonInfo, doi)
+                  this.makeUnpaywallCall(articleRes, buttonInfo, doi)
                 : // no fallback, just return buttonInfo from display waterfall
                   of(buttonInfo)
           )
@@ -92,14 +92,14 @@ export class ButtonInfoService {
    * -------- Article link
    * - Browzine link check
    */
-  private displayWaterfall(
+  displayWaterfall(
     response: ApiResult,
     type: EntityType
-  ): { articleResponse: ApiResult; buttonInfo: ButtonInfo } {
+  ): { response: ApiResult; buttonInfo: ButtonInfo } {
     const data = this.apiService.getData(response);
     const journal = this.apiService.getIncludedJournal(response);
     const defaultReturn = {
-      articleResponse: response,
+      response,
       buttonInfo: DEFAULT_BUTTON_INFO,
     };
 
@@ -181,9 +181,9 @@ export class ButtonInfoService {
 
     // Browzine Journal link check
     if (
+      type === EntityType.Journal &&
       browzineWebLink &&
       browzineEnabled &&
-      type === EntityType.Journal &&
       this.showJournalBrowZineWebLinkText()
     ) {
       showBrowzineButton = true;
@@ -191,11 +191,11 @@ export class ButtonInfoService {
 
     // Browzine Article in context link check
     if (
+      type === EntityType.Article &&
       browzineWebLink &&
       browzineEnabled &&
-      type === EntityType.Article &&
-      (directToPDFUrl || articleLinkUrl) &&
-      this.showArticleBrowZineWebLinkText()
+      this.showArticleBrowZineWebLinkText() &&
+      (directToPDFUrl || articleLinkUrl)
     ) {
       showBrowzineButton = true;
     }
@@ -216,7 +216,7 @@ export class ButtonInfoService {
     };
     return {
       buttonInfo,
-      articleResponse: response,
+      response,
     };
   }
 
@@ -238,6 +238,7 @@ export class ButtonInfoService {
     }
 
     if (type === EntityType.Article) {
+      console.log('article type, browzineEnabled:', journal?.browzineEnabled);
       if (journal?.browzineEnabled) {
         browzineEnabled = journal.browzineEnabled;
       }
