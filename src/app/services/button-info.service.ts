@@ -1,15 +1,15 @@
 import { Injectable } from '@angular/core';
+import { map, mergeMap, Observable, of } from 'rxjs';
 import { ApiService } from './api.service';
 import { SearchEntityService } from './search-entity.service';
 import { UnpaywallService } from './unpaywall.service';
+import { ConfigService } from './config.service';
 import { SearchEntity } from '../types/searchEntity.types';
 import { ButtonInfo } from '../types/buttonInfo.types';
-import { map, mergeMap, Observable, of } from 'rxjs';
 import { ApiResult, ArticleData, JournalData } from '../types/tiData.types';
 import { EntityType } from '../shared/entity-type.enum';
 import { IconType } from '../shared/icon-type.enum';
 import { ButtonType } from '../shared/button-type.enum';
-import { UnpaywallResponse } from '../types/unpaywall.types';
 
 export const DEFAULT_BUTTON_INFO = {
   ariaLabel: '',
@@ -29,7 +29,8 @@ export class ButtonInfoService {
   constructor(
     private apiService: ApiService,
     private searchEntityService: SearchEntityService,
-    private unpaywallService: UnpaywallService
+    private unpaywallService: UnpaywallService,
+    private configService: ConfigService
   ) {}
 
   getButtonInfo(entity: SearchEntity): Observable<ButtonInfo> {
@@ -128,7 +129,7 @@ export class ButtonInfoService {
     if (
       articleRetractionUrl &&
       type === EntityType.Article &&
-      this.showRetractionWatch()
+      this.configService.showRetractionWatch()
     ) {
       buttonType = ButtonType.Retraction;
       buttonText = 'Retracted Article'; // TODO - add config: browzine.articleRetractionWatchText
@@ -137,7 +138,7 @@ export class ButtonInfoService {
     } else if (
       articleEocNoticeUrl &&
       type === EntityType.Article &&
-      this.showExpressionOfConcern()
+      this.configService.showExpressionOfConcern()
     ) {
       buttonType = ButtonType.ExpressionOfConcern;
       buttonText = 'Expression of Concern'; // TODO - add config: browzine.articleExpressionOfConcernText
@@ -157,7 +158,7 @@ export class ButtonInfoService {
     else if (
       directToPDFUrl &&
       type === EntityType.Article &&
-      this.showDirectToPDFLink()
+      this.configService.showDirectToPDFLink()
     ) {
       buttonType = ButtonType.DirectToPDF;
       buttonText = 'Download PDF'; // TODO - add config: browzine.articlePDFDownloadLinkText || browzine.primoArticlePDFDownloadLinkText
@@ -167,11 +168,11 @@ export class ButtonInfoService {
 
     // ArticleLink
     else if (
-      this.showFormatChoice() &&
+      this.configService.showFormatChoice() &&
       articleLinkUrl &&
       type === EntityType.Article &&
-      this.showDirectToPDFLink() &&
-      this.showArticleLink()
+      this.configService.showDirectToPDFLink() &&
+      this.configService.showArticleLink()
     ) {
       buttonType = ButtonType.ArticleLink;
       buttonText = 'Read Article'; // TODO - add config: browzine.articleLinkText
@@ -184,7 +185,7 @@ export class ButtonInfoService {
       type === EntityType.Journal &&
       browzineWebLink &&
       browzineEnabled &&
-      this.showJournalBrowZineWebLinkText()
+      this.configService.showJournalBrowZineWebLinkText()
     ) {
       showBrowzineButton = true;
     }
@@ -194,7 +195,7 @@ export class ButtonInfoService {
       type === EntityType.Article &&
       browzineWebLink &&
       browzineEnabled &&
-      this.showArticleBrowZineWebLinkText() &&
+      this.configService.showArticleBrowZineWebLinkText() &&
       (directToPDFUrl || articleLinkUrl)
     ) {
       showBrowzineButton = true;
@@ -441,95 +442,5 @@ export class ButtonInfoService {
     }
 
     return isAlertType;
-  }
-
-  // TODO - load from config //
-  // TODO - MOVE TO primo-config.service //
-  showDirectToPDFLink(): boolean {
-    let featureEnabled = true; // set back to false once implemented
-    // var config = browzine.articlePDFDownloadLinkEnabled;
-    // var prefixConfig = browzine.primoArticlePDFDownloadLinkEnabled;
-
-    // if (typeof config === "undefined" || config === null || config === true) {
-    //   featureEnabled = true;
-    // }
-
-    // if (
-    //   typeof prefixConfig !== "undefined" &&
-    //   prefixConfig !== null &&
-    //   prefixConfig === false
-    // ) {
-    //   featureEnabled = false;
-    // }
-
-    return featureEnabled;
-  }
-
-  showArticleLink(): boolean {
-    let featureEnabled = true; // set back to false once implemented
-    // let config = browzine.articleLinkEnabled;
-
-    // if (typeof config === "undefined" || config === null || config === true) {
-    //   featureEnabled = true;
-    // }
-
-    return featureEnabled;
-  }
-
-  // TODO - load from config //
-  showFormatChoice(): boolean {
-    let featureEnabled = true; // set back to false once implemented
-    // var config = browzine.showFormatChoice;
-
-    // if (config === true) {
-    //   featureEnabled = true;
-    // }
-
-    return featureEnabled;
-  }
-
-  // TODO - load from config //
-  showRetractionWatch(): boolean {
-    let featureEnabled = true; // set back to false once implemented
-    // let config = browzine.articleRetractionWatchEnabled;
-
-    // if (typeof config === "undefined" || config === null || config === true) {
-    //   featureEnabled = true;
-    // }
-
-    return featureEnabled;
-  }
-
-  showExpressionOfConcern(): boolean {
-    let featureEnabled = true; // set back to false once implemented
-    // let config = browzine.articleExpressionOfConcernEnabled;
-
-    // if (typeof config === "undefined" || config === null || config === true) {
-    //   featureEnabled = true;
-    // }
-
-    return featureEnabled;
-  }
-
-  showJournalBrowZineWebLinkText() {
-    let featureEnabled = true; // set back to false once implemented
-    // let config = browzine.journalBrowZineWebLinkTextEnabled;
-
-    // if (typeof config === 'undefined' || config === null || config === true) {
-    //   featureEnabled = true;
-    // }
-
-    return featureEnabled;
-  }
-
-  showArticleBrowZineWebLinkText() {
-    let featureEnabled = true; // set back to false once implemented
-    // let config = browzine.articleBrowZineWebLinkTextEnabled;
-
-    // if (typeof config === 'undefined' || config === null || config === true) {
-    //   featureEnabled = true;
-    // }
-
-    return featureEnabled;
   }
 }
