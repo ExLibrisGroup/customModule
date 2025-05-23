@@ -1,16 +1,23 @@
 import { Injectable } from '@angular/core';
+// import {LookupService}
 
 @Injectable({
   providedIn: 'root',
 })
 export class ConfigService {
-  constructor() {}
+  constructor() {} //private lookupService: LookupService
 
-  // TODO - load from config //
+  // TODO - load config values from LookupService //
   showDirectToPDFLink(): boolean {
     let featureEnabled = true; // set back to false once implemented
+    // TODO - load from LookupService:
+    // const config = this.lookupService.getModuleParam('articlePDFDownloadLinkEnabled')
+    // const prefixConfig = this.lookupService.getModuleParam('primoArticlePDFDownloadLinkEnabled')
+
+    //// - old way -
     // var config = browzine.articlePDFDownloadLinkEnabled;
     // var prefixConfig = browzine.primoArticlePDFDownloadLinkEnabled;
+    ////
 
     // if (typeof config === "undefined" || config === null || config === true) {
     //   featureEnabled = true;
@@ -27,6 +34,7 @@ export class ConfigService {
     return featureEnabled;
   }
 
+  // TODO - load config values from LookupService //
   showArticleLink(): boolean {
     let featureEnabled = true; // set back to false once implemented
     // let config = browzine.articleLinkEnabled;
@@ -38,7 +46,7 @@ export class ConfigService {
     return featureEnabled;
   }
 
-  // TODO - load from config //
+  // TODO - load config values from LookupService //
   showFormatChoice(): boolean {
     let featureEnabled = true; // set back to false once implemented
     // var config = browzine.showFormatChoice;
@@ -50,7 +58,7 @@ export class ConfigService {
     return featureEnabled;
   }
 
-  // TODO - load from config //
+  // TODO - load config values from LookupService //
   showRetractionWatch(): boolean {
     let featureEnabled = true; // set back to false once implemented
     // let config = browzine.articleRetractionWatchEnabled;
@@ -62,6 +70,7 @@ export class ConfigService {
     return featureEnabled;
   }
 
+  // TODO - load config values from LookupService //
   showExpressionOfConcern(): boolean {
     let featureEnabled = true; // set back to false once implemented
     // let config = browzine.articleExpressionOfConcernEnabled;
@@ -73,6 +82,7 @@ export class ConfigService {
     return featureEnabled;
   }
 
+  // TODO - load config values from LookupService //
   showJournalBrowZineWebLinkText() {
     let featureEnabled = true; // set back to false once implemented
     // let config = browzine.journalBrowZineWebLinkTextEnabled;
@@ -84,6 +94,7 @@ export class ConfigService {
     return featureEnabled;
   }
 
+  // TODO - load config values from LookupService //
   showArticleBrowZineWebLinkText() {
     let featureEnabled = true; // set back to false once implemented
     // let config = browzine.articleBrowZineWebLinkTextEnabled;
