@@ -1,11 +1,11 @@
 import { Component, Input } from '@angular/core';
 import { Observable } from 'rxjs';
-import { BaseButtonComponent } from '../components/base-button/base-button.component';
-import { BrowzineButtonComponent } from '../components/browzine-button/browzine-button.component';
-import { SearchEntity } from '../types/searchEntity.types';
-import { ButtonInfo } from '../types/buttonInfo.types';
-import { SearchEntityService } from '../services/search-entity.service';
-import { ButtonInfoService } from '../services/button-info.service';
+import { BaseButtonComponent } from '../../components/base-button/base-button.component';
+import { BrowzineButtonComponent } from '../../components/browzine-button/browzine-button.component';
+import { SearchEntity } from '../../types/searchEntity.types';
+import { ButtonInfo } from '../../types/buttonInfo.types';
+import { SearchEntityService } from '../../services/search-entity.service';
+import { ButtonInfoService } from '../../services/button-info.service';
 import { AsyncPipe } from '@angular/common';
 
 @Component({

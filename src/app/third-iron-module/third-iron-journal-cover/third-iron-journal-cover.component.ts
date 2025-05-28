@@ -1,8 +1,8 @@
 import { Component, ElementRef, Input } from '@angular/core';
-import { SearchEntity } from '../types/searchEntity.types';
+import { SearchEntity } from '../../types/searchEntity.types';
 import { Observable } from 'rxjs';
 import { AsyncPipe } from '@angular/common';
-import { JournalCoverService } from '../services/journal-cover.service';
+import { JournalCoverService } from '../../services/journal-cover.service';
 
 @Component({
   selector: 'custom-third-iron-journal-cover',
