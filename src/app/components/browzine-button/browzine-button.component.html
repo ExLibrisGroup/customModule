@@ -1,4 +1,3 @@
-<custom-base-button [ariaLabel]="buttonInfo().ariaLabel" [color]="buttonInfo().color" [icon]="iconType.BrowZine"
-  [url]="buttonInfo().browzineUrl || ''"
-  [buttonText]="buttonInfo().entityType === entityType.Journal ? 'View Journal Contents' : 'View Issue Contents'">
+<custom-base-button [ariaLabel]="buttonText" [color]="'sys-primary'" [icon]="IconType.BrowZine" [url]="url() || ''"
+  [buttonText]="buttonText">
 </custom-base-button>

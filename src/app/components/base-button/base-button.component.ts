@@ -1,7 +1,5 @@
 import { Component, input } from '@angular/core';
 import { SvgIconComponent } from '../svg-icon/svg-icon.component';
-import { IconType } from 'src/app/shared/icon-type.enum';
-import { EntityType } from 'src/app/shared/entity-type.enum';
 import { MatButtonModule } from '@angular/material/button';
 
 @Component({
@@ -17,9 +15,6 @@ export class BaseButtonComponent {
   color = input.required<string>();
   icon = input.required<string>();
   url = input.required<string>();
-
-  iconType = IconType;
-  entityType = EntityType;
 
   onClick(event: MouseEvent) {
     // We’ve seen some discovery services intercept basic a href links, and have
