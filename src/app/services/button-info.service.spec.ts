@@ -9,7 +9,7 @@ import { ButtonInfoService } from './button-info.service';
 import { ApiService } from './api.service';
 import { EntityType } from '../shared/entity-type.enum';
 import { ApiResult, ArticleData, JournalData } from '../types/tiData.types';
-import { ButtonInfo } from '../types/buttonInfo.types';
+import { DisplayWaterfallResponse } from '../types/displayWaterfallResponse.types';
 import { SearchEntity } from '../types/searchEntity.types';
 import { firstValueFrom, of } from 'rxjs';
 import { ButtonType } from '../shared/button-type.enum';
@@ -103,16 +103,15 @@ const responseMetaData = {
   url: 'third-iron.com',
 };
 
-const validateButton = (buttonInfo: ButtonInfo, expectedValues: ButtonInfo) => {
-  expect(buttonInfo.ariaLabel).toBe(expectedValues.ariaLabel);
-  expect(buttonInfo.browzineUrl).toBe(expectedValues.browzineUrl);
-  expect(buttonInfo.buttonText).toBe(expectedValues.buttonText);
-  expect(buttonInfo.buttonType).toBe(expectedValues.buttonType);
-  expect(buttonInfo.color).toBe(expectedValues.color);
+const validateButton = (
+  buttonInfo: DisplayWaterfallResponse,
+  expectedValues: DisplayWaterfallResponse
+) => {
   expect(buttonInfo.entityType).toBe(expectedValues.entityType);
-  expect(buttonInfo.icon).toBe(expectedValues.icon);
+  expect(buttonInfo.mainUrl).toBe(expectedValues.mainUrl);
+  expect(buttonInfo.mainButtonType).toBe(expectedValues.mainButtonType);
   expect(buttonInfo.showBrowzineButton).toBe(expectedValues.showBrowzineButton);
-  expect(buttonInfo.url).toBe(expectedValues.url);
+  expect(buttonInfo.browzineUrl).toBe(expectedValues.browzineUrl);
 };
 
 describe('ButtonInfoService', () => {
@@ -144,7 +143,7 @@ describe('ButtonInfoService', () => {
   describe('#getButtonInfo', () => {
     it('should make a call to the article endpoint for given doi based on entity obj', async () => {
       // request article info from api service
-      const buttonInfo$ = service.getButtonInfo(articleSearchEntity);
+      const buttonInfo$ = service.getDisplayInfo(articleSearchEntity);
 
       // `firstValueFrom` subscribes to the `Observable`, which makes the HTTP request,
       // and creates a `Promise` of the response.
@@ -167,16 +166,13 @@ describe('ButtonInfoService', () => {
       req.flush(mockedArticleData);
 
       expect(await articlePromise).toEqual({
-        ariaLabel: 'Retracted Article',
         browzineUrl:
           'https://browzine.com/libraries/XXX/journals/18126/issues/7764583?showArticleInContext=doi:10.1136/bmj.h2575',
-        buttonText: 'Retracted Article',
-        buttonType: ButtonType.Retraction,
-        color: 'sys-primary',
+        mainButtonType: ButtonType.Retraction,
         entityType: EntityType.Article,
-        icon: 'article-alert-icon',
         showBrowzineButton: false,
-        url: 'https://develop.libkey.io/libraries/1252/10.1155/2019/5730746',
+        mainUrl:
+          'https://develop.libkey.io/libraries/1252/10.1155/2019/5730746',
       });
 
       // Finally, we can assert that no other requests were made.
@@ -184,7 +180,7 @@ describe('ButtonInfoService', () => {
     });
     it('should make a call to the journal endpoint for given issn based on entity obj', async () => {
       // request journal info from api service
-      const buttonInfo$ = service.getButtonInfo(journalSearchEntity);
+      const buttonInfo$ = service.getDisplayInfo(journalSearchEntity);
 
       // `firstValueFrom` subscribes to the `Observable`, which makes the HTTP request,
       // and creates a `Promise` of the response.
@@ -207,15 +203,11 @@ describe('ButtonInfoService', () => {
       req.flush(mockedJournalData);
 
       expect(await journalPromise).toEqual({
-        ariaLabel: '',
         browzineUrl: 'https://browzine.com/libraries/XXX/journals/10292',
-        buttonText: '',
-        buttonType: ButtonType.None,
-        color: 'sys-primary',
+        mainButtonType: ButtonType.None,
         entityType: EntityType.Journal,
-        icon: '',
         showBrowzineButton: true,
-        url: '',
+        mainUrl: '',
       });
 
       // Finally, we can assert that no other requests were made.
@@ -241,7 +233,7 @@ describe('ButtonInfoService', () => {
         const mockedApiResult: ApiResult = { ...responseMetaData };
         mockedApiResult.body.data = [{ ...mockedJournalData }];
 
-        const { buttonInfo } = service.displayWaterfall(
+        const { displayInfo: buttonInfo } = service.displayWaterfall(
           mockedApiResult,
           EntityType.Journal
         );
@@ -265,7 +257,7 @@ describe('ButtonInfoService', () => {
         mockedApiResult.body.data = { ...mockedArticleData };
         mockedApiResult.body.included = { ...mockedJournalData };
 
-        const { buttonInfo } = service.displayWaterfall(
+        const { displayInfo: buttonInfo } = service.displayWaterfall(
           mockedApiResult,
           EntityType.Article
         );
@@ -289,21 +281,17 @@ describe('ButtonInfoService', () => {
         mockedApiResult.body.data = [{ ...mockedJournalData }];
         mockedApiResult.body.included = undefined;
 
-        const { buttonInfo } = service.displayWaterfall(
+        const { displayInfo: buttonInfo } = service.displayWaterfall(
           mockedApiResult,
           EntityType.Journal
         );
 
         const expectedValues = {
-          ariaLabel: '',
           browzineUrl: 'https://browzine.com/libraries/XXX/journals/10292',
-          buttonText: '',
-          buttonType: ButtonType.None,
-          color: 'sys-primary',
+          mainButtonType: ButtonType.None,
           entityType: EntityType.Journal,
-          icon: '',
           showBrowzineButton: true,
-          url: '',
+          mainUrl: '',
         };
 
         validateButton(buttonInfo, expectedValues);
@@ -320,7 +308,7 @@ describe('ButtonInfoService', () => {
 
         console.log('mockedApiResult', mockedApiResult);
 
-        const { buttonInfo } = service.displayWaterfall(
+        const { displayInfo: buttonInfo } = service.displayWaterfall(
           mockedApiResult,
           EntityType.Article
         );
@@ -328,16 +316,13 @@ describe('ButtonInfoService', () => {
         // TODO @Karl - do we only show Browzine buttons for Journals or articles with included journal?
         // Would we have a browzineUrl on an article without an included journal as in this mock data?
         const expectedValues = {
-          ariaLabel: 'Retracted Article',
           browzineUrl:
             'https://browzine.com/libraries/XXX/journals/18126/issues/7764583?showArticleInContext=doi:10.1136/bmj.h2575',
-          buttonText: 'Retracted Article',
-          buttonType: ButtonType.Retraction,
-          color: 'sys-primary',
+          mainButtonType: ButtonType.Retraction,
           entityType: EntityType.Article,
-          icon: 'article-alert-icon',
           showBrowzineButton: false, // false because null journal passed into waterfall
-          url: 'https://develop.libkey.io/libraries/1252/10.1155/2019/5730746',
+          mainUrl:
+            'https://develop.libkey.io/libraries/1252/10.1155/2019/5730746',
         };
 
         validateButton(buttonInfo, expectedValues);
@@ -354,22 +339,18 @@ describe('ButtonInfoService', () => {
 
         console.log('mockedApiResult', mockedApiResult);
 
-        const { buttonInfo } = service.displayWaterfall(
+        const { displayInfo: buttonInfo } = service.displayWaterfall(
           mockedApiResult,
           EntityType.Article
         );
 
         const expectedValues = {
-          ariaLabel: 'Expression of Concern',
           browzineUrl:
             'https://browzine.com/libraries/XXX/journals/18126/issues/7764583?showArticleInContext=doi:10.1136/bmj.h2575',
-          buttonText: 'Expression of Concern',
-          buttonType: ButtonType.ExpressionOfConcern,
-          color: 'sys-primary',
+          mainButtonType: ButtonType.ExpressionOfConcern,
           entityType: EntityType.Article,
-          icon: 'article-alert-icon',
           showBrowzineButton: false, // false because null journal passed into waterfall
-          url: 'https://develop.libkey.io/libraries/XXXX/10.1002/ijc.25451',
+          mainUrl: 'https://develop.libkey.io/libraries/XXXX/10.1002/ijc.25451',
         };
 
         validateButton(buttonInfo, expectedValues);
@@ -387,22 +368,19 @@ describe('ButtonInfoService', () => {
 
         console.log('mockedApiResult', mockedApiResult);
 
-        const { buttonInfo } = service.displayWaterfall(
+        const { displayInfo: buttonInfo } = service.displayWaterfall(
           mockedApiResult,
           EntityType.Article
         );
 
         const expectedValues = {
-          ariaLabel: 'Problematic Journal',
           browzineUrl:
             'https://browzine.com/libraries/XXX/journals/18126/issues/7764583?showArticleInContext=doi:10.1136/bmj.h2575',
-          buttonText: 'Problematic Journal',
-          buttonType: ButtonType.ProblematicJournalArticle,
-          color: 'sys-primary',
+          mainButtonType: ButtonType.ProblematicJournalArticle,
           entityType: EntityType.Article,
-          icon: 'article-alert-icon',
           showBrowzineButton: false, // false because null journal passed into waterfall
-          url: 'https://develop.libkey.io/libraries/1414/10.5897/JMA2014.0308',
+          mainUrl:
+            'https://develop.libkey.io/libraries/1414/10.5897/JMA2014.0308',
         };
 
         validateButton(buttonInfo, expectedValues);
@@ -419,22 +397,19 @@ describe('ButtonInfoService', () => {
         mockedApiResult.body.data = mockedArticleData;
         mockedApiResult.body.included = undefined;
 
-        const { buttonInfo } = service.displayWaterfall(
+        const { displayInfo: buttonInfo } = service.displayWaterfall(
           mockedApiResult,
           EntityType.Article
         );
 
         const expectedValues = {
-          ariaLabel: 'Download PDF',
           browzineUrl:
             'https://browzine.com/libraries/XXX/journals/18126/issues/7764583?showArticleInContext=doi:10.1136/bmj.h2575',
-          buttonText: 'Download PDF',
-          buttonType: ButtonType.DirectToPDF,
-          color: 'sys-primary',
+          mainButtonType: ButtonType.DirectToPDF,
           entityType: EntityType.Article,
-          icon: 'pdf-download-icon',
           showBrowzineButton: false, // false because null journal passed into waterfall
-          url: 'https://develop.browzine.com/libraries/XXX/articles/55134408/full-text-file',
+          mainUrl:
+            'https://develop.browzine.com/libraries/XXX/articles/55134408/full-text-file',
         };
 
         validateButton(buttonInfo, expectedValues);
@@ -452,22 +427,19 @@ describe('ButtonInfoService', () => {
         mockedApiResult.body.data = mockedArticleData;
         mockedApiResult.body.included = undefined;
 
-        const { buttonInfo } = service.displayWaterfall(
+        const { displayInfo: buttonInfo } = service.displayWaterfall(
           mockedApiResult,
           EntityType.Article
         );
 
         const expectedValues = {
-          ariaLabel: 'Read Article',
           browzineUrl:
             'https://browzine.com/libraries/XXX/journals/18126/issues/7764583?showArticleInContext=doi:10.1136/bmj.h2575',
-          buttonText: 'Read Article',
-          buttonType: ButtonType.ArticleLink,
-          color: 'sys-primary',
+          mainButtonType: ButtonType.ArticleLink,
           entityType: EntityType.Article,
-          icon: 'article-link-icon',
           showBrowzineButton: false, // false because null journal passed into waterfall
-          url: 'https://develop.browzine.com/libraries/XXX/articles/55134408',
+          mainUrl:
+            'https://develop.browzine.com/libraries/XXX/articles/55134408',
         };
 
         validateButton(buttonInfo, expectedValues);
@@ -489,22 +461,20 @@ describe('ButtonInfoService', () => {
         mockedApiResult.body.data = mockedArticleData;
         mockedApiResult.body.included = mockedJournalData;
 
-        const { buttonInfo } = service.displayWaterfall(
+        const { displayInfo: buttonInfo } = service.displayWaterfall(
           mockedApiResult,
           EntityType.Article
         );
 
         const expectedValues = {
-          ariaLabel: 'Download PDF',
           browzineUrl:
             'https://browzine.com/libraries/XXX/journals/18126/issues/7764583?showArticleInContext=doi:10.1136/bmj.h2575',
-          buttonText: 'Download PDF',
-          buttonType: ButtonType.DirectToPDF,
+          mainButtonType: ButtonType.DirectToPDF,
           color: 'sys-primary',
           entityType: EntityType.Article,
-          icon: 'pdf-download-icon',
           showBrowzineButton: true, // true because journal into passed along to waterfall
-          url: 'https://develop.browzine.com/libraries/XXX/articles/55134408/full-text-file',
+          mainUrl:
+            'https://develop.browzine.com/libraries/XXX/articles/55134408/full-text-file',
         };
 
         validateButton(buttonInfo, expectedValues);

@@ -13,7 +13,6 @@ import { BaseButtonComponent } from '../base-button/base-button.component';
 })
 export class ArticleLinkButtonComponent {
   url = input.required<string>();
-  entityType = input.required<EntityType>();
 
   buttonText: string = '';
   EntityTypeEnum = EntityType;
