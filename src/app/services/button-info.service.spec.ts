@@ -140,7 +140,7 @@ describe('ButtonInfoService', () => {
     expect(service).toBeTruthy();
   });
 
-  describe('#getButtonInfo', () => {
+  describe('#getDisplayInfo', () => {
     it('should make a call to the article endpoint for given doi based on entity obj', async () => {
       // request article info from api service
       const buttonInfo$ = service.getDisplayInfo(articleSearchEntity);
@@ -276,6 +276,14 @@ describe('ButtonInfoService', () => {
       it('should not show Browzine button for Article when user config setting is false', () => {});
       it('should not show Browzine button for Article when neither directoToPdf nor articleLink urls are present', () => {});
     });
+
+    // based on config, we may show both the Download PDF and the Article Link buttons
+    describe('for secondary (Article Link) button', () => {
+      it('should not show secondary button if main button is an alert type', () => {});
+      it('should not show secondary button if main button is already Article Link type', () => {});
+      it('should show secondary button if config showFormatChoice is true', () => {});
+    });
+
     describe('for the general button, with a Journal response', () => {
       it('should return Browzine button info and no article button info', () => {
         const mockedJournalData: JournalData = {
