@@ -6,7 +6,7 @@ import {
 } from '@angular/common/http/testing';
 
 import { ThirdIronJournalCoverComponent } from './third-iron-journal-cover.component';
-import { JournalCoverService } from '../services/journal-cover.service';
+import { JournalCoverService } from '../../services/journal-cover.service';
 
 describe('ThirdIronJournalCoverComponent', () => {
   let httpTesting: HttpTestingController;

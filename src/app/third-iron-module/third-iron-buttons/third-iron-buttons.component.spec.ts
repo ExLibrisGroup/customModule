@@ -5,7 +5,7 @@ import {
   provideHttpClientTesting,
 } from '@angular/common/http/testing';
 import { ThirdIronButtonsComponent } from './third-iron-buttons.component';
-import { SearchEntityService } from '../services/search-entity.service';
+import { SearchEntityService } from '../../services/search-entity.service';
 
 describe('ThirdIronButtonsComponent', () => {
   let httpTesting: HttpTestingController;
