@@ -1,13 +1,9 @@
-
 @use '@angular/material' as mat;
-@use 'generate-pallete-color-vars' as nde-mixins;
-@use 'm3-theme';
+@use 'm3-theme' as m3-theme;
 
-// Be sure that you only ever include this mixin once!
-@include mat.core();
+//uncomment the following lines in order to apply your own theme
 
-
-.custom-nde-theme{
-  @include mat.all-component-themes(m3-theme.$light-theme);
-  @include mat.system-level-colors(m3-theme.$light-theme);
-}
+//.custom-nde-theme{
+//  @include mat.all-component-colors(m3-theme.$light-theme);
+//  @include mat.system-level-colors(m3-theme.$light-theme);
+//}
