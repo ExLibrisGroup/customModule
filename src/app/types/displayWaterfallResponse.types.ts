@@ -1,14 +1,12 @@
 import { ButtonType } from '../shared/button-type.enum';
 import { EntityType } from '../shared/entity-type.enum';
 
-export type ButtonInfo = {
-  ariaLabel: string;
-  buttonText: string;
-  buttonType: ButtonType;
-  color: string;
+export type DisplayWaterfallResponse = {
   entityType: EntityType;
-  icon: string;
-  url: string;
+  mainButtonType: ButtonType;
+  mainUrl: string;
+  showSecondaryButton?: boolean;
+  secondaryUrl?: string;
   browzineUrl?: string;
   showBrowzineButton?: boolean;
 };

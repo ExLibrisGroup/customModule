@@ -16,6 +16,10 @@ export const DEFAULT_JOURNAL_COVER_INFO = {
   showBrowzineButton: false,
 };
 
+/**
+ * This Service is responsible for initiating the call to Third Iron article/journal endpoints
+ * to retrieve a Journal Cover image url
+ */
 @Injectable({
   providedIn: 'root',
 })

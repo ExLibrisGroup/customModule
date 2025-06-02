@@ -1,6 +1,11 @@
 import { Injectable } from '@angular/core';
 // import {LookupService}
 
+/**
+ * This Service is responsible for getting config values from the corresponding
+ * configuration dataset associated with the account.
+ */
+
 @Injectable({
   providedIn: 'root',
 })

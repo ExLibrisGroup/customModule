@@ -1,17 +1,23 @@
 import { Component, Input } from '@angular/core';
 import { Observable } from 'rxjs';
-import { BaseButtonComponent } from '../../components/base-button/base-button.component';
 import { BrowzineButtonComponent } from '../../components/browzine-button/browzine-button.component';
 import { SearchEntity } from '../../types/searchEntity.types';
-import { ButtonInfo } from '../../types/buttonInfo.types';
+import { DisplayWaterfallResponse } from '../../types/displayWaterfallResponse.types';
 import { SearchEntityService } from '../../services/search-entity.service';
 import { ButtonInfoService } from '../../services/button-info.service';
 import { AsyncPipe } from '@angular/common';
+import { ArticleLinkButtonComponent } from 'src/app/components/article-link-button/article-link-button.component';
+import { MainButtonComponent } from 'src/app/components/main-button/main-button.component';
 
 @Component({
   selector: 'custom-third-iron-buttons',
   standalone: true,
-  imports: [BaseButtonComponent, BrowzineButtonComponent, AsyncPipe],
+  imports: [
+    MainButtonComponent,
+    BrowzineButtonComponent,
+    ArticleLinkButtonComponent,
+    AsyncPipe,
+  ],
   templateUrl: './third-iron-buttons.component.html',
   styleUrl: './third-iron-buttons.component.scss',
   providers: [SearchEntityService],
@@ -19,7 +25,7 @@ import { AsyncPipe } from '@angular/common';
 export class ThirdIronButtonsComponent {
   @Input() private hostComponent!: any;
 
-  buttonInfo$!: Observable<ButtonInfo>;
+  displayInfo$!: Observable<DisplayWaterfallResponse>;
 
   constructor(
     private buttonInfoService: ButtonInfoService,
@@ -36,6 +42,6 @@ export class ThirdIronButtonsComponent {
       return;
     }
 
-    this.buttonInfo$ = this.buttonInfoService.getButtonInfo(searchResult);
+    this.displayInfo$ = this.buttonInfoService.getDisplayInfo(searchResult);
   };
 }

@@ -8,6 +8,11 @@ import { catchError, Observable, throwError } from 'rxjs';
 import { ApiResult, ArticleData, JournalData } from '../types/tiData.types';
 import { UnpaywallData } from '../types/unpaywall.types';
 
+/**
+ * This Service is responsible for all HTTP requests and includes some
+ * helper functions for processing the returned response, error handling
+ * and type guard checks
+ */
 @Injectable({
   providedIn: 'root',
 })

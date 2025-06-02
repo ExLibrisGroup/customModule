@@ -2,10 +2,14 @@ import { Injectable } from '@angular/core';
 import { EntityType } from '../shared/entity-type.enum';
 import { UnpaywallData } from '../types/unpaywall.types';
 import { ButtonType } from '../shared/button-type.enum';
-import { IconType } from '../shared/icon-type.enum';
-import { ButtonInfo } from '../types/buttonInfo.types';
-import { DEFAULT_BUTTON_INFO } from './button-info.service';
+import { DisplayWaterfallResponse } from '../types/displayWaterfallResponse.types';
+import { DEFAULT_DISPLAY_WATERFALL_RESPONSE } from './button-info.service';
 
+/**
+ * This Service is responsible for initiating the call to the Unpaywall endpoint
+ * and processing the response through our 'unpaywall waterfall' to determine
+ * what type of button we will display
+ */
 @Injectable({
   providedIn: 'root',
 })
@@ -15,11 +19,9 @@ export class UnpaywallService {
   unpaywallWaterfall(
     unpaywallResponse: any,
     avoidUnpaywallPublisherLinks: boolean
-  ): ButtonInfo {
+  ): DisplayWaterfallResponse {
     let buttonType: ButtonType = ButtonType.None;
     let unpaywallUrl = '';
-    let buttonText = '';
-    let icon = '';
 
     if (unpaywallResponse.status == 200) {
       const data: UnpaywallData = unpaywallResponse.body;
@@ -27,7 +29,7 @@ export class UnpaywallService {
       if (
         this.shouldIgnoreUnpaywallResponse(data, avoidUnpaywallPublisherLinks)
       ) {
-        return DEFAULT_BUTTON_INFO;
+        return DEFAULT_DISPLAY_WATERFALL_RESPONSE;
       }
 
       const unpaywallArticlePDFUrl = this.getUnpaywallArticlePDFUrl(data);
@@ -42,49 +44,34 @@ export class UnpaywallService {
         // TODO load config: && browzine.articlePDFDownloadViaUnpaywallEnabled
       ) {
         buttonType = ButtonType.UnpaywallDirectToPDF;
-        buttonText = 'Download PDF (via Unpaywall)';
         unpaywallUrl = unpaywallArticlePDFUrl;
-        icon = IconType.DownloadPDF;
       } else if (
         unpaywallArticleLinkUrl
         // TODO load config: && browzine.articleLinkViaUnpaywallEnabled
       ) {
         buttonType = ButtonType.UnpaywallArticleLink;
-        buttonText = 'Read Article (via Unpaywall)';
         unpaywallUrl = unpaywallArticleLinkUrl;
-        icon = IconType.ArticleLink;
       } else if (
         unpaywallManuscriptArticlePDFUrl
         // TODO load config: && browzine.articleAcceptedManuscriptPDFViaUnpaywallEnabled
       ) {
         buttonType = ButtonType.UnpaywallManuscriptPDF;
-        buttonText = 'Download PDF (Accepted Manuscript via Unpaywall)';
         unpaywallUrl = unpaywallManuscriptArticlePDFUrl;
-        icon = IconType.DownloadPDF;
       } else if (
         unpaywallManuscriptArticleLinkUrl
         // TODO load config: && browzine.articleAcceptedManuscriptArticleLinkViaUnpaywallEnabled
       ) {
         buttonType = ButtonType.UnpaywallManuscriptLink;
         unpaywallUrl = unpaywallManuscriptArticleLinkUrl;
-        buttonText = 'Read Article (Accepted Manuscript via Unpaywall)';
-        icon = IconType.ArticleLink;
       }
 
-      console.log('buttonType', buttonType);
-      console.log('url', unpaywallUrl);
-
       return {
-        ariaLabel: buttonText,
-        buttonText: buttonText,
-        buttonType,
-        color: 'sys-primary',
+        mainButtonType: buttonType,
         entityType: EntityType.Article,
-        icon: icon,
-        url: unpaywallUrl,
+        mainUrl: unpaywallUrl,
       };
     }
-    return DEFAULT_BUTTON_INFO;
+    return DEFAULT_DISPLAY_WATERFALL_RESPONSE;
   }
 
   private shouldIgnoreUnpaywallResponse(
