@@ -166,13 +166,15 @@ describe('ButtonInfoService', () => {
       req.flush(mockedArticleData);
 
       expect(await articlePromise).toEqual({
-        browzineUrl:
-          'https://browzine.com/libraries/XXX/journals/18126/issues/7764583?showArticleInContext=doi:10.1136/bmj.h2575',
-        mainButtonType: ButtonType.Retraction,
         entityType: EntityType.Article,
-        showBrowzineButton: false,
+        mainButtonType: ButtonType.Retraction,
         mainUrl:
           'https://develop.libkey.io/libraries/1252/10.1155/2019/5730746',
+        browzineUrl:
+          'https://browzine.com/libraries/XXX/journals/18126/issues/7764583?showArticleInContext=doi:10.1136/bmj.h2575',
+        showBrowzineButton: false,
+        secondaryUrl: '',
+        showSecondaryButton: false, // this is an alert type button, don't show secondary btn
       });
 
       // Finally, we can assert that no other requests were made.
@@ -203,11 +205,13 @@ describe('ButtonInfoService', () => {
       req.flush(mockedJournalData);
 
       expect(await journalPromise).toEqual({
-        browzineUrl: 'https://browzine.com/libraries/XXX/journals/10292',
-        mainButtonType: ButtonType.None,
         entityType: EntityType.Journal,
-        showBrowzineButton: true,
+        mainButtonType: ButtonType.None,
         mainUrl: '',
+        browzineUrl: 'https://browzine.com/libraries/XXX/journals/10292',
+        showBrowzineButton: true,
+        secondaryUrl: '', // journal, so content location not returned from getArticleLinkUrl
+        showSecondaryButton: true, // passes secondary btn check, but no url so button still not shown
       });
 
       // Finally, we can assert that no other requests were made.
