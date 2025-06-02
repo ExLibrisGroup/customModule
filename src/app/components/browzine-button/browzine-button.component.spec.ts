@@ -2,8 +2,6 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { BrowzineButtonComponent } from './browzine-button.component';
 import { ComponentRef } from '@angular/core';
-import { ButtonInfo } from 'src/app/types/buttonInfo.types';
-import { ButtonType } from 'src/app/shared/button-type.enum';
 import { EntityType } from 'src/app/shared/entity-type.enum';
 
 describe('BrowzineButtonComponent', () => {
@@ -11,18 +9,6 @@ describe('BrowzineButtonComponent', () => {
   let componentRef: ComponentRef<BrowzineButtonComponent>;
   let fixture: ComponentFixture<BrowzineButtonComponent>;
   let buttonElement: HTMLElement;
-
-  const defaultButtonInfo: ButtonInfo = {
-    ariaLabel: 'Arial Label Text!',
-    buttonText: 'Test Button Text!',
-    color: 'sys-primary',
-    icon: 'open-book-icon',
-    url: 'www.test.com',
-    browzineUrl: 'www.browzine.com',
-    showBrowzineButton: true,
-    buttonType: ButtonType.ArticleLink,
-    entityType: EntityType.Article,
-  };
 
   beforeEach(() => {
     TestBed.configureTestingModule({
@@ -38,25 +24,31 @@ describe('BrowzineButtonComponent', () => {
     expect(component).toBeDefined();
   });
 
-  it('should show button label "View Issue Contents" for Article type', () => {
-    componentRef.setInput('buttonInfo', defaultButtonInfo);
+  it('should show button label "View Issue Contents" for Article type', async () => {
+    componentRef.setInput('url', 'www.test.browzine.com');
+    componentRef.setInput('entityType', EntityType.Article);
 
-    fixture.detectChanges();
+    fixture.autoDetectChanges();
     buttonElement = fixture.nativeElement;
+    await fixture.whenStable();
 
-    // TODO check for button title
+    const buttonTextSpan = buttonElement.querySelector(
+      '[data-testid="ti-button-text"]'
+    )!;
+    expect(buttonTextSpan.textContent).toContain('View Issue Contents');
   });
 
-  it('should show button label "View Journal Contents" for Journal type', () => {
-    const journalButtonInfo = {
-      ...defaultButtonInfo,
-      entityType: EntityType.Journal,
-    };
-    componentRef.setInput('buttonInfo', journalButtonInfo);
+  it('should show button label "View Journal Contents" for Journal type', async () => {
+    componentRef.setInput('url', 'www.test.browzine.com');
+    componentRef.setInput('entityType', EntityType.Journal);
 
-    fixture.detectChanges();
+    fixture.autoDetectChanges();
     buttonElement = fixture.nativeElement;
+    await fixture.whenStable();
 
-    // TODO check for button title
+    const buttonTextSpan = buttonElement.querySelector(
+      '[data-testid="ti-button-text"]'
+    )!;
+    expect(buttonTextSpan.textContent).toContain('View Journal Contents');
   });
 });

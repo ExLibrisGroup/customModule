@@ -5,8 +5,8 @@
   </custom-main-button>
   }
   @if(displayInfo.showSecondaryButton && displayInfo.secondaryUrl) {
-  <article-link-button class="ti-single-button" [entityType]="displayInfo.entityType"
-    [url]="displayInfo.secondaryUrl || ''" class="ti-single-button"></article-link-button>
+  <article-link-button class="ti-single-button" [url]="displayInfo.secondaryUrl || ''"
+    class="ti-single-button"></article-link-button>
   }
   @if(displayInfo.showBrowzineButton && displayInfo.browzineUrl) {
   <custom-browzine-button class="ti-single-button" [entityType]="displayInfo.entityType" [url]="displayInfo.browzineUrl"
