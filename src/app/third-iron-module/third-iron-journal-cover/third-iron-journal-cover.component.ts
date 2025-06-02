@@ -44,6 +44,14 @@ export class ThirdIronJournalCoverComponent {
 
           Array.from(imageElements).forEach((elem) => {
             elem.style.display = 'none';
+
+            // TODO try setting img.src to our journal cover image
+            // console.log('elem::::', elem);
+            // const imageElement = elem.querySelector('img');
+            // console.log('img::::', imageElement);
+            // if (imageElement) {
+            //   imageElement.src = journalCoverUrl;
+            // }
           });
         }
       });
