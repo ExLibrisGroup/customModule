@@ -1,5 +1,8 @@
 version: 2.1
 
+orbs:
+  browser-tools: circleci/browser-tools@2.0.0
+
 settings: &settings
   shell: /bin/bash --login
   docker:
@@ -10,7 +13,7 @@ package-cache: &package-cache
   key: package-cache-{{ checksum "package.json" }}-{{ checksum "package-lock.json" }}
 
 jobs:
-  build:
+  build-and-test:
     <<: *settings
     steps:
       - checkout
@@ -20,23 +23,26 @@ jobs:
           name: Install project dependencies
           command: |
             npm ci --loglevel verbose
+      - browser-tools/install_chrome
+      - browser-tools/install_chromedriver
+      - run:
+          name: Check browser tools install
+          command: |
+            google-chrome --version
+            chromedriver --version
       - save_cache:
           <<: *package-cache
           paths:
             - node_modules
+      - run:
+          name: Run automated tests
+          command: |
+            npm run test:ci
       - persist_to_workspace:
           root: ~/
           paths:
             - 'project'
-  test:
-    <<: *settings
-    steps:
-      - attach_workspace:
-          at: ~/
-      - run:
-          name: Automated Tests
-          command: |
-            npm run test:ci
+
   deploy-hotfix:
     <<: *settings
     steps:
@@ -170,37 +176,35 @@ jobs:
 workflows:
   build-test-deploy:
     jobs:
-      - build
-      - test:
-          requires:
-            - build
+      # - build
+      - build-and-test
       - deploy-hotfix:
           requires:
-            - test
+            - build-and-test
           filters:
             branches:
               only: /hotfix\/.*/
       - deploy-feature:
           requires:
-            - test
+            - build-and-test
           filters:
             branches:
               only: /feature\/.*/
       - deploy-develop:
           requires:
-            - test
+            - build-and-test
           filters:
             branches:
               only: develop
       - deploy-master:
           requires:
-            - test
+            - build-and-test
           filters:
             branches:
               only: main
       - renogen:
            requires:
-             - test
+             - build-and-test
            filters:
              branches:
                only:
