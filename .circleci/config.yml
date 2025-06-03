@@ -1,0 +1,214 @@
+version: 2.1
+
+settings: &settings
+  shell: /bin/bash --login
+  docker:
+    - image: cimg/node:20.9.0
+  working_directory: ~/project
+
+package-cache: &package-cache
+  key: package-cache-{{ checksum "package.json" }}-{{ checksum "package-lock.json" }}
+
+jobs:
+  build:
+    <<: *settings
+    steps:
+      - checkout
+      - restore_cache:
+          <<: *package-cache
+      - run:
+          name: Install project dependencies
+          command: |
+            npm ci --loglevel verbose
+      - save_cache:
+          <<: *package-cache
+          paths:
+            - node_modules
+      - persist_to_workspace:
+          root: ~/
+          paths:
+            - 'project'
+  test:
+    <<: *settings
+    steps:
+      - attach_workspace:
+          at: ~/
+      - run:
+          name: Automated Tests
+          command: |
+            npm run test
+  deploy-hotfix:
+    <<: *settings
+    steps:
+      - checkout
+      - restore_cache:
+          <<: *package-cache
+      - run:
+          name: Install project dependencies
+          command: |
+            npm ci --loglevel verbose
+      - save_cache:
+          <<: *package-cache
+          paths:
+            - node_modules
+      - run:
+          name: Deploy Hotfix Primo
+          command: |
+            . ~/.nvm/nvm.sh
+            npm run deploy-primo-hotfix
+  deploy-feature:
+    <<: *settings
+    steps:
+      - checkout
+      - restore_cache:
+          <<: *package-cache
+      - run:
+          name: Install project dependencies
+          command: |
+            npm ci --loglevel verbose
+      - save_cache:
+          <<: *package-cache
+          paths:
+            - node_modules
+      - run:
+          name: Deploy Feature Summon
+          command: |
+            . ~/.nvm/nvm.sh
+            npm run deploy-summon-feature
+      - run:
+          name: Deploy Feature 360 Core
+          command: |
+            . ~/.nvm/nvm.sh
+            npm run deploy-360-core-feature
+      - run:
+          name: Deploy Feature Primo
+          command: |
+            . ~/.nvm/nvm.sh
+            npm run deploy-primo-feature
+  deploy-develop:
+    <<: *settings
+    steps:
+      - checkout
+      - restore_cache:
+          <<: *package-cache
+      - run:
+          name: Install project dependencies
+          command: |
+            npm ci --loglevel verbose
+      - save_cache:
+          <<: *package-cache
+          paths:
+            - node_modules
+      - run:
+          name: Deploy Develop Summon
+          command: |
+            . ~/.nvm/nvm.sh
+            npm run deploy-summon-develop
+      - run:
+          name: Deploy Develop 360 Core
+          command: |
+            . ~/.nvm/nvm.sh
+            npm run deploy-360-core-develop
+      - run:
+          name: Deploy Develop Primo
+          command: |
+            . ~/.nvm/nvm.sh
+            npm run deploy-primo-develop
+  deploy-master:
+    <<: *settings
+    steps:
+      - checkout
+      - restore_cache:
+          <<: *package-cache
+      - run:
+          name: Install project dependencies
+          command: |
+            npm ci --loglevel verbose
+      - save_cache:
+          <<: *package-cache
+          paths:
+            - node_modules
+      - run:
+          name: Deploy Master Summon
+          command: |
+            . ~/.nvm/nvm.sh
+            npm run deploy-summon-master
+      - run:
+          name: Deploy Master 360 Core
+          command: |
+            . ~/.nvm/nvm.sh
+            npm run deploy-360-core-master
+      - run:
+          name: Deploy Master Primo
+          command: |
+            . ~/.nvm/nvm.sh
+            npm run deploy-primo-master
+  renogen:
+    docker:
+      - image: cimg/node:18.16.1
+    steps:
+      - add_ssh_keys
+      - run:
+          name: create ssh directory
+          command: mkdir ~/.ssh/
+      - run:
+          name: add github.com to known_hosts
+          command: ssh-keyscan github.com >> ~/.ssh/known_hosts
+      - run:
+          name: Clone release_notes_generator repository
+          command: git clone git@github.com:thirdiron/release_notes_generator.git .
+      - run:
+          name: Install release_notes_generator dependencies
+          command: npm ci
+      - run:
+          name: Build release_notes_generator
+          command: npm run build
+      - run:
+          name: Generate release notes
+          command: DEPLOY_BRANCH_NAME='main' npm run start -- primo-nde-discovery-service-adapter
+
+workflows:
+  build-test-deploy:
+    jobs:
+      - build
+      - test:
+          requires:
+            - build
+      - deploy-hotfix:
+          requires:
+            - test
+          filters:
+            branches:
+              only: /hotfix\/.*/
+      - deploy-feature:
+          requires:
+            - test
+          filters:
+            branches:
+              only: /feature\/.*/
+      - deploy-develop:
+          requires:
+            - test
+          filters:
+            branches:
+              only: develop
+      - deploy-master:
+          requires:
+            - test
+          filters:
+            branches:
+              only: main
+      - renogen:
+           requires:
+             - test
+           filters:
+             branches:
+               only:
+                 - develop
+
+# experimental:
+#   notify:
+#     branches:
+#       only:
+#         - main
+#         - develop
