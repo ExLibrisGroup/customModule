@@ -3,7 +3,7 @@ version: 2.1
 settings: &settings
   shell: /bin/bash --login
   docker:
-    - image: cimg/node:20.9.0
+    - image: cimg/node:20.18.3-browsers
   working_directory: ~/project
 
 package-cache: &package-cache
