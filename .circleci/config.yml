@@ -36,7 +36,7 @@ jobs:
       - run:
           name: Automated Tests
           command: |
-            npm run test
+            npm run test:ci
   deploy-hotfix:
     <<: *settings
     steps:
