@@ -43,112 +43,82 @@ jobs:
           paths:
             - 'project'
 
-  deploy-hotfix:
-    <<: *settings
-    steps:
-      - checkout
-      - restore_cache:
-          <<: *package-cache
-      - run:
-          name: Install project dependencies
-          command: |
-            npm ci --loglevel verbose
-      - save_cache:
-          <<: *package-cache
-          paths:
-            - node_modules
-      - run:
-          name: Deploy Hotfix Primo
-          command: |
-            . ~/.nvm/nvm.sh
-            npm run deploy-primo-hotfix
-  deploy-feature:
-    <<: *settings
-    steps:
-      - checkout
-      - restore_cache:
-          <<: *package-cache
-      - run:
-          name: Install project dependencies
-          command: |
-            npm ci --loglevel verbose
-      - save_cache:
-          <<: *package-cache
-          paths:
-            - node_modules
-      - run:
-          name: Deploy Feature Summon
-          command: |
-            . ~/.nvm/nvm.sh
-            npm run deploy-summon-feature
-      - run:
-          name: Deploy Feature 360 Core
-          command: |
-            . ~/.nvm/nvm.sh
-            npm run deploy-360-core-feature
-      - run:
-          name: Deploy Feature Primo
-          command: |
-            . ~/.nvm/nvm.sh
-            npm run deploy-primo-feature
-  deploy-develop:
-    <<: *settings
-    steps:
-      - checkout
-      - restore_cache:
-          <<: *package-cache
-      - run:
-          name: Install project dependencies
-          command: |
-            npm ci --loglevel verbose
-      - save_cache:
-          <<: *package-cache
-          paths:
-            - node_modules
-      - run:
-          name: Deploy Develop Summon
-          command: |
-            . ~/.nvm/nvm.sh
-            npm run deploy-summon-develop
-      - run:
-          name: Deploy Develop 360 Core
-          command: |
-            . ~/.nvm/nvm.sh
-            npm run deploy-360-core-develop
-      - run:
-          name: Deploy Develop Primo
-          command: |
-            . ~/.nvm/nvm.sh
-            npm run deploy-primo-develop
-  deploy-master:
-    <<: *settings
-    steps:
-      - checkout
-      - restore_cache:
-          <<: *package-cache
-      - run:
-          name: Install project dependencies
-          command: |
-            npm ci --loglevel verbose
-      - save_cache:
-          <<: *package-cache
-          paths:
-            - node_modules
-      - run:
-          name: Deploy Master Summon
-          command: |
-            . ~/.nvm/nvm.sh
-            npm run deploy-summon-master
-      - run:
-          name: Deploy Master 360 Core
-          command: |
-            . ~/.nvm/nvm.sh
-            npm run deploy-360-core-master
-      - run:
-          name: Deploy Master Primo
-          command: |
-            . ~/.nvm/nvm.sh
-            npm run deploy-primo-master
+  # deploy-hotfix:
+  #   <<: *settings
+  #   steps:
+  #     - checkout
+  #     - restore_cache:
+  #         <<: *package-cache
+  #     - run:
+  #         name: Install project dependencies
+  #         command: |
+  #           npm ci --loglevel verbose
+  #     - save_cache:
+  #         <<: *package-cache
+  #         paths:
+  #           - node_modules
+  #     - run:
+  #         name: Deploy Hotfix Primo
+  #         command: |
+  #           . ~/.nvm/nvm.sh
+  #           npm run deploy-primo-hotfix
+  # deploy-feature:
+  #   <<: *settings
+  #   steps:
+  #     - checkout
+  #     - restore_cache:
+  #         <<: *package-cache
+  #     - run:
+  #         name: Install project dependencies
+  #         command: |
+  #           npm ci --loglevel verbose
+  #     - save_cache:
+  #         <<: *package-cache
+  #         paths:
+  #           - node_modules
+  #     - run:
+  #         name: Deploy Feature Primo
+  #         command: |
+  #           . ~/.nvm/nvm.sh
+  #           npm run deploy-primo-feature
+  # deploy-develop:
+  #   <<: *settings
+  #   steps:
+  #     - checkout
+  #     - restore_cache:
+  #         <<: *package-cache
+  #     - run:
+  #         name: Install project dependencies
+  #         command: |
+  #           npm ci --loglevel verbose
+  #           npm run build
+  #     - save_cache:
+  #         <<: *package-cache
+  #         paths:
+  #           - node_modules
+  #     - run:
+  #         name: Deploy Develop Primo
+  #         command: |
+  #           AWS_BUCKET_FOLDER=primo/staging deploy-web-to-s3 src/primo
+  # deploy-master:
+  #   <<: *settings
+  #   steps:
+  #     - checkout
+  #     - restore_cache:
+  #         <<: *package-cache
+  #     - run:
+  #         name: Install project dependencies
+  #         command: |
+  #           npm ci --loglevel verbose
+  #     - save_cache:
+  #         <<: *package-cache
+  #         paths:
+  #           - node_modules
+  #     - run:
+  #         name: Deploy Master Primo
+  #         command: |
+  #           . ~/.nvm/nvm.sh
+  #           npm run deploy-primo-master
   renogen:
     docker:
       - image: cimg/node:18.16.1
@@ -178,30 +148,30 @@ workflows:
     jobs:
       # - build
       - build-and-test
-      - deploy-hotfix:
-          requires:
-            - build-and-test
-          filters:
-            branches:
-              only: /hotfix\/.*/
-      - deploy-feature:
-          requires:
-            - build-and-test
-          filters:
-            branches:
-              only: /feature\/.*/
-      - deploy-develop:
-          requires:
-            - build-and-test
-          filters:
-            branches:
-              only: develop
-      - deploy-master:
-          requires:
-            - build-and-test
-          filters:
-            branches:
-              only: main
+      # - deploy-hotfix:
+      #     requires:
+      #       - build-and-test
+      #     filters:
+      #       branches:
+      #         only: /hotfix\/.*/
+      # - deploy-feature:
+      #     requires:
+      #       - build-and-test
+      #     filters:
+      #       branches:
+      #         only: /feature\/.*/
+      # - deploy-develop:
+      #     requires:
+      #       - build-and-test
+      #     filters:
+      #       branches:
+      #         only: develop
+      # - deploy-master:
+      #     requires:
+      #       - build-and-test
+      #     filters:
+      #       branches:
+      #         only: main
       - renogen:
            requires:
              - build-and-test
