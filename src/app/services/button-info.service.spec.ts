@@ -92,6 +92,7 @@ const articleData: ArticleData = {
     'https://develop.libkey.io/libraries/XXXX/10.1002/ijc.25451',
   problematicJournalArticleNoticeUrl:
     'https://develop.libkey.io/libraries/1414/10.5897/JMA2014.0308',
+  documentDeliveryFulfillmentUrl: 'test.document.delivery-url.com'
 };
 
 const responseMetaData = {
@@ -452,6 +453,38 @@ describe('ButtonInfoService', () => {
           showBrowzineButton: false, // false because null journal passed into waterfall
           mainUrl:
             'https://develop.browzine.com/libraries/XXX/articles/55134408',
+        };
+
+        validateButton(buttonInfo, expectedValues);
+      });
+      it('should return a Document Delivery type button with corresponding link and image', () => {
+        const mockedArticleData: ArticleData = {
+          ...articleData,
+          // make previous waterfall steps empty so we fall into Document Delivery
+          retractionNoticeUrl: '',
+          expressionOfConcernNoticeUrl: '',
+          problematicJournalArticleNoticeUrl: '',
+          fullTextFile: '',
+          contentLocation: '',
+          documentDeliveryFulfillmentUrl: 'test.document.delivery-url.com'
+        };
+        const mockedApiResult: ApiResult = { ...responseMetaData };
+        mockedApiResult.body.data = mockedArticleData;
+        mockedApiResult.body.included = undefined;
+
+        const { displayInfo: buttonInfo } = service.displayWaterfall(
+          mockedApiResult,
+          EntityType.Article
+        );
+
+        const expectedValues = {
+          browzineUrl:
+            'https://browzine.com/libraries/XXX/journals/18126/issues/7764583?showArticleInContext=doi:10.1136/bmj.h2575',
+          mainButtonType: ButtonType.DocumentDelivery,
+          entityType: EntityType.Article,
+          showBrowzineButton: false, // false because null journal passed into waterfall
+          mainUrl:
+            'test.document.delivery-url.com',
         };
 
         validateButton(buttonInfo, expectedValues);

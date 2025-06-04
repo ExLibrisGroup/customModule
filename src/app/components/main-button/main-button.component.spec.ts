@@ -71,6 +71,7 @@ describe('MainButtonComponent', () => {
       mainButtonType: ButtonType.DirectToPDF,
     });
   });
+
   it('should have expected button properties for ArticleLink', async () => {
     componentRef.setInput('url', 'www.test.com');
     componentRef.setInput('buttonType', ButtonType.ArticleLink);
@@ -81,14 +82,34 @@ describe('MainButtonComponent', () => {
 
     await fixture.whenStable();
 
-    // validateButtonProps(buttonElement, {
-    //   mainAriaLabel: 'Download PDF',
-    //   mainButtonText: 'Download PDF',
-    //   mainColor: 'sys-primary',
-    //   mainIcon: IconType.DownloadPDF,
-    //   mainUrl: 'www.test.com',
-    //   mainButtonType: ButtonType.DirectToPDF,
-    // });
+    validateButtonProps(buttonElement, {
+      mainAriaLabel: 'Read Article',
+      mainButtonText: 'Read Article',
+      mainColor: 'sys-primary',
+      mainIcon: IconType.ArticleLink,
+      mainUrl: 'www.test.com',
+      mainButtonType: ButtonType.ArticleLink,
+    });
+  });
+
+  it('should have expected button properties for Document Delivery', async () => {
+    componentRef.setInput('url', 'www.test.com');
+    componentRef.setInput('buttonType', ButtonType.DocumentDelivery);
+
+    fixture.autoDetectChanges();
+
+    buttonElement = fixture.nativeElement;
+
+    await fixture.whenStable();
+
+    validateButtonProps(buttonElement, {
+      mainAriaLabel: 'Request PDF',
+      mainButtonText: 'Request PDF',
+      mainColor: 'sys-primary',
+      mainIcon: IconType.DownloadPDF,
+      mainUrl: 'www.test.com',
+      mainButtonType: ButtonType.DocumentDelivery,
+    });
   });
 
   it('should have expected button properties for Retraction', async () => {
@@ -101,14 +122,14 @@ describe('MainButtonComponent', () => {
 
     await fixture.whenStable();
 
-    // validateButtonProps(buttonElement, {
-    //   mainAriaLabel: 'Download PDF',
-    //   mainButtonText: 'Download PDF',
-    //   mainColor: 'sys-primary',
-    //   mainIcon: IconType.DownloadPDF,
-    //   mainUrl: 'www.test.com',
-    //   mainButtonType: ButtonType.DirectToPDF,
-    // });
+    validateButtonProps(buttonElement, {
+      mainAriaLabel: 'Retracted Article',
+      mainButtonText: 'Retracted Article',
+      mainColor: 'sys-primary',
+      mainIcon: IconType.ArticleAlert,
+      mainUrl: 'www.test.com',
+      mainButtonType: ButtonType.Retraction,
+    });
   });
 
   it('should have expected button properties for Expression of Concern article', async () => {
@@ -141,6 +162,7 @@ describe('MainButtonComponent', () => {
 
     await fixture.whenStable();
 
+    // TODO - add values
     // validateButtonProps(buttonElement, {
     //   mainAriaLabel: 'Download PDF',
     //   mainButtonText: 'Download PDF',
@@ -161,6 +183,7 @@ describe('MainButtonComponent', () => {
 
     await fixture.whenStable();
 
+    // TODO - add values
     // validateButtonProps(buttonElement, {
     //   mainAriaLabel: 'Read Article (Accepted Manuscript via Unpaywall)',
     //   mainButtonText: 'Read Article (Accepted Manuscript via Unpaywall)',
@@ -181,6 +204,7 @@ describe('MainButtonComponent', () => {
 
     await fixture.whenStable();
 
+    // TODO - add values
     // validateButtonProps(buttonElement, {
     //   mainAriaLabel: 'Read Article (Accepted Manuscript via Unpaywall)',
     //   mainButtonText: 'Read Article (Accepted Manuscript via Unpaywall)',
@@ -201,6 +225,7 @@ describe('MainButtonComponent', () => {
 
     await fixture.whenStable();
 
+    // TODO - add values
     // validateButtonProps(buttonElement, {
     //   mainAriaLabel: 'Read Article (Accepted Manuscript via Unpaywall)',
     //   mainButtonText: 'Read Article (Accepted Manuscript via Unpaywall)',

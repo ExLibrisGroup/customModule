@@ -1,5 +1,6 @@
 export enum ButtonType {
   DirectToPDF = 'DirectToPDF',
+  DocumentDelivery = 'DocumentDelivery',
   ArticleLink = 'ArticleLink',
   Retraction = 'Retraction',
   ExpressionOfConcern = 'ExpressionOfConcern',

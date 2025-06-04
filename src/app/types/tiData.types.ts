@@ -26,6 +26,7 @@ export interface ArticleData {
   date: string;
   doi: string;
   expressionOfConcernNoticeUrl?: string;
+  documentDeliveryFulfillmentUrl?: string;
   fullTextFile: string;
   id: number;
   inPress: boolean;
