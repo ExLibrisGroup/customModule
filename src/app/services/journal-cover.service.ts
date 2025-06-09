@@ -3,7 +3,7 @@ import { SearchEntity } from '../types/searchEntity.types';
 import { map, Observable, Observer, of } from 'rxjs';
 import { SearchEntityService } from './search-entity.service';
 import { EntityType } from '../shared/entity-type.enum';
-import { ApiService } from './api.service';
+import { HttpService } from './http.service';
 import { ApiResult, ArticleData, JournalData } from '../types/tiData.types';
 
 export const DEFAULT_JOURNAL_COVER_INFO = {
@@ -25,7 +25,7 @@ export const DEFAULT_JOURNAL_COVER_INFO = {
 })
 export class JournalCoverService {
   constructor(
-    private apiService: ApiService,
+    private httpService: HttpService,
     private searchEntityService: SearchEntityService
   ) {}
 
@@ -35,12 +35,12 @@ export class JournalCoverService {
     // make API call for article or journal
     if (entityType) {
       if (entityType === EntityType.Article) {
-        return this.apiService
+        return this.httpService
           .getArticle(this.searchEntityService.getDoi(entity))
           .pipe(map((res) => this.transformRes(res, entityType)));
       }
       if (entityType === EntityType.Journal) {
-        return this.apiService
+        return this.httpService
           .getJournal(this.searchEntityService.getIssn(entity))
           .pipe(map((res) => this.transformRes(res, entityType)));
       }
@@ -53,12 +53,15 @@ export class JournalCoverService {
   }
 
   transformRes(response: ApiResult, type: EntityType): string {
-    const data = this.apiService.getData(response);
-    const journal = this.apiService.getIncludedJournal(response);
+    const data = this.httpService.getData(response);
+    const journal = this.httpService.getIncludedJournal(response);
 
     // If our response object data isn't an Article and isn't a Journal,
     // we can't proceed, so return empty string
-    if (!this.apiService.isArticle(data) && !this.apiService.isJournal(data)) {
+    if (
+      !this.httpService.isArticle(data) &&
+      !this.httpService.isJournal(data)
+    ) {
       return '';
     }
 
@@ -81,7 +84,7 @@ export class JournalCoverService {
   ): string {
     let coverImageUrl = '';
 
-    if (type === EntityType.Journal && this.apiService.isJournal(data)) {
+    if (type === EntityType.Journal && this.httpService.isJournal(data)) {
       if (data && data.coverImageUrl) {
         coverImageUrl = data.coverImageUrl;
       }

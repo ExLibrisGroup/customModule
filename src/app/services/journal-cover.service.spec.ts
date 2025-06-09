@@ -9,14 +9,11 @@ import {
   provideHttpClientTesting,
 } from '@angular/common/http/testing';
 import { JournalCoverService } from './journal-cover.service';
-import { ApiService } from './api.service';
+import { HttpService } from './http.service';
 
 describe('JournalCoverService', () => {
   let httpTesting: HttpTestingController;
   let service: JournalCoverService;
-  // let apiService: ApiService;
-  // let httpClient: HttpClient;
-  // let httpErrorResponse: HttpErrorResponse;
 
   beforeEach(() => {
     TestBed.configureTestingModule({
@@ -28,9 +25,6 @@ describe('JournalCoverService', () => {
     });
     httpTesting = TestBed.inject(HttpTestingController);
     service = TestBed.inject(JournalCoverService);
-    // apiService = TestBed.inject(ApiService);
-    // httpClient = TestBed.inject(HttpClient);
-    // httpErrorResponse = TestBed.inject(HttpErrorResponse);
   });
 
   it('should be created', () => {

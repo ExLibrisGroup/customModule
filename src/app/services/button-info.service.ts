@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { map, mergeMap, Observable, of } from 'rxjs';
-import { ApiService } from './api.service';
+import { HttpService } from './http.service';
 import { SearchEntityService } from './search-entity.service';
 import { UnpaywallService } from './unpaywall.service';
 import { ConfigService } from './config.service';
@@ -29,7 +29,7 @@ export const DEFAULT_DISPLAY_WATERFALL_RESPONSE = {
 })
 export class ButtonInfoService {
   constructor(
-    private apiService: ApiService,
+    private httpService: HttpService,
     private searchEntityService: SearchEntityService,
     private unpaywallService: UnpaywallService,
     private configService: ConfigService
@@ -42,7 +42,7 @@ export class ButtonInfoService {
     if (entityType) {
       if (entityType === EntityType.Article) {
         const doi = this.searchEntityService.getDoi(entity);
-        return this.apiService.getArticle(doi).pipe(
+        return this.httpService.getArticle(doi).pipe(
           // first, pass article response into display waterfall to get display object
           map(
             (
@@ -70,7 +70,7 @@ export class ButtonInfoService {
       }
       if (entityType === EntityType.Journal) {
         const issn = this.searchEntityService.getIssn(entity);
-        return this.apiService.getJournal(issn).pipe(
+        return this.httpService.getJournal(issn).pipe(
           map((journalResponse) => {
             const waterfallResponse = this.displayWaterfall(
               journalResponse,
@@ -97,13 +97,16 @@ export class ButtonInfoService {
    * ------ Direct PDF link
    * -------- Article link
    * - Browzine link check
+   *
+   * Note: live Unpaywall has a separate waterfall in unpaywall.service.ts - that waterfall
+   *       comes into play if we don't find button info from the base article/journal API call
    */
   displayWaterfall(
     response: ApiResult,
     type: EntityType
   ): { response: ApiResult; displayInfo: DisplayWaterfallResponse } {
-    const data = this.apiService.getData(response);
-    const journal = this.apiService.getIncludedJournal(response);
+    const data = this.httpService.getData(response);
+    const journal = this.httpService.getIncludedJournal(response);
     const defaultReturn = {
       response,
       displayInfo: DEFAULT_DISPLAY_WATERFALL_RESPONSE,
@@ -111,7 +114,10 @@ export class ButtonInfoService {
 
     // If our response object data isn't an Article and isn't a Journal,
     // we can't proceed, so return the default empty button info
-    if (!this.apiService.isArticle(data) && !this.apiService.isJournal(data)) {
+    if (
+      !this.httpService.isArticle(data) &&
+      !this.httpService.isJournal(data)
+    ) {
       return defaultReturn;
     }
 
@@ -221,9 +227,8 @@ export class ButtonInfoService {
       showBrowzineButton = true;
     }
 
-    // console.log('***ButtonType', buttonType);
-    // console.log('***linkUrl', linkUrl);
-
+    // Note: live Unpaywall info could be filled in after this displayInfo object is returned (e.g. if we have a buttonType of 'None' here).
+    //       See the unpaywall.service.ts file for that waterfall logic.
     const displayInfo: DisplayWaterfallResponse = {
       mainButtonType: buttonType,
       mainUrl: linkUrl,
@@ -250,7 +255,7 @@ export class ButtonInfoService {
   ): boolean {
     let browzineEnabled = false;
 
-    if (type === EntityType.Journal && this.apiService.isJournal(data)) {
+    if (type === EntityType.Journal && this.httpService.isJournal(data)) {
       if (data?.browzineEnabled) {
         browzineEnabled = data.browzineEnabled;
       }
@@ -272,7 +277,7 @@ export class ButtonInfoService {
   ): string {
     let directToPDFUrl = '';
 
-    if (type === EntityType.Article && this.apiService.isArticle(data)) {
+    if (type === EntityType.Article && this.httpService.isArticle(data)) {
       if (data?.fullTextFile) {
         directToPDFUrl = data.fullTextFile;
       }
@@ -287,7 +292,7 @@ export class ButtonInfoService {
   ): string {
     let articleLinkUrl = '';
 
-    if (type === EntityType.Article && this.apiService.isArticle(data)) {
+    if (type === EntityType.Article && this.httpService.isArticle(data)) {
       if (data && data.contentLocation) {
         articleLinkUrl = data.contentLocation;
       }
@@ -302,7 +307,7 @@ export class ButtonInfoService {
   ): string {
     let articleRetractionUrl = '';
 
-    if (type === EntityType.Article && this.apiService.isArticle(data)) {
+    if (type === EntityType.Article && this.httpService.isArticle(data)) {
       if (data && data.retractionNoticeUrl) {
         articleRetractionUrl = data.retractionNoticeUrl;
       }
@@ -317,7 +322,7 @@ export class ButtonInfoService {
   ): string {
     let articleEocNoticeUrl = '';
 
-    if (type === EntityType.Article && this.apiService.isArticle(data)) {
+    if (type === EntityType.Article && this.httpService.isArticle(data)) {
       if (data && data.expressionOfConcernNoticeUrl) {
         articleEocNoticeUrl = data.expressionOfConcernNoticeUrl;
       }
@@ -331,7 +336,7 @@ export class ButtonInfoService {
   ): string {
     let problematicJournalArticleNoticeUrl = '';
 
-    if (type === EntityType.Article && this.apiService.isArticle(data)) {
+    if (type === EntityType.Article && this.httpService.isArticle(data)) {
       if (data && data.problematicJournalArticleNoticeUrl) {
         problematicJournalArticleNoticeUrl =
           data.problematicJournalArticleNoticeUrl;
@@ -346,7 +351,7 @@ export class ButtonInfoService {
   ): string {
     let documentDeliveryUrl = '';
 
-    if (type === EntityType.Article && this.apiService.isArticle(data)) {
+    if (type === EntityType.Article && this.httpService.isArticle(data)) {
       if (data && data.documentDeliveryFulfillmentUrl) {
         documentDeliveryUrl = data.documentDeliveryFulfillmentUrl;
       }
@@ -359,10 +364,10 @@ export class ButtonInfoService {
     entityType: EntityType,
     buttonType: ButtonType
   ): boolean {
-    const data = this.apiService.getData(response);
+    const data = this.httpService.getData(response);
 
     // If we aren't dealing with an Article, don't continue with Unpaywall call
-    if (!this.apiService.isArticle(data)) {
+    if (!this.httpService.isArticle(data)) {
       return false;
     }
 
@@ -411,12 +416,12 @@ export class ButtonInfoService {
     type: EntityType,
     data: ArticleData | JournalData
   ) {
-    if (type !== EntityType.Article || this.apiService.isJournal(data)) {
+    if (type !== EntityType.Article || this.httpService.isJournal(data)) {
       return false;
     }
     if (
       !data ||
-      (this.apiService.isArticle(data) &&
+      (this.httpService.isArticle(data) &&
         !data.hasOwnProperty('unpaywallUsable'))
     ) {
       return true;
@@ -440,11 +445,11 @@ export class ButtonInfoService {
     displayInfo: DisplayWaterfallResponse,
     doi: string
   ): Observable<DisplayWaterfallResponse> {
-    return this.apiService.getUnpaywall(doi).pipe(
+    return this.httpService.getUnpaywall(doi).pipe(
       map((unpaywallRes) => {
-        const data = this.apiService.getData(articleResponse);
+        const data = this.httpService.getData(articleResponse);
         const avoidUnpaywallPublisherLinks = !!(
-          this.apiService.isArticle(data) && data?.avoidUnpaywallPublisherLinks
+          this.httpService.isArticle(data) && data?.avoidUnpaywallPublisherLinks
         );
 
         const unpaywallButtonInfo = this.unpaywallService.unpaywallWaterfall(

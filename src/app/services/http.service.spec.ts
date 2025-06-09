@@ -5,11 +5,11 @@ import {
   provideHttpClientTesting,
 } from '@angular/common/http/testing';
 
-import { ApiService } from './api.service';
+import { HttpService } from './http.service';
 
-describe('ApiService', () => {
+describe('HttpService', () => {
   let httpTesting: HttpTestingController;
-  let service: ApiService;
+  let service: HttpService;
 
   const responseMeta = {
     ok: true,
@@ -36,10 +36,10 @@ describe('ApiService', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      providers: [ApiService, provideHttpClient(), provideHttpClientTesting()],
+      providers: [HttpService, provideHttpClient(), provideHttpClientTesting()],
     });
     httpTesting = TestBed.inject(HttpTestingController);
-    service = TestBed.inject(ApiService);
+    service = TestBed.inject(HttpService);
   });
 
   it('should be created', () => {

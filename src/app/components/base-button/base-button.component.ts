@@ -3,7 +3,7 @@ import { SvgIconComponent } from '../svg-icon/svg-icon.component';
 import { MatButtonModule } from '@angular/material/button';
 
 @Component({
-  selector: 'custom-base-button',
+  selector: 'base-button',
   standalone: true,
   imports: [SvgIconComponent, MatButtonModule],
   templateUrl: './base-button.component.html',

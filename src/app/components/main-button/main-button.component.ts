@@ -4,7 +4,7 @@ import { BaseButtonComponent } from '../base-button/base-button.component';
 import { ButtonType } from 'src/app/shared/button-type.enum';
 
 @Component({
-  selector: 'custom-main-button',
+  selector: 'main-button',
   standalone: true,
   imports: [BaseButtonComponent],
   templateUrl: './main-button.component.html',
@@ -95,8 +95,8 @@ export class MainButtonComponent {
         icon = IconType.ArticleLink;
         break;
       case ButtonType.DocumentDelivery:
-          icon = IconType.DownloadPDF;
-          break;
+        icon = IconType.DownloadPDF;
+        break;
       case ButtonType.UnpaywallDirectToPDF:
         icon = IconType.DownloadPDF;
         break;

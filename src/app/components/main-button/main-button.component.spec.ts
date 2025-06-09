@@ -17,7 +17,7 @@ const validateButtonProps = (
     .querySelector('button')
     ?.getAttribute('aria-label');
   const buttonUrl = buttonElement
-    .querySelector('custom-base-button')
+    .querySelector('base-button')
     ?.getAttribute('ng-reflect-url');
   const buttonIcon = buttonElement.querySelector(
     '[data-testid="ti-svg-icon"]'

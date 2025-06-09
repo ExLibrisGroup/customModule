@@ -1,17 +1,17 @@
 import { TestBed } from '@angular/core/testing';
-import { HttpClient, provideHttpClient } from '@angular/common/http';
+import { provideHttpClient } from '@angular/common/http';
 import {
   HttpTestingController,
   provideHttpClientTesting,
 } from '@angular/common/http/testing';
 
 import { ButtonInfoService } from './button-info.service';
-import { ApiService } from './api.service';
+import { HttpService } from './http.service';
 import { EntityType } from '../shared/entity-type.enum';
 import { ApiResult, ArticleData, JournalData } from '../types/tiData.types';
 import { DisplayWaterfallResponse } from '../types/displayWaterfallResponse.types';
 import { SearchEntity } from '../types/searchEntity.types';
-import { firstValueFrom, of } from 'rxjs';
+import { firstValueFrom } from 'rxjs';
 import { ButtonType } from '../shared/button-type.enum';
 
 const baseUrl = 'https://public-api.thirdiron.com/public/v1/libraries/322';
@@ -92,7 +92,7 @@ const articleData: ArticleData = {
     'https://develop.libkey.io/libraries/XXXX/10.1002/ijc.25451',
   problematicJournalArticleNoticeUrl:
     'https://develop.libkey.io/libraries/1414/10.5897/JMA2014.0308',
-  documentDeliveryFulfillmentUrl: 'test.document.delivery-url.com'
+  documentDeliveryFulfillmentUrl: 'test.document.delivery-url.com',
 };
 
 const responseMetaData = {
@@ -118,22 +118,19 @@ const validateButton = (
 describe('ButtonInfoService', () => {
   let httpTesting: HttpTestingController;
   let service: ButtonInfoService;
-  let apiService: ApiService;
-  // let httpClientSpy: jasmine.SpyObj<HttpClient>;
+  let httpService: HttpService;
 
   beforeEach(() => {
     TestBed.configureTestingModule({
       providers: [
-        ApiService,
+        HttpService,
         ButtonInfoService,
         provideHttpClient(),
         provideHttpClientTesting(),
       ],
     });
     httpTesting = TestBed.inject(HttpTestingController);
-    // httpClientSpy = jasmine.createSpyObj('HttpClient', ['get']);
-    // apiService = new ApiService(httpClientSpy);
-    apiService = TestBed.inject(ApiService);
+    httpService = TestBed.inject(HttpService);
     service = TestBed.inject(ButtonInfoService);
   });
 
@@ -466,7 +463,7 @@ describe('ButtonInfoService', () => {
           problematicJournalArticleNoticeUrl: '',
           fullTextFile: '',
           contentLocation: '',
-          documentDeliveryFulfillmentUrl: 'test.document.delivery-url.com'
+          documentDeliveryFulfillmentUrl: 'test.document.delivery-url.com',
         };
         const mockedApiResult: ApiResult = { ...responseMetaData };
         mockedApiResult.body.data = mockedArticleData;
@@ -483,8 +480,7 @@ describe('ButtonInfoService', () => {
           mainButtonType: ButtonType.DocumentDelivery,
           entityType: EntityType.Article,
           showBrowzineButton: false, // false because null journal passed into waterfall
-          mainUrl:
-            'test.document.delivery-url.com',
+          mainUrl: 'test.document.delivery-url.com',
         };
 
         validateButton(buttonInfo, expectedValues);

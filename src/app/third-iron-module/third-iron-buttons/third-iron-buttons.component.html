@@ -1,8 +1,8 @@
 @if(displayInfo$ | async; as displayInfo){
 <span>
   @if(displayInfo.mainUrl !== '') {
-  <custom-main-button class="ti-single-button" [url]="displayInfo.mainUrl" [buttonType]="displayInfo.mainButtonType">
-  </custom-main-button>
+  <main-button class="ti-single-button" [url]="displayInfo.mainUrl" [buttonType]="displayInfo.mainButtonType">
+  </main-button>
   }
   @if(displayInfo.showSecondaryButton && displayInfo.secondaryUrl) {
   <article-link-button class="ti-single-button" [url]="displayInfo.secondaryUrl || ''"

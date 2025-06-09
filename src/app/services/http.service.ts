@@ -6,7 +6,6 @@ import {
 } from '@angular/common/http';
 import { catchError, Observable, throwError } from 'rxjs';
 import { ApiResult, ArticleData, JournalData } from '../types/tiData.types';
-import { UnpaywallData } from '../types/unpaywall.types';
 
 /**
  * This Service is responsible for all HTTP requests and includes some
@@ -16,7 +15,7 @@ import { UnpaywallData } from '../types/unpaywall.types';
 @Injectable({
   providedIn: 'root',
 })
-export class ApiService {
+export class HttpService {
   // TODO load dynamically from config
   private apiUrl = 'https://public-api.thirdiron.com/public/v1/libraries/322';
   private apiKey = 'dc14dee7-f4f3-4617-bd84-be027c3830c0';
