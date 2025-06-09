@@ -56,6 +56,9 @@ export class MainButtonComponent {
       case ButtonType.ArticleLink:
         text = 'Read Article'; // TODO - add config: browzine.articleLinkText
         break;
+      case ButtonType.DocumentDelivery:
+        text = 'Request PDF'; // TODO - add config: browzine.documentDeliveryFulfillmentText
+        break;
       case ButtonType.UnpaywallDirectToPDF:
         text = 'Download PDF (via Unpaywall)'; // TODO load config: && browzine.articlePDFDownloadViaUnpaywallText
         break;
@@ -91,6 +94,9 @@ export class MainButtonComponent {
       case ButtonType.ArticleLink:
         icon = IconType.ArticleLink;
         break;
+      case ButtonType.DocumentDelivery:
+          icon = IconType.DownloadPDF;
+          break;
       case ButtonType.UnpaywallDirectToPDF:
         icon = IconType.DownloadPDF;
         break;

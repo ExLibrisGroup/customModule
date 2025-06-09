@@ -123,6 +123,10 @@ export class ButtonInfoService {
     const articleEocNoticeUrl = this.getArticleEOCNoticeUrl(type, data);
     const problematicJournalArticleNoticeUrl =
       this.getProblematicJournalArticleNoticeUrl(type, data);
+    const documentDeliveryUrl = this.getDocumentDeliveryFulfillmentUrl(
+      type,
+      data
+    );
 
     let buttonType = ButtonType.None;
     let showBrowzineButton = false;
@@ -172,6 +176,16 @@ export class ButtonInfoService {
     ) {
       buttonType = ButtonType.ArticleLink;
       linkUrl = articleLinkUrl;
+    }
+
+    // DocumentDelivery
+    else if (
+      documentDeliveryUrl &&
+      type === EntityType.Article &&
+      this.configService.showDocumentDeliveryFulfillment()
+    ) {
+      buttonType = ButtonType.DocumentDelivery;
+      linkUrl = documentDeliveryUrl;
     }
 
     if (
@@ -324,6 +338,20 @@ export class ButtonInfoService {
       }
     }
     return problematicJournalArticleNoticeUrl;
+  }
+
+  private getDocumentDeliveryFulfillmentUrl(
+    type: EntityType,
+    data: ArticleData | JournalData
+  ): string {
+    let documentDeliveryUrl = '';
+
+    if (type === EntityType.Article && this.apiService.isArticle(data)) {
+      if (data && data.documentDeliveryFulfillmentUrl) {
+        documentDeliveryUrl = data.documentDeliveryFulfillmentUrl;
+      }
+    }
+    return documentDeliveryUrl;
   }
 
   private shouldMakeUnpaywallCall(

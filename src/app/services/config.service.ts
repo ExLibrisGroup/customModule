@@ -110,4 +110,16 @@ export class ConfigService {
 
     return featureEnabled;
   }
+
+  // TODO - load config values from LookupService //
+  showDocumentDeliveryFulfillment() {
+    let featureEnabled = true; // set back to false once implemented
+    // let config = browzine.documentDeliveryFulfillmentEnabled;
+
+    // if (typeof config === 'undefined' || config === null || config === true) {
+    //   featureEnabled = true;
+    // }
+
+    return featureEnabled;
+  }
 }
