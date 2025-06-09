@@ -113,7 +113,7 @@ There are two options for setting up your local development environment: configu
       ['nde-recommendations-before', RecommendationsComponentBefore],
       ['nde-recommendations-after', RecommendationsComponentAfter],
       ['nde-recommendations-top', RecommendationsComponentTop],
-      ['nde-recommendations-buttom', RecommendationsComponentButtom], 	  
+      ['nde-recommendations-bottom', RecommendationsComponentBottom], 	  
       ['nde-recommendations', RecommendationsComponent],
       // Add more pairs as needed
     ]);
