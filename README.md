@@ -1,3 +1,9 @@
+# Introduction
+This is a fork of the main repository based on the ExLibris New Discovery Experience.
+It is developed based on the information for Victoria Universities Library Information Repo - Te Waharoa.
+
+Currently a work in progress, based on the information for the existing version.
+
 # CustomModule
 
 ### Overview
