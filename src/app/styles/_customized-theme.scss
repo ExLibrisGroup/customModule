@@ -3,7 +3,9 @@
 
 //uncomment the following lines in order to apply your own theme
 
-//.custom-nde-theme{
-//  @include mat.all-component-colors(m3-theme.$light-theme);
-//  @include mat.system-level-colors(m3-theme.$light-theme);
-//}
+.custom-nde-theme{
+ @include mat.all-component-colors(m3-theme.$light-theme);
+ @include mat.system-level-colors(m3-theme.$light-theme);
+}
+
+//rgba(62, 156, 79, 0.4784313725
