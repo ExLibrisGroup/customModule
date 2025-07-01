@@ -62,10 +62,10 @@ module.exports = {
       library: { type: "module" },
 
       // For remotes (please adjust)
-      name: "customModule",
+      name: "LibKey",
       filename: "remoteEntry.js",
       exposes: {
-        "./custom-module": "./src/bootstrap.ts",
+        "./custom-module": "./src/bootstrapLibKey.ts",
       },
 
       // For hosts (please adjust)
