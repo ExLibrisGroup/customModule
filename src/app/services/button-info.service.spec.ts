@@ -14,9 +14,9 @@ import { SearchEntity } from '../types/searchEntity.types';
 import { firstValueFrom } from 'rxjs';
 import { ButtonType } from '../shared/button-type.enum';
 
-const baseUrl = 'https://public-api.thirdiron.com/public/v1/libraries/322';
-const articlePath = `${baseUrl}/articles/doi/10.1002%2Fijc.25451?include=journal,library&access_token=dc14dee7-f4f3-4617-bd84-be027c3830c0`;
-const journalPath = `${baseUrl}/search?issns=00284793&access_token=dc14dee7-f4f3-4617-bd84-be027c3830c0`;
+const baseUrl = 'https://public-api.thirdiron.com/public/v1/libraries/222';
+const articlePath = `${baseUrl}/articles/doi/10.1002%2Fijc.25451?include=journal,library&access_token=826ba44a-4e48-48df-bbd2-cf8ee7bbb67d`;
+const journalPath = `${baseUrl}/search?issns=00284793&access_token=826ba44a-4e48-48df-bbd2-cf8ee7bbb67d`;
 
 const articleSearchEntity: SearchEntity = {
   pnx: {

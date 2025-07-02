@@ -17,8 +17,8 @@ import { ApiResult, ArticleData, JournalData } from '../types/tiData.types';
 })
 export class HttpService {
   // TODO load dynamically from config
-  private apiUrl = 'https://public-api.thirdiron.com/public/v1/libraries/322';
-  private apiKey = 'dc14dee7-f4f3-4617-bd84-be027c3830c0';
+  private apiUrl = 'https://public-api.thirdiron.com/public/v1/libraries/222'; //'https://public-api.thirdiron.com/public/v1/libraries/322';
+  private apiKey = '826ba44a-4e48-48df-bbd2-cf8ee7bbb67d'; //'dc14dee7-f4f3-4617-bd84-be027c3830c0';
 
   constructor(private http: HttpClient) {}
 
@@ -27,7 +27,6 @@ export class HttpService {
       this.apiUrl
     }/articles/doi/${doi}?include=journal,library${this.appendAccessToken()}`;
 
-    console.log('http getArticle', endpoint);
     return this.http
       .get(endpoint, { observe: 'response' })
       .pipe(catchError(this.handleError));

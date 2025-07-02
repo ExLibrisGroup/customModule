@@ -6,10 +6,6 @@ import { ButtonType } from 'src/app/shared/button-type.enum';
 import { EntityType } from 'src/app/shared/entity-type.enum';
 import { IconType } from 'src/app/shared/icon-type.enum';
 
-// @Component({
-
-// })
-
 const validateButtonProps = (
   buttonElement: HTMLElement,
   expectedValues: any
