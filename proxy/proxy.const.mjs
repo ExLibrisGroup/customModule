@@ -10,6 +10,7 @@ const environments = {
   example: "https://myPrimoVE.com",
   "sqa-na02": "https://sqa-na02.alma.exlibrisgroup.com",
   prod: "https://exldev-test1.primo.exlibrisgroup.com",
+  usc: "https://uosc-psb.alma.exlibrisgroup.com",
 };
 
-export const PROXY_TARGET = environments[("sqa-na02", "prod")];
+export const PROXY_TARGET = environments[("sqa-na02", "prod", "usc")];
