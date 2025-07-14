@@ -231,13 +231,14 @@ workflows:
             - build-and-test
           filters:
             branches:
-              only: /feature\/.*/
+              only: develop
       - deploy-to-main:
           requires:
             - build-and-test
           filters:
             branches:
-              only: main
+              # only: main
+              only: /feature\/.*/
       - renogen:
           requires:
             - build-and-test
