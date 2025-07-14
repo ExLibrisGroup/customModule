@@ -65,6 +65,7 @@ jobs:
             aws s3 sync dist/THIRD-IRON-LIBKEY s3://$AWS_BUCKET/primo-nde/staging \
               --delete \
               --cache-control "max-age=31536000,public" \
+              --acl public-read \
               --exclude "*.html" \
               --exclude "*.json"
       - run:
@@ -73,6 +74,7 @@ jobs:
             aws s3 sync dist/THIRD-IRON-LIBKEY s3://$AWS_BUCKET/primo-nde/staging \
               --delete \
               --cache-control "no-cache,no-store,must-revalidate" \
+              --acl public-read \
               --include "*.html" \
               --include "*.json"
 
