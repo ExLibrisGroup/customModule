@@ -19,11 +19,10 @@ orbs:
 
    - Go to Project Settings → Environment Variables
    - Add these variables:
-     - `AWS_ACCESS_KEY`
+     - `AWS_ACCESS_KEY_ID`
      - `AWS_SECRET_ACCESS_KEY`
      - `AWS_DEFAULT_REGION` (e.g., `us-east-1`)
-     - `S3_BUCKET_NAME`
-     - `AWS_BUCKET_FOLDER` (e.g., `primo-nde/staging`)
+     - `AWS_BUCKET` (your S3 bucket name)
 
 3. **Create a deployment job:**
 
@@ -44,15 +43,9 @@ deploy-to-s3:
           npm run build
     - aws-cli/install
     - run:
-        name: Configure AWS credentials
-        command: |
-          aws configure set aws_access_key $AWS_ACCESS_KEY
-          aws configure set aws_secret_access_key $AWS_SECRET_ACCESS_KEY
-          aws configure set default.region $AWS_DEFAULT_REGION
-    - run:
         name: Upload to S3
         command: |
-          aws s3 sync dist/THIRD-IRON-LIBKEY s3://$S3_BUCKET_NAME/$AWS_BUCKET_FOLDER \
+          aws s3 sync dist/THIRD-IRON-LIBKEY s3://$AWS_BUCKET/primo-nde/staging \
             --delete \
             --cache-control "max-age=31536000,public" \
             --exclude "*.html" \
@@ -60,7 +53,7 @@ deploy-to-s3:
     - run:
         name: Upload HTML files with no-cache
         command: |
-          aws s3 sync dist/THIRD-IRON-LIBKEY s3://$S3_BUCKET_NAME/$AWS_BUCKET_FOLDER \
+          aws s3 sync dist/THIRD-IRON-LIBKEY s3://$AWS_BUCKET/primo-nde/staging \
             --delete \
             --cache-control "no-cache,no-store,must-revalidate" \
             --include "*.html" \

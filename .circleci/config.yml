@@ -60,12 +60,6 @@ jobs:
             npm run build
       - aws-cli/install
       - run:
-          name: Configure AWS credentials
-          command: |
-            aws configure set aws_access_key $AWS_ACCESS_KEY
-            aws configure set aws_secret_access_key $AWS_SECRET_ACCESS_KEY
-            aws configure set default.region $AWS_DEFAULT_REGION
-      - run:
           name: Upload to S3
           command: |
             aws s3 sync dist/THIRD-IRON-LIBKEY s3://$AWS_BUCKET/primo-nde/staging \
@@ -97,12 +91,6 @@ jobs:
           command: |
             npm run build
       - aws-cli/install
-      - run:
-          name: Configure AWS credentials
-          command: |
-            aws configure set aws_access_key $AWS_ACCESS_KEY
-            aws configure set aws_secret_access_key $AWS_SECRET_ACCESS_KEY
-            aws configure set default.region $AWS_DEFAULT_REGION
       - run:
           name: Upload to S3
           command: |
