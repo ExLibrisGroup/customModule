@@ -1,7 +1,8 @@
 version: 2.1
 
 orbs:
-  browser-tools: circleci/browser-tools@2.0.0
+  browser-tools: circleci/browser-tools@2.1.2
+  aws-cli: circleci/aws-cli@4.1.3
 
 settings: &settings
   shell: /bin/bash --login
@@ -41,8 +42,83 @@ jobs:
       - persist_to_workspace:
           root: ~/
           paths:
-            - 'project'
+            - "project"
 
+  deploy-to-staging:
+    <<: *settings
+    steps:
+      - checkout
+      - restore_cache:
+          <<: *package-cache
+      - run:
+          name: Install project dependencies
+          command: |
+            npm ci --loglevel verbose
+      - run:
+          name: Build project
+          command: |
+            npm run build
+      - aws-cli/install
+      - run:
+          name: Configure AWS credentials
+          command: |
+            aws configure set aws_access_key $AWS_ACCESS_KEY
+            aws configure set aws_secret_access_key $AWS_SECRET_ACCESS_KEY
+            aws configure set default.region $AWS_DEFAULT_REGION
+      - run:
+          name: Upload to S3
+          command: |
+            aws s3 sync dist/THIRD-IRON-LIBKEY s3://$AWS_BUCKET/primo-nde/staging \
+              --delete \
+              --cache-control "max-age=31536000,public" \
+              --exclude "*.html" \
+              --exclude "*.json"
+      - run:
+          name: Upload HTML files with no-cache
+          command: |
+            aws s3 sync dist/THIRD-IRON-LIBKEY s3://$AWS_BUCKET/primo-nde/staging \
+              --delete \
+              --cache-control "no-cache,no-store,must-revalidate" \
+              --include "*.html" \
+              --include "*.json"
+
+  deploy-to-main:
+    <<: *settings
+    steps:
+      - checkout
+      - restore_cache:
+          <<: *package-cache
+      - run:
+          name: Install project dependencies
+          command: |
+            npm ci --loglevel verbose
+      - run:
+          name: Build project
+          command: |
+            npm run build
+      - aws-cli/install
+      - run:
+          name: Configure AWS credentials
+          command: |
+            aws configure set aws_access_key $AWS_ACCESS_KEY
+            aws configure set aws_secret_access_key $AWS_SECRET_ACCESS_KEY
+            aws configure set default.region $AWS_DEFAULT_REGION
+      - run:
+          name: Upload to S3
+          command: |
+            aws s3 sync dist/THIRD-IRON-LIBKEY s3://$AWS_BUCKET/primo-nde/production \
+              --delete \
+              --cache-control "max-age=31536000,public" \
+              --exclude "*.html" \
+              --exclude "*.json"
+      - run:
+          name: Upload HTML files with no-cache
+          command: |
+            aws s3 sync dist/THIRD-IRON-LIBKEY s3://$AWS_BUCKET/primo-nde/production \
+              --delete \
+              --cache-control "no-cache,no-store,must-revalidate" \
+              --include "*.html" \
+              --include "*.json"
   # deploy-hotfix:
   #   <<: *settings
   #   steps:
@@ -99,7 +175,7 @@ jobs:
   #     - run:
   #         name: Deploy Develop Primo
   #         command: |
-  #           AWS_BUCKET_FOLDER=primo/staging deploy-web-to-s3 src/primo
+  #           npm run deploy-primo-develop
   # deploy-master:
   #   <<: *settings
   #   steps:
@@ -160,26 +236,25 @@ workflows:
       #     filters:
       #       branches:
       #         only: /feature\/.*/
-      # - deploy-develop:
-      #     requires:
-      #       - build-and-test
-      #     filters:
-      #       branches:
-      #         only: develop
-      # - deploy-master:
-      #     requires:
-      #       - build-and-test
-      #     filters:
-      #       branches:
-      #         only: main
+      - deploy-to-staging:
+          requires:
+            - build-and-test
+          filters:
+            branches:
+              only: /feature\/.*/
+      - deploy-to-main:
+          requires:
+            - build-and-test
+          filters:
+            branches:
+              only: main
       - renogen:
-           requires:
-             - build-and-test
-           filters:
-             branches:
-               only:
-                 - develop
-
+          requires:
+            - build-and-test
+          filters:
+            branches:
+              only:
+                - develop
 # experimental:
 #   notify:
 #     branches:
