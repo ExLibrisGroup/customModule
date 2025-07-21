@@ -1,4 +1,4 @@
-import { Component, ElementRef, Input } from '@angular/core';
+import { Component, ElementRef, Input, Inject } from '@angular/core';
 import { Observable } from 'rxjs';
 import { BrowzineButtonComponent } from '../../components/browzine-button/browzine-button.component';
 import { SearchEntity } from '../../types/searchEntity.types';
@@ -34,14 +34,18 @@ export class ThirdIronButtonsComponent {
     private buttonInfoService: ButtonInfoService,
     private searchEntityService: SearchEntityService,
     private configService: ConfigService,
-    elementRef: ElementRef
+    elementRef: ElementRef,
+    @Inject('MODULE_PARAMETERS') public moduleParameters: any
   ) {
     this.elementRef = elementRef;
+    console.log(
+      'Module parameters TestBottomComponent:',
+      this.moduleParameters
+    );
   }
 
   ngOnInit() {
     // Start the process for determining if a button should be displayed and with what info
-    console.log('hostComponent', this.hostComponent);
     this.enhance(this.hostComponent.searchResult);
   }
 

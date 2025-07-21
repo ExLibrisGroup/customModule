@@ -262,7 +262,6 @@ export class ButtonInfoService {
     }
 
     if (type === EntityType.Article) {
-      console.log('article type, browzineEnabled:', journal?.browzineEnabled);
       if (journal?.browzineEnabled) {
         browzineEnabled = journal.browzineEnabled;
       }
@@ -394,10 +393,8 @@ export class ButtonInfoService {
         !shouldAvoidUnpaywall &&
         isUnpaywallUsable)
     ) {
-      // console.log('SHOULD MAKE UNPAYWALL CALL');
       return true;
     }
-    // console.log('DO NOT MAKE UNPAYWALL CALL');
     return false;
   }
 

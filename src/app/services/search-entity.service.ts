@@ -9,7 +9,6 @@ export class SearchEntityService {
   constructor() {}
 
   shouldEnhance = (result: SearchEntity): boolean => {
-    // console.log('shouldEnhance');
     var validation = false;
 
     // if (!isFiltered(scope)) {
@@ -30,7 +29,6 @@ export class SearchEntityService {
     }
     // }
 
-    // console.log('return shouldEnhance value');
     return validation;
   };
 

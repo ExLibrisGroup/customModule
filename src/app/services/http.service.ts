@@ -47,7 +47,6 @@ export class HttpService {
     const email = 'info@thirdiron.com';
 
     const endpoint = `https://api.unpaywall.org/v2/${doi}?email=${email}`;
-    console.log('http getUnpaywall', endpoint);
     return this.http
       .get(endpoint, { observe: 'response' })
       .pipe(catchError(this.handleError));
