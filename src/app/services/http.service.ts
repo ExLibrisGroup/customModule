@@ -18,7 +18,7 @@ import { ApiResult, ArticleData, JournalData } from '../types/tiData.types';
 export class HttpService {
   // TODO load dynamically from config
   private apiUrl = 'https://public-api.thirdiron.com/public/v1/libraries/222'; //'https://public-api.thirdiron.com/public/v1/libraries/322';
-  private apiKey = '826ba44a-4e48-48df-bbd2-cf8ee7bbb67d'; //'dc14dee7-f4f3-4617-bd84-be027c3830c0';
+  private apiKey = 'a9c7fb8f-9758-4ff9-9dc9-fcb4cbf32724'; //'dc14dee7-f4f3-4617-bd84-be027c3830c0';
 
   constructor(private http: HttpClient) {}
 
