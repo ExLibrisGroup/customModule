@@ -22,7 +22,11 @@ export class HttpService {
   constructor(
     private http: HttpClient,
     @Inject('MODULE_PARAMETERS') public moduleParameters: any
-  ) {}
+  ) {
+    console.log('apiUrl', this.apiUrl);
+    console.log('apiKey', this.apiKey);
+    console.log('moduleParameters', this.moduleParameters);
+  }
 
   getArticle(doi: string): Observable<any> {
     const endpoint = `${
