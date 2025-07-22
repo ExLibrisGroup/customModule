@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, Inject } from '@angular/core';
 // import {LookupService}
 
 /**
@@ -10,55 +10,56 @@ import { Injectable } from '@angular/core';
   providedIn: 'root',
 })
 export class ConfigService {
-  constructor() {} //private lookupService: LookupService
+  constructor(@Inject('MODULE_PARAMETERS') public moduleParameters: any) {
+    console.log(
+      'Module parameters TestBottomComponent:',
+      this.moduleParameters
+    );
+  }
 
   // TODO - load config values from LookupService //
   showDirectToPDFLink(): boolean {
-    let featureEnabled = true; // set back to false once implemented
+    let featureEnabled = false;
     // TODO - load from LookupService:
-    // const config = this.lookupService.getModuleParam('articlePDFDownloadLinkEnabled')
-    // const prefixConfig = this.lookupService.getModuleParam('primoArticlePDFDownloadLinkEnabled')
+    const config = this.moduleParameters.articlePDFDownloadLinkEnabled;
+    const prefixConfig =
+      this.moduleParameters.primoArticlePDFDownloadLinkEnabled;
 
-    //// - old way -
-    // var config = browzine.articlePDFDownloadLinkEnabled;
-    // var prefixConfig = browzine.primoArticlePDFDownloadLinkEnabled;
-    ////
+    console.log('showDirectToPDFLink config', config);
 
-    // if (typeof config === "undefined" || config === null || config === true) {
-    //   featureEnabled = true;
-    // }
+    if (typeof config === 'undefined' || config === null || config === true) {
+      featureEnabled = true;
+    }
 
-    // if (
-    //   typeof prefixConfig !== "undefined" &&
-    //   prefixConfig !== null &&
-    //   prefixConfig === false
-    // ) {
-    //   featureEnabled = false;
-    // }
+    if (
+      typeof prefixConfig !== 'undefined' &&
+      prefixConfig !== null &&
+      prefixConfig === false
+    ) {
+      featureEnabled = false;
+    }
 
     return featureEnabled;
   }
 
-  // TODO - load config values from LookupService //
   showArticleLink(): boolean {
-    let featureEnabled = true; // set back to false once implemented
-    // let config = browzine.articleLinkEnabled;
+    let featureEnabled = false;
+    let config = this.moduleParameters.articleLinkEnabled;
 
-    // if (typeof config === "undefined" || config === null || config === true) {
-    //   featureEnabled = true;
-    // }
+    if (typeof config === 'undefined' || config === null || config === true) {
+      featureEnabled = true;
+    }
 
     return featureEnabled;
   }
 
-  // TODO - load config values from LookupService //
   showFormatChoice(): boolean {
-    let featureEnabled = true; // set back to false once implemented
-    // var config = browzine.showFormatChoice;
+    let featureEnabled = false;
+    let config = this.moduleParameters.showFormatChoice;
 
-    // if (config === true) {
-    //   featureEnabled = true;
-    // }
+    if (config === true) {
+      featureEnabled = true;
+    }
 
     return featureEnabled;
   }

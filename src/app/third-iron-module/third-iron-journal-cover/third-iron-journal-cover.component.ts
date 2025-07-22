@@ -37,8 +37,8 @@ export class ThirdIronJournalCoverComponent {
         // hide default Primo image blocks if we find a Third Iron provided image
         if (journalCoverUrl !== '') {
           const hostElem = this.elementRef.nativeElement; // this component's template element
-          const imageBlockParent = hostElem.parentNode.parentNode; // jump up to parent of <nde-record-image />
-          const imageElements = imageBlockParent.getElementsByTagName(
+          const imageBlockParent = hostElem.parentNode?.parentNode; // jump up to parent of <nde-record-image />
+          const imageElements = imageBlockParent?.getElementsByTagName(
             'nde-record-image'
           ) as HTMLCollectionOf<HTMLElement>;
 
