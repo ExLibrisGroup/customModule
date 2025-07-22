@@ -85,13 +85,13 @@ describe('UnpaywallService', () => {
       });
 
       // TODO: Karl - if the PDF link config setting is false, do we expect to return the article link? or nothing?
-      it('should skip PDF and return UnpaywallArticleLink when article link is enabled', () => {
+      it('should return default response since article pdf url is present but not enabled', () => {
         const response = { status: 200, body: mockBasicUnpaywallData };
         const result = service.unpaywallWaterfall(response, false);
 
-        expect(result.mainButtonType).toBe(ButtonType.UnpaywallArticleLink);
-        expect(result.entityType).toBe(EntityType.Article);
-        expect(result.mainUrl).toBe('https://example.com/article');
+        expect(result.mainButtonType).toBe(ButtonType.None);
+        expect(result.entityType).toBe(EntityType.Unknown);
+        expect(result.mainUrl).toBe('');
       });
     });
 
@@ -141,13 +141,13 @@ describe('UnpaywallService', () => {
         service = TestBed.inject(UnpaywallService);
       });
 
-      it('should skip manuscript PDF and check manuscript link when available', () => {
+      it('should return default response since manuscript PDF is present but not enabled', () => {
         const response = { status: 200, body: mockManuscriptData };
         const result = service.unpaywallWaterfall(response, false);
 
-        expect(result.mainButtonType).toBe(ButtonType.UnpaywallManuscriptLink);
-        expect(result.entityType).toBe(EntityType.Article);
-        expect(result.mainUrl).toBe('https://example.com/manuscript');
+        expect(result.mainButtonType).toBe(ButtonType.None);
+        expect(result.entityType).toBe(EntityType.Unknown);
+        expect(result.mainUrl).toBe('');
       });
     });
 
@@ -161,6 +161,7 @@ describe('UnpaywallService', () => {
               provide: 'MODULE_PARAMETERS',
               useValue: {
                 ...MOCK_MODULE_PARAMETERS,
+                articleAcceptedManuscriptPDFViaUnpaywallEnabled: false,
                 articleAcceptedManuscriptArticleLinkViaUnpaywallEnabled: false,
               },
             },

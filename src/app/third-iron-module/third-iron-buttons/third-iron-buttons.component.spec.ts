@@ -37,7 +37,7 @@ describe('ThirdIronButtonsComponent', () => {
   });
 
   // TODO: Add tests for the component
-  xit('should create', () => {
+  it('should create', () => {
     expect(component).toBeTruthy();
   });
 });
