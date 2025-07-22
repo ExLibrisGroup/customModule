@@ -1,5 +1,4 @@
 import { Injectable, Inject } from '@angular/core';
-// import {LookupService}
 
 /**
  * This Service is responsible for getting config values from the corresponding
@@ -17,10 +16,8 @@ export class ConfigService {
     );
   }
 
-  // TODO - load config values from LookupService //
   showDirectToPDFLink(): boolean {
     let featureEnabled = false;
-    // TODO - load from LookupService:
     const config = this.moduleParameters.articlePDFDownloadLinkEnabled;
     const prefixConfig =
       this.moduleParameters.primoArticlePDFDownloadLinkEnabled;
@@ -64,74 +61,68 @@ export class ConfigService {
     return featureEnabled;
   }
 
-  // TODO - load config values from LookupService //
   showRetractionWatch(): boolean {
-    let featureEnabled = true; // set back to false once implemented
-    // let config = browzine.articleRetractionWatchEnabled;
+    let featureEnabled = false;
+    let config = this.moduleParameters.articleRetractionWatchEnabled;
 
-    // if (typeof config === "undefined" || config === null || config === true) {
-    //   featureEnabled = true;
-    // }
+    if (typeof config === 'undefined' || config === null || config === true) {
+      featureEnabled = true;
+    }
 
     return featureEnabled;
   }
 
-  // TODO - load config values from LookupService //
   showExpressionOfConcern(): boolean {
-    let featureEnabled = true; // set back to false once implemented
-    // let config = browzine.articleExpressionOfConcernEnabled;
+    let featureEnabled = false;
+    let config = this.moduleParameters.articleExpressionOfConcernEnabled;
 
-    // if (typeof config === "undefined" || config === null || config === true) {
-    //   featureEnabled = true;
-    // }
+    if (typeof config === 'undefined' || config === null || config === true) {
+      featureEnabled = true;
+    }
 
     return featureEnabled;
   }
 
-  // TODO - load config values from LookupService //
   showJournalBrowZineWebLinkText() {
-    let featureEnabled = true; // set back to false once implemented
-    // let config = browzine.journalBrowZineWebLinkTextEnabled;
+    let featureEnabled = false;
+    let config = this.moduleParameters.journalBrowZineWebLinkTextEnabled;
 
-    // if (typeof config === 'undefined' || config === null || config === true) {
-    //   featureEnabled = true;
-    // }
+    if (typeof config === 'undefined' || config === null || config === true) {
+      featureEnabled = true;
+    }
 
     return featureEnabled;
   }
 
-  // TODO - load config values from LookupService //
   showArticleBrowZineWebLinkText() {
-    let featureEnabled = true; // set back to false once implemented
-    // let config = browzine.articleBrowZineWebLinkTextEnabled;
+    let featureEnabled = false;
+    let config = this.moduleParameters.articleBrowZineWebLinkTextEnabled;
 
-    // if (typeof config === 'undefined' || config === null || config === true) {
-    //   featureEnabled = true;
-    // }
+    if (typeof config === 'undefined' || config === null || config === true) {
+      featureEnabled = true;
+    }
 
     return featureEnabled;
   }
 
-  // TODO - load config values from LookupService //
   showDocumentDeliveryFulfillment() {
-    let featureEnabled = true; // set back to false once implemented
-    // let config = browzine.documentDeliveryFulfillmentEnabled;
+    let featureEnabled = false;
+    let config = this.moduleParameters.documentDeliveryFulfillmentEnabled;
 
-    // if (typeof config === 'undefined' || config === null || config === true) {
-    //   featureEnabled = true;
-    // }
+    if (typeof config === 'undefined' || config === null || config === true) {
+      featureEnabled = true;
+    }
 
     return featureEnabled;
   }
 
-  // TODO - load config values from LookupService //
   showLinkResolverLink() {
     let featureEnabled = false;
-    // let config = browzine.showLinkResolverLink;
+    let config = this.moduleParameters.showLinkResolverLink;
 
-    // if (typeof config === "undefined" || config === null || config === true) {
-    //   featureEnabled = true;
-    // }
+    if (typeof config === 'undefined' || config === null || config === true) {
+      featureEnabled = true;
+    }
 
     return featureEnabled;
   }

@@ -7,6 +7,7 @@ import {
 
 import { ThirdIronJournalCoverComponent } from './third-iron-journal-cover.component';
 import { JournalCoverService } from '../../services/journal-cover.service';
+import { MOCK_MODULE_PARAMETERS } from '../../services/config.service.spec';
 
 describe('ThirdIronJournalCoverComponent', () => {
   let httpTesting: HttpTestingController;
@@ -21,6 +22,10 @@ describe('ThirdIronJournalCoverComponent', () => {
         JournalCoverService,
         provideHttpClient(),
         provideHttpClientTesting(),
+        {
+          provide: 'MODULE_PARAMETERS',
+          useValue: MOCK_MODULE_PARAMETERS,
+        },
       ],
     }).compileComponents();
 

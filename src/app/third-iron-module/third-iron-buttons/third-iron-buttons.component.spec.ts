@@ -6,6 +6,7 @@ import {
 } from '@angular/common/http/testing';
 import { ThirdIronButtonsComponent } from './third-iron-buttons.component';
 import { SearchEntityService } from '../../services/search-entity.service';
+import { MOCK_MODULE_PARAMETERS } from '../../services/config.service.spec';
 
 describe('ThirdIronButtonsComponent', () => {
   let httpTesting: HttpTestingController;
@@ -20,6 +21,10 @@ describe('ThirdIronButtonsComponent', () => {
         SearchEntityService,
         provideHttpClient(),
         provideHttpClientTesting(),
+        {
+          provide: 'MODULE_PARAMETERS',
+          useValue: MOCK_MODULE_PARAMETERS,
+        },
       ],
     }).compileComponents();
 

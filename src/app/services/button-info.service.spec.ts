@@ -13,6 +13,7 @@ import { DisplayWaterfallResponse } from '../types/displayWaterfallResponse.type
 import { SearchEntity } from '../types/searchEntity.types';
 import { firstValueFrom } from 'rxjs';
 import { ButtonType } from '../shared/button-type.enum';
+import { MOCK_MODULE_PARAMETERS } from './config.service.spec';
 
 const authToken = 'a9c7fb8f-9758-4ff9-9dc9-fcb4cbf32724';
 const baseUrl = 'https://public-api.thirdiron.com/public/v1/libraries/222';
@@ -128,6 +129,10 @@ describe('ButtonInfoService', () => {
         ButtonInfoService,
         provideHttpClient(),
         provideHttpClientTesting(),
+        {
+          provide: 'MODULE_PARAMETERS',
+          useValue: MOCK_MODULE_PARAMETERS,
+        },
       ],
     });
     httpTesting = TestBed.inject(HttpTestingController);
