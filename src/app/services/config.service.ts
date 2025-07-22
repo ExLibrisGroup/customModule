@@ -9,12 +9,7 @@ import { Injectable, Inject } from '@angular/core';
   providedIn: 'root',
 })
 export class ConfigService {
-  constructor(@Inject('MODULE_PARAMETERS') public moduleParameters: any) {
-    console.log(
-      'Module parameters TestBottomComponent:',
-      this.moduleParameters
-    );
-  }
+  constructor(@Inject('MODULE_PARAMETERS') public moduleParameters: any) {}
 
   getIsUnpaywallEnabled(): boolean {
     return (
@@ -31,8 +26,6 @@ export class ConfigService {
     const prefixConfig =
       this.moduleParameters.primoArticlePDFDownloadLinkEnabled;
 
-    console.log('showDirectToPDFLink config', config);
-
     if (typeof config === 'undefined' || config === null || config === true) {
       featureEnabled = true;
     }
@@ -45,6 +38,7 @@ export class ConfigService {
       featureEnabled = false;
     }
 
+    console.log('showDirectToPDFLink:', featureEnabled);
     return featureEnabled;
   }
 

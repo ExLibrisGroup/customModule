@@ -140,6 +140,16 @@ export class ButtonInfoService {
     let secondaryButtonUrl = '';
     let linkUrl = '';
 
+    console.log('articleRetractionUrl', articleRetractionUrl);
+    console.log('articleEocNoticeUrl', articleEocNoticeUrl);
+    console.log(
+      'problematicJournalArticleNoticeUrl',
+      problematicJournalArticleNoticeUrl
+    );
+    console.log('directToPDFUrl', directToPDFUrl);
+    console.log('articleLinkUrl', articleLinkUrl);
+    console.log('documentDeliveryUrl', documentDeliveryUrl);
+
     // Alert type buttons //
     if (
       articleRetractionUrl &&
