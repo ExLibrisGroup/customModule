@@ -23,19 +23,9 @@ export class ConfigService {
   showDirectToPDFLink(): boolean {
     let featureEnabled = false;
     const config = this.moduleParameters.articlePDFDownloadLinkEnabled;
-    const prefixConfig =
-      this.moduleParameters.primoArticlePDFDownloadLinkEnabled;
 
     if (typeof config === 'undefined' || config === null || config === true) {
       featureEnabled = true;
-    }
-
-    if (
-      typeof prefixConfig !== 'undefined' &&
-      prefixConfig !== null &&
-      prefixConfig === false
-    ) {
-      featureEnabled = false;
     }
 
     console.log('showDirectToPDFLink:', featureEnabled);
@@ -105,6 +95,7 @@ export class ConfigService {
       featureEnabled = true;
     }
 
+    console.log('showArticleBrowZineWebLinkText:', featureEnabled);
     return featureEnabled;
   }
 
