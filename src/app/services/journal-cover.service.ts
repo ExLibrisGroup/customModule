@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, Inject } from '@angular/core';
 import { SearchEntity } from '../types/searchEntity.types';
 import { map, Observable, Observer, of } from 'rxjs';
 import { SearchEntityService } from './search-entity.service';
@@ -26,7 +26,8 @@ export const DEFAULT_JOURNAL_COVER_INFO = {
 export class JournalCoverService {
   constructor(
     private httpService: HttpService,
-    private searchEntityService: SearchEntityService
+    private searchEntityService: SearchEntityService,
+    @Inject('MODULE_PARAMETERS') public moduleParameters: any
   ) {}
 
   getJournalCoverUrl(entity: SearchEntity): Observable<string> {
@@ -106,12 +107,12 @@ export class JournalCoverService {
   }
 
   private showJournalCoverImages() {
-    let featureEnabled = true; // set back to false once implemented
-    // const config = browzine.journalCoverImagesEnabled;
+    let featureEnabled = false;
+    const config = this.moduleParameters.journalCoverImagesEnabled;
 
-    // if (typeof config === 'undefined' || config === null || config === true) {
-    //   featureEnabled = true;
-    // }
+    if (typeof config === 'undefined' || config === null || config === true) {
+      featureEnabled = true;
+    }
 
     return featureEnabled;
   }

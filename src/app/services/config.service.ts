@@ -16,6 +16,15 @@ export class ConfigService {
     );
   }
 
+  getIsUnpaywallEnabled(): boolean {
+    return (
+      this.moduleParameters.articlePDFDownloadViaUnpaywallEnabled ||
+      this.moduleParameters.articleLinkViaUnpaywallEnabled ||
+      this.moduleParameters.articleAcceptedManuscriptPDFViaUnpaywallEnabled ||
+      this.moduleParameters
+        .articleAcceptedManuscriptArticleLinkViaUnpaywallEnabled
+    );
+  }
   showDirectToPDFLink(): boolean {
     let featureEnabled = false;
     const config = this.moduleParameters.articlePDFDownloadLinkEnabled;

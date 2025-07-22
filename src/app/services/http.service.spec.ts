@@ -6,6 +6,7 @@ import {
 } from '@angular/common/http/testing';
 
 import { HttpService } from './http.service';
+import { MOCK_MODULE_PARAMETERS } from './config.service.spec';
 
 describe('HttpService', () => {
   let httpTesting: HttpTestingController;
@@ -36,7 +37,15 @@ describe('HttpService', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      providers: [HttpService, provideHttpClient(), provideHttpClientTesting()],
+      providers: [
+        HttpService,
+        provideHttpClient(),
+        provideHttpClientTesting(),
+        {
+          provide: 'MODULE_PARAMETERS',
+          useValue: MOCK_MODULE_PARAMETERS,
+        },
+      ],
     });
     httpTesting = TestBed.inject(HttpTestingController);
     service = TestBed.inject(HttpService);

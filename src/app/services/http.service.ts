@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, Inject } from '@angular/core';
 import {
   HttpClient,
   HttpErrorResponse,
@@ -16,11 +16,13 @@ import { ApiResult, ArticleData, JournalData } from '../types/tiData.types';
   providedIn: 'root',
 })
 export class HttpService {
-  // TODO load dynamically from config
-  private apiUrl = 'https://public-api.thirdiron.com/public/v1/libraries/222'; //'https://public-api.thirdiron.com/public/v1/libraries/322';
-  private apiKey = 'a9c7fb8f-9758-4ff9-9dc9-fcb4cbf32724'; //'dc14dee7-f4f3-4617-bd84-be027c3830c0';
+  private apiUrl = this.moduleParameters.apiUrl;
+  private apiKey = this.moduleParameters.apiKey;
 
-  constructor(private http: HttpClient) {}
+  constructor(
+    private http: HttpClient,
+    @Inject('MODULE_PARAMETERS') public moduleParameters: any
+  ) {}
 
   getArticle(doi: string): Observable<any> {
     const endpoint = `${
@@ -42,9 +44,7 @@ export class HttpService {
   }
 
   getUnpaywall(doi: string): Observable<HttpResponse<Object>> {
-    // TODO - load from config
-    // var email = browzine.unpaywallEmailAddressKey;
-    const email = 'info@thirdiron.com';
+    const email = this.moduleParameters.unpaywallEmailAddressKey; //'info@thirdiron.com';
 
     const endpoint = `https://api.unpaywall.org/v2/${doi}?email=${email}`;
     return this.http

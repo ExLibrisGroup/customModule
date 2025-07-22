@@ -10,6 +10,7 @@ import {
 } from '@angular/common/http/testing';
 import { JournalCoverService } from './journal-cover.service';
 import { HttpService } from './http.service';
+import { MOCK_MODULE_PARAMETERS } from './config.service.spec';
 
 describe('JournalCoverService', () => {
   let httpTesting: HttpTestingController;
@@ -21,6 +22,10 @@ describe('JournalCoverService', () => {
         JournalCoverService,
         provideHttpClient(),
         provideHttpClientTesting(),
+        {
+          provide: 'MODULE_PARAMETERS',
+          useValue: MOCK_MODULE_PARAMETERS,
+        },
       ],
     });
     httpTesting = TestBed.inject(HttpTestingController);

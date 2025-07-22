@@ -427,14 +427,7 @@ export class ButtonInfoService {
   }
 
   private isUnpaywallEnabled() {
-    return (
-      // TODO - load from config
-      // browzine.articlePDFDownloadViaUnpaywallEnabled ||
-      // browzine.articleLinkViaUnpaywallEnabled ||
-      // browzine.articleAcceptedManuscriptPDFViaUnpaywallEnabled ||
-      // browzine.articleAcceptedManuscriptArticleLinkViaUnpaywallEnabled
-      true
-    );
+    return this.configService.getIsUnpaywallEnabled();
   }
 
   private makeUnpaywallCall(
