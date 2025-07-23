@@ -206,10 +206,13 @@ export class ButtonInfoService {
       linkUrl = documentDeliveryUrl;
     }
 
+    // Secondary button
     if (
       !this.isAlertButton(buttonType) &&
       buttonType !== ButtonType.ArticleLink &&
-      this.configService.showFormatChoice()
+      this.configService.showFormatChoice() &&
+      articleLinkUrl &&
+      articleLinkUrl !== ''
     ) {
       // If we don't have an alert type button and we aren't already going to
       // display an Article Link button, then
