@@ -1,4 +1,4 @@
-import { Injectable, Inject } from '@angular/core';
+import { Injectable } from '@angular/core';
 import {
   HttpClient,
   HttpErrorResponse,
@@ -6,6 +6,7 @@ import {
 } from '@angular/common/http';
 import { catchError, Observable, throwError } from 'rxjs';
 import { ApiResult, ArticleData, JournalData } from '../types/tiData.types';
+import { ConfigService } from './config.service';
 
 /**
  * This Service is responsible for all HTTP requests and includes some
@@ -16,16 +17,12 @@ import { ApiResult, ArticleData, JournalData } from '../types/tiData.types';
   providedIn: 'root',
 })
 export class HttpService {
-  private apiUrl = this.moduleParameters.apiUrl;
-  private apiKey = this.moduleParameters.apiKey;
+  private apiUrl = this.configService.getApiUrl();
+  private apiKey = this.configService.getApiKey();
 
-  constructor(
-    private http: HttpClient,
-    @Inject('MODULE_PARAMETERS') public moduleParameters: any
-  ) {
+  constructor(private http: HttpClient, private configService: ConfigService) {
     console.log('apiUrl', this.apiUrl);
     console.log('apiKey', this.apiKey);
-    console.log('moduleParameters', this.moduleParameters);
   }
 
   getArticle(doi: string): Observable<any> {
@@ -48,7 +45,7 @@ export class HttpService {
   }
 
   getUnpaywall(doi: string): Observable<HttpResponse<Object>> {
-    const email = this.moduleParameters.unpaywallEmailAddressKey; //'info@thirdiron.com';
+    const email = this.configService.getEmailAddressKey();
 
     const endpoint = `https://api.unpaywall.org/v2/${doi}?email=${email}`;
     return this.http

@@ -55,7 +55,7 @@ describe('UnpaywallService', () => {
   });
 
   describe('unpaywallWaterfall', () => {
-    describe('when moduleParameters.articlePDFDownloadViaUnpaywallEnabled is true', () => {
+    describe('when articlePDFDownloadViaUnpaywallEnabled is true', () => {
       it('should return UnpaywallDirectToPDF button type when PDF URL is available', () => {
         const response = { status: 200, body: mockBasicUnpaywallData };
         const result = service.unpaywallWaterfall(response, false);
@@ -66,7 +66,7 @@ describe('UnpaywallService', () => {
       });
     });
 
-    describe('when moduleParameters.articlePDFDownloadViaUnpaywallEnabled is false', () => {
+    describe('when articlePDFDownloadViaUnpaywallEnabled is false', () => {
       beforeEach(() => {
         TestBed.resetTestingModule();
         TestBed.configureTestingModule({
@@ -95,7 +95,7 @@ describe('UnpaywallService', () => {
       });
     });
 
-    describe('when moduleParameters.articleLinkViaUnpaywallEnabled is false', () => {
+    describe('when articleLinkViaUnpaywallEnabled is false', () => {
       beforeEach(() => {
         TestBed.resetTestingModule();
         TestBed.configureTestingModule({
@@ -123,7 +123,7 @@ describe('UnpaywallService', () => {
       });
     });
 
-    describe('when moduleParameters.articleAcceptedManuscriptPDFViaUnpaywallEnabled is false', () => {
+    describe('when articleAcceptedManuscriptPDFViaUnpaywallEnabled is false', () => {
       beforeEach(() => {
         TestBed.resetTestingModule();
         TestBed.configureTestingModule({
@@ -151,7 +151,7 @@ describe('UnpaywallService', () => {
       });
     });
 
-    describe('when moduleParameters.articleAcceptedManuscriptArticleLinkViaUnpaywallEnabled is false', () => {
+    describe('when articleAcceptedManuscriptArticleLinkViaUnpaywallEnabled is false', () => {
       beforeEach(() => {
         TestBed.resetTestingModule();
         TestBed.configureTestingModule({
