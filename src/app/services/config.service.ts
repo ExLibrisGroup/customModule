@@ -13,7 +13,8 @@ export class ConfigService {
 
   private getBooleanParam(paramName: string): boolean {
     try {
-      return JSON.parse(this.moduleParameters[paramName]);
+      const parsedValue = JSON.parse(this.moduleParameters[paramName]);
+      return parsedValue === true;
     } catch {
       return false;
     }
@@ -30,9 +31,7 @@ export class ConfigService {
     );
   }
   showDirectToPDFLink(): boolean {
-    const result = this.getBooleanParam('articlePDFDownloadLinkEnabled');
-    console.log('showDirectToPDFLink:', result);
-    return result;
+    return this.getBooleanParam('articlePDFDownloadLinkEnabled');
   }
 
   showArticleLink(): boolean {
@@ -76,9 +75,7 @@ export class ConfigService {
   }
 
   showArticleBrowZineWebLinkText() {
-    const result = this.getBooleanParam('articleBrowZineWebLinkTextEnabled');
-    console.log('showArticleBrowZineWebLinkText:', result);
-    return result;
+    return this.getBooleanParam('articleBrowZineWebLinkTextEnabled');
   }
 
   showJournalCoverImages() {
