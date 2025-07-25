@@ -91,7 +91,8 @@ export class ConfigService {
   }
 
   getApiUrl(): string {
-    return this.moduleParameters.apiUrl;
+    const libraryId = this.moduleParameters.libraryId;
+    return `https://public-api.thirdiron.com/public/v1/libraries/${libraryId}`;
   }
 
   getApiKey(): string {

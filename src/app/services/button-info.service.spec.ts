@@ -779,8 +779,6 @@ describe('ButtonInfoService', () => {
         mockedApiResult.body.data = mockedArticleData;
         mockedApiResult.body.included = undefined;
 
-        console.log('mockedApiResult', mockedApiResult);
-
         const { displayInfo: buttonInfo } = service.displayWaterfall(
           mockedApiResult,
           EntityType.Article
@@ -810,8 +808,6 @@ describe('ButtonInfoService', () => {
         mockedApiResult.body.data = mockedArticleData;
         mockedApiResult.body.included = undefined;
 
-        console.log('mockedApiResult', mockedApiResult);
-
         const { displayInfo: buttonInfo } = service.displayWaterfall(
           mockedApiResult,
           EntityType.Article
@@ -838,8 +834,6 @@ describe('ButtonInfoService', () => {
         const mockedApiResult: ApiResult = { ...responseMetaData };
         mockedApiResult.body.data = mockedArticleData;
         mockedApiResult.body.included = undefined;
-
-        console.log('mockedApiResult', mockedApiResult);
 
         const { displayInfo: buttonInfo } = service.displayWaterfall(
           mockedApiResult,
