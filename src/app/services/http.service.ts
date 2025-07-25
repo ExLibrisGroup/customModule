@@ -20,7 +20,10 @@ export class HttpService {
   private apiUrl = this.configService.getApiUrl();
   private apiKey = this.configService.getApiKey();
 
-  constructor(private http: HttpClient, private configService: ConfigService) {}
+  constructor(private http: HttpClient, private configService: ConfigService) {
+    console.log('apiUrl', this.apiUrl);
+    console.log('apiKey', this.apiKey);
+  }
 
   getArticle(doi: string): Observable<any> {
     const endpoint = `${

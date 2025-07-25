@@ -92,6 +92,7 @@ export class ConfigService {
 
   getApiUrl(): string {
     const libraryId = this.moduleParameters.libraryId;
+    console.log('libraryId', libraryId);
     return `https://public-api.thirdiron.com/public/v1/libraries/${libraryId}`;
   }
 
