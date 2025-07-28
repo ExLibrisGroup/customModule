@@ -61,11 +61,12 @@ jobs:
       - aws-cli/install
       - run:
           name: Upload to S3
+          # --acl public-read: uses access keys instead of IAM roles, don't use on production
           command: |
             aws s3 sync dist/THIRD-IRON-LIBKEY s3://$AWS_BUCKET/primo-nde/staging \
               --delete \
               --cache-control "max-age=31536000,public" \
-              --acl public-read \ # <-- uses access keys instead of IAM roles, don't use on production
+              --acl public-read \
               --exclude "*.html" \
               --exclude "*.json"
       - run:
@@ -74,7 +75,7 @@ jobs:
             aws s3 sync dist/THIRD-IRON-LIBKEY s3://$AWS_BUCKET/primo-nde/staging \
               --delete \
               --cache-control "no-cache,no-store,must-revalidate" \
-              --acl public-read \ # <-- uses access keys instead of IAM roles, don't use on production
+              --acl public-read \
               --include "*.html" \
               --include "*.json"
 
@@ -156,8 +157,7 @@ workflows:
             - build-and-test
           filters:
             branches:
-              only: /feature\/.*/
-              # only:develop
+              only: develop
       - deploy-to-production:
           requires:
             - build-and-test
