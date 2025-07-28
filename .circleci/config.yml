@@ -65,7 +65,7 @@ jobs:
             aws s3 sync dist/THIRD-IRON-LIBKEY s3://$AWS_BUCKET/primo-nde/staging \
               --delete \
               --cache-control "max-age=31536000,public" \
-              --acl public-read \
+              --acl public-read \ # <-- uses access keys instead of IAM roles, don't use on production
               --exclude "*.html" \
               --exclude "*.json"
       - run:
@@ -74,7 +74,7 @@ jobs:
             aws s3 sync dist/THIRD-IRON-LIBKEY s3://$AWS_BUCKET/primo-nde/staging \
               --delete \
               --cache-control "no-cache,no-store,must-revalidate" \
-              --acl public-read \
+              --acl public-read \ # <-- uses access keys instead of IAM roles, don't use on production
               --include "*.html" \
               --include "*.json"
 
