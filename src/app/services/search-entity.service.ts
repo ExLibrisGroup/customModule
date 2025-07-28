@@ -9,7 +9,7 @@ export class SearchEntityService {
   constructor() {}
 
   isFiltered = (result: SearchEntity): boolean => {
-    let validation = true; //TODO set back to false once implemented
+    let validation = false;
 
     // On new result object is it:
     // result.pnx.delivery.delcategory[0] !== "Remote Search Resource"

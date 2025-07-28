@@ -31,8 +31,8 @@ describe('SvgIconComponent', () => {
     iconElement = fixture.nativeElement;
 
     const icon = iconElement.querySelector('open-book-icon');
-    console.log('iconElement', iconElement);
-    console.log('icon', icon);
+    // console.log('iconElement', iconElement);
+    // console.log('icon', icon);
     //TODO - check for expected icon
   });
   it('should display pdf-download-icon', () => {
