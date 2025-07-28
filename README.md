@@ -408,7 +408,7 @@ To ensure smooth development, debugging, and code management, we recommend setti
 
 ### Live Demo Tutorial
 - **Customize Primo NDE UI**: Watch our live demo on YouTube for a visual guide on how to customize the Primo NDE UI:
-  [Customize Primo NDE UI: Live Demo](https://www.youtube.com/watch?v=z06l2hJYuLc)
+  [Customize Primo NDE UI: Live Demo](https://www.youtube.com/watch?v=j6jAYkawDSM)
 
 
 
