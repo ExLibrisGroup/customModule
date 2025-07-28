@@ -61,6 +61,7 @@ jobs:
       - aws-cli/install
       - run:
           name: Upload to S3
+          # --acl public-read: uses access keys instead of IAM roles, don't use on production
           command: |
             aws s3 sync dist/THIRD-IRON-LIBKEY s3://$AWS_BUCKET/primo-nde/staging \
               --delete \

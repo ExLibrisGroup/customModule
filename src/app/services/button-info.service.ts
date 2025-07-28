@@ -140,18 +140,6 @@ export class ButtonInfoService {
     let secondaryButtonUrl = '';
     let linkUrl = '';
 
-    console.log('--------------------------------');
-    console.log('articleRetractionUrl', articleRetractionUrl);
-    console.log('articleEocNoticeUrl', articleEocNoticeUrl);
-    console.log(
-      'problematicJournalArticleNoticeUrl',
-      problematicJournalArticleNoticeUrl
-    );
-    console.log('directToPDFUrl', directToPDFUrl);
-    console.log('articleLinkUrl', articleLinkUrl);
-    console.log('documentDeliveryUrl', documentDeliveryUrl);
-    console.log('--------------------------------');
-
     // Alert type buttons //
     if (
       articleRetractionUrl &&
@@ -206,10 +194,13 @@ export class ButtonInfoService {
       linkUrl = documentDeliveryUrl;
     }
 
+    // Secondary button
     if (
       !this.isAlertButton(buttonType) &&
       buttonType !== ButtonType.ArticleLink &&
-      this.configService.showFormatChoice()
+      this.configService.showFormatChoice() &&
+      articleLinkUrl &&
+      articleLinkUrl !== ''
     ) {
       // If we don't have an alert type button and we aren't already going to
       // display an Article Link button, then

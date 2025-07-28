@@ -11,113 +11,96 @@ import { Injectable, Inject } from '@angular/core';
 export class ConfigService {
   constructor(@Inject('MODULE_PARAMETERS') public moduleParameters: any) {}
 
+  private getBooleanParam(paramName: string): boolean {
+    try {
+      const parsedValue = JSON.parse(this.moduleParameters[paramName]);
+      return parsedValue === true;
+    } catch {
+      return false;
+    }
+  }
+
   getIsUnpaywallEnabled(): boolean {
     return (
-      this.moduleParameters.articlePDFDownloadViaUnpaywallEnabled ||
-      this.moduleParameters.articleLinkViaUnpaywallEnabled ||
-      this.moduleParameters.articleAcceptedManuscriptPDFViaUnpaywallEnabled ||
-      this.moduleParameters
-        .articleAcceptedManuscriptArticleLinkViaUnpaywallEnabled
+      this.getBooleanParam('articlePDFDownloadViaUnpaywallEnabled') ||
+      this.getBooleanParam('articleLinkViaUnpaywallEnabled') ||
+      this.getBooleanParam('articleAcceptedManuscriptPDFViaUnpaywallEnabled') ||
+      this.getBooleanParam(
+        'articleAcceptedManuscriptArticleLinkViaUnpaywallEnabled'
+      )
     );
   }
   showDirectToPDFLink(): boolean {
-    let featureEnabled = false;
-    const config = this.moduleParameters.articlePDFDownloadLinkEnabled;
-
-    if (typeof config === 'undefined' || config === null || config === true) {
-      featureEnabled = true;
-    }
-
-    console.log('showDirectToPDFLink:', featureEnabled);
-    return featureEnabled;
+    return this.getBooleanParam('articlePDFDownloadLinkEnabled');
   }
 
   showArticleLink(): boolean {
-    let featureEnabled = false;
-    let config = this.moduleParameters.articleLinkEnabled;
-
-    if (typeof config === 'undefined' || config === null || config === true) {
-      featureEnabled = true;
-    }
-
-    return featureEnabled;
+    return this.getBooleanParam('articleLinkEnabled');
   }
 
   showFormatChoice(): boolean {
-    let featureEnabled = false;
-    let config = this.moduleParameters.showFormatChoice;
-
-    if (config === true) {
-      featureEnabled = true;
-    }
-
-    return featureEnabled;
+    return this.getBooleanParam('showFormatChoice');
   }
 
   showRetractionWatch(): boolean {
-    let featureEnabled = false;
-    let config = this.moduleParameters.articleRetractionWatchEnabled;
-
-    if (typeof config === 'undefined' || config === null || config === true) {
-      featureEnabled = true;
-    }
-
-    return featureEnabled;
+    return this.getBooleanParam('articleRetractionWatchEnabled');
   }
 
   showExpressionOfConcern(): boolean {
-    let featureEnabled = false;
-    let config = this.moduleParameters.articleExpressionOfConcernEnabled;
+    return this.getBooleanParam('articleExpressionOfConcernEnabled');
+  }
 
-    if (typeof config === 'undefined' || config === null || config === true) {
-      featureEnabled = true;
-    }
+  showUnpaywallDirectToPDFLink(): boolean {
+    return this.getBooleanParam('articlePDFDownloadViaUnpaywallEnabled');
+  }
 
-    return featureEnabled;
+  showUnpaywallArticleLink(): boolean {
+    return this.getBooleanParam('articleLinkViaUnpaywallEnabled');
+  }
+
+  showUnpaywallManuscriptPDFLink(): boolean {
+    return this.getBooleanParam(
+      'articleAcceptedManuscriptPDFViaUnpaywallEnabled'
+    );
+  }
+
+  showUnpaywallManuscriptArticleLink(): boolean {
+    return this.getBooleanParam(
+      'articleAcceptedManuscriptArticleLinkViaUnpaywallEnabled'
+    );
   }
 
   showJournalBrowZineWebLinkText() {
-    let featureEnabled = false;
-    let config = this.moduleParameters.journalBrowZineWebLinkTextEnabled;
-
-    if (typeof config === 'undefined' || config === null || config === true) {
-      featureEnabled = true;
-    }
-
-    return featureEnabled;
+    return this.getBooleanParam('journalBrowZineWebLinkTextEnabled');
   }
 
   showArticleBrowZineWebLinkText() {
-    let featureEnabled = false;
-    let config = this.moduleParameters.articleBrowZineWebLinkTextEnabled;
+    return this.getBooleanParam('articleBrowZineWebLinkTextEnabled');
+  }
 
-    if (typeof config === 'undefined' || config === null || config === true) {
-      featureEnabled = true;
-    }
-
-    console.log('showArticleBrowZineWebLinkText:', featureEnabled);
-    return featureEnabled;
+  showJournalCoverImages() {
+    return this.getBooleanParam('journalCoverImagesEnabled');
   }
 
   showDocumentDeliveryFulfillment() {
-    let featureEnabled = false;
-    let config = this.moduleParameters.documentDeliveryFulfillmentEnabled;
-
-    if (typeof config === 'undefined' || config === null || config === true) {
-      featureEnabled = true;
-    }
-
-    return featureEnabled;
+    return this.getBooleanParam('documentDeliveryFulfillmentEnabled');
   }
 
   showLinkResolverLink() {
-    let featureEnabled = false;
-    let config = this.moduleParameters.showLinkResolverLink;
+    return this.getBooleanParam('showLinkResolverLink');
+  }
 
-    if (typeof config === 'undefined' || config === null || config === true) {
-      featureEnabled = true;
-    }
+  getApiUrl(): string {
+    const libraryId = this.moduleParameters.libraryId;
+    console.log('libraryId', libraryId);
+    return `https://public-api.thirdiron.com/public/v1/libraries/${libraryId}`;
+  }
 
-    return featureEnabled;
+  getApiKey(): string {
+    return this.moduleParameters.apiKey;
+  }
+
+  getEmailAddressKey(): string {
+    return this.moduleParameters.unpaywallEmailAddressKey;
   }
 }

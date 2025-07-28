@@ -117,6 +117,24 @@ const validateButton = (
   expect(buttonInfo.browzineUrl).toBe(expectedValues.browzineUrl);
 };
 
+const createTestModule = async (config: any) => {
+  TestBed.resetTestingModule();
+  TestBed.configureTestingModule({
+    providers: [
+      HttpService,
+      ButtonInfoService,
+      provideHttpClient(),
+      provideHttpClientTesting(),
+      {
+        provide: 'MODULE_PARAMETERS',
+        useValue: config,
+      },
+    ],
+  });
+  await TestBed.compileComponents();
+  return TestBed;
+};
+
 describe('ButtonInfoService', () => {
   let httpTesting: HttpTestingController;
   let service: ButtonInfoService;
@@ -138,6 +156,10 @@ describe('ButtonInfoService', () => {
     httpTesting = TestBed.inject(HttpTestingController);
     httpService = TestBed.inject(HttpService);
     service = TestBed.inject(ButtonInfoService);
+  });
+
+  afterEach(() => {
+    httpTesting.verify();
   });
 
   it('should be created', () => {
@@ -215,20 +237,214 @@ describe('ButtonInfoService', () => {
         browzineUrl: 'https://browzine.com/libraries/XXX/journals/10292',
         showBrowzineButton: true,
         secondaryUrl: '', // journal, so content location not returned from getArticleLinkUrl
-        showSecondaryButton: true, // passes secondary btn check, but no url so button still not shown
+        showSecondaryButton: false, // passes secondary btn check, but no url so button still not shown
       });
 
       // Finally, we can assert that no other requests were made.
       httpTesting.verify();
     });
 
-    describe('shouldMakeUnpaywallCall', () => {
-      it('should make an Unpaywall api call if we have an article, unpaywalEnabled is true, we do not have an alert type button, avoidUnpaywall is false, unpaywallUsable is true, and we do not have directToPDF or articleLink urls', () => {});
-      it('should not make an Unpaywall api call if unpaywalEnabled is false', () => {});
-      it('should not make an Unpaywall api call if we have an alert type button', () => {});
-      it('should not make an Unpaywall api call if avoidUnpaywall is true', () => {});
-      it('should not make an Unpaywall api call if unpaywallUsable is true', () => {});
-      it('should not make an Unpaywall api call if we have either a directToPDF or articleLink url', () => {});
+    describe('shouldMakeUnpaywallCall checks', () => {
+      it('should make an Unpaywall api call if we have an article, unpaywalEnabled is true, we do not have an alert type button, avoidUnpaywall is false, unpaywallUsable is true, and we do not have directToPDF or articleLink urls', async () => {
+        const articleWithoutUrls: ArticleData = {
+          ...articleData,
+          fullTextFile: '',
+          contentLocation: '',
+          retractionNoticeUrl: '',
+          expressionOfConcernNoticeUrl: '',
+          problematicJournalArticleNoticeUrl: '',
+          documentDeliveryFulfillmentUrl: '',
+        };
+
+        const buttonInfo$ = service.getDisplayInfo(articleSearchEntity);
+        const articlePromise = firstValueFrom(buttonInfo$);
+
+        const req = httpTesting.expectOne(articlePath);
+        req.flush({
+          data: articleWithoutUrls,
+        });
+
+        // Should make Unpaywall call
+        const unpaywallReq = httpTesting.expectOne(
+          `https://api.unpaywall.org/v2/10.1002%2Fijc.25451?email=info@thirdiron.com`
+        );
+        unpaywallReq.flush({
+          data: {
+            best_open_access_location: { url: 'https://unpaywall.org/pdf' },
+          },
+        });
+
+        const result = await articlePromise;
+        expect(result.mainButtonType).toBe(ButtonType.None);
+        httpTesting.verify();
+      });
+
+      it('should make Unpaywall call when ApiResult has 404 status', () => {
+        // Test the 404 condition by directly testing the shouldMakeUnpaywallCall method
+        const mockApiResult: ApiResult = {
+          body: {
+            data: { doi: '10.1002/ijc.25451' } as any, // Include doi to pass isArticle check
+          },
+          status: 404,
+          ok: false,
+          url: 'test-url',
+        };
+
+        // Test that shouldMakeUnpaywallCall returns true for 404 status
+        const shouldMakeCall = (service as any).shouldMakeUnpaywallCall(
+          mockApiResult,
+          EntityType.Article,
+          ButtonType.None
+        );
+        expect(shouldMakeCall).toBeTrue();
+      });
+
+      it('should not make an Unpaywall api call if unpaywalEnabled is false', async () => {
+        // Create a new test module with different config
+        const mockConfig = { ...MOCK_MODULE_PARAMETERS };
+        mockConfig.articlePDFDownloadViaUnpaywallEnabled = false;
+        mockConfig.articleLinkViaUnpaywallEnabled = false;
+        mockConfig.articleAcceptedManuscriptPDFViaUnpaywallEnabled = false;
+        mockConfig.articleAcceptedManuscriptArticleLinkViaUnpaywallEnabled =
+          false;
+
+        const testBed = await createTestModule(mockConfig);
+        const testService = testBed.inject(ButtonInfoService);
+        const testHttpTesting = testBed.inject(HttpTestingController);
+
+        const articleWithoutUrls: ArticleData = {
+          ...articleData,
+          fullTextFile: '',
+          contentLocation: '',
+          retractionNoticeUrl: '',
+          documentDeliveryFulfillmentUrl: '',
+        };
+
+        const buttonInfo$ = testService.getDisplayInfo(articleSearchEntity);
+        const articlePromise = firstValueFrom(buttonInfo$);
+
+        const req = testHttpTesting.expectOne(articlePath);
+        req.flush({
+          data: articleWithoutUrls,
+        });
+
+        const result = await articlePromise;
+        expect(result.mainButtonType).toBe(ButtonType.ExpressionOfConcern);
+
+        // Should not make Unpaywall call
+        testHttpTesting.verify();
+      });
+
+      it('should not make an Unpaywall api call if we have an alert type button', async () => {
+        const articleWithRetraction: ArticleData = {
+          ...articleData,
+          fullTextFile: '',
+          contentLocation: '',
+        };
+
+        const buttonInfo$ = service.getDisplayInfo(articleSearchEntity);
+        const articlePromise = firstValueFrom(buttonInfo$);
+
+        const req = httpTesting.expectOne(articlePath);
+        req.flush({
+          data: articleWithRetraction,
+        });
+
+        const result = await articlePromise;
+        expect(result.mainButtonType).toBe(ButtonType.Retraction);
+
+        // Should not make Unpaywall call due to alert button
+        httpTesting.verify();
+      });
+
+      it('should not make an Unpaywall api call if avoidUnpaywall is true', async () => {
+        const articleWithoutUrls: ArticleData = {
+          ...articleData,
+          fullTextFile: '',
+          contentLocation: '',
+          retractionNoticeUrl: '',
+          expressionOfConcernNoticeUrl: '',
+          problematicJournalArticleNoticeUrl: '',
+          documentDeliveryFulfillmentUrl: '',
+        };
+
+        // Create a proper ApiResult object with meta property
+        const mockedApiResult: ApiResult = {
+          ...responseMetaData,
+          body: {
+            data: articleWithoutUrls,
+          },
+          meta: {
+            avoidUnpaywall: true,
+          },
+        };
+
+        // Test the displayWaterfall method directly
+        const { displayInfo: buttonInfo } = service.displayWaterfall(
+          mockedApiResult,
+          EntityType.Article
+        );
+
+        expect(buttonInfo.mainButtonType).toBe(ButtonType.None);
+
+        // Test that shouldMakeUnpaywallCall returns false due to avoidUnpaywall flag
+        const shouldMakeCall = (service as any).shouldMakeUnpaywallCall(
+          mockedApiResult,
+          EntityType.Article,
+          ButtonType.None
+        );
+        expect(shouldMakeCall).toBeFalse();
+      });
+
+      it('should not make an Unpaywall api call if unpaywallUsable is false', async () => {
+        const articleWithoutUrls: ArticleData = {
+          ...articleData,
+          fullTextFile: '',
+          contentLocation: '',
+          retractionNoticeUrl: '',
+          expressionOfConcernNoticeUrl: '',
+          problematicJournalArticleNoticeUrl: '',
+          // documentDeliveryFulfillmentUrl still has URL, so we show Document Delivery button
+          unpaywallUsable: false,
+        };
+
+        const buttonInfo$ = service.getDisplayInfo(articleSearchEntity);
+        const articlePromise = firstValueFrom(buttonInfo$);
+
+        const req = httpTesting.expectOne(articlePath);
+        req.flush({
+          data: articleWithoutUrls,
+        });
+
+        const result = await articlePromise;
+        expect(result.mainButtonType).toBe(ButtonType.DocumentDelivery);
+
+        // Should not make Unpaywall call due to unpaywallUsable: false
+        httpTesting.verify();
+      });
+
+      it('should not make an Unpaywall api call if we have either a directToPDF or articleLink url', async () => {
+        const articleWithDirectPDF: ArticleData = {
+          ...articleData,
+          retractionNoticeUrl: '',
+          expressionOfConcernNoticeUrl: '',
+          problematicJournalArticleNoticeUrl: '',
+        };
+
+        const buttonInfo$ = service.getDisplayInfo(articleSearchEntity);
+        const articlePromise = firstValueFrom(buttonInfo$);
+
+        const req = httpTesting.expectOne(articlePath);
+        req.flush({
+          data: articleWithDirectPDF,
+        });
+
+        const result = await articlePromise;
+        expect(result.mainButtonType).toBe(ButtonType.DirectToPDF);
+
+        // Should not make Unpaywall call due to existing directToPDF url
+        httpTesting.verify();
+      });
     });
   });
 
@@ -251,9 +467,60 @@ describe('ButtonInfoService', () => {
           'https://browzine.com/libraries/XXX/journals/10292' // use Journal browzineWebLink value
         );
       });
-      it('should not show Browzine button for Journal when no browzineWebLink present', () => {});
-      it('should not show Browzine button for Journal when browzineEnabled is false', () => {});
-      it('should not show Browzine button for Journal when user config setting is false', () => {});
+      it('should not show Browzine button for Journal when no browzineWebLink present', () => {
+        const mockedJournalData: JournalData = {
+          ...journalData[0],
+          browzineWebLink: '',
+        };
+        const mockedApiResult: ApiResult = { ...responseMetaData };
+        mockedApiResult.body.data = [{ ...mockedJournalData }];
+
+        const { displayInfo: buttonInfo } = service.displayWaterfall(
+          mockedApiResult,
+          EntityType.Journal
+        );
+
+        expect(buttonInfo.showBrowzineButton).toBeFalse();
+        expect(buttonInfo.browzineUrl).toBe('');
+      });
+
+      it('should not show Browzine button for Journal when browzineEnabled is false', () => {
+        const mockedJournalData: JournalData = {
+          ...journalData[0],
+          browzineEnabled: false,
+        };
+        const mockedApiResult: ApiResult = { ...responseMetaData };
+        mockedApiResult.body.data = [{ ...mockedJournalData }];
+
+        const { displayInfo: buttonInfo } = service.displayWaterfall(
+          mockedApiResult,
+          EntityType.Journal
+        );
+
+        expect(buttonInfo.showBrowzineButton).toBeFalse();
+      });
+
+      it('should not show Browzine button for Journal when user config setting is false', async () => {
+        // Create a new test module with different config
+        const mockConfig = { ...MOCK_MODULE_PARAMETERS };
+        mockConfig.journalBrowZineWebLinkTextEnabled = false;
+
+        const testBed = await createTestModule(mockConfig);
+        const testService = testBed.inject(ButtonInfoService);
+
+        const mockedJournalData: JournalData = {
+          ...journalData[0],
+        };
+        const mockedApiResult: ApiResult = { ...responseMetaData };
+        mockedApiResult.body.data = [{ ...mockedJournalData }];
+
+        const { displayInfo: buttonInfo } = testService.displayWaterfall(
+          mockedApiResult,
+          EntityType.Journal
+        );
+
+        expect(buttonInfo.showBrowzineButton).toBeFalse();
+      });
       it('should show Browzine button for Article when browzineWebLink, browzineEnabled and user config setting are true and directToPdf or articleLink urls present', () => {
         const mockedArticleData: ArticleData = {
           ...articleData,
@@ -275,17 +542,188 @@ describe('ButtonInfoService', () => {
           'https://browzine.com/libraries/XXX/journals/18126/issues/7764583?showArticleInContext=doi:10.1136/bmj.h2575'
         ); // TODO - @Karl, we only use the Article browzineWebLink value here, even if the included journal has this property?
       });
-      it('should not show Browzine button for Article when no browzineWebLink present', () => {});
-      it('should not show Browzine button for Article when browzineEnabled is false', () => {});
-      it('should not show Browzine button for Article when user config setting is false', () => {});
-      it('should not show Browzine button for Article when neither directoToPdf nor articleLink urls are present', () => {});
+      it('should not show Browzine button for Article when no browzineWebLink present', () => {
+        const mockedArticleData: ArticleData = {
+          ...articleData,
+          browzineWebLink: '',
+        };
+        const mockedJournalData: JournalData = {
+          ...journalData[0],
+        };
+        const mockedApiResult: ApiResult = { ...responseMetaData };
+        mockedApiResult.body.data = { ...mockedArticleData };
+        mockedApiResult.body.included = { ...mockedJournalData };
+
+        const { displayInfo: buttonInfo } = service.displayWaterfall(
+          mockedApiResult,
+          EntityType.Article
+        );
+
+        expect(buttonInfo.showBrowzineButton).toBeFalse();
+      });
+
+      it('should not show Browzine button for Article when browzineEnabled is false', () => {
+        const mockedArticleData: ArticleData = {
+          ...articleData,
+        };
+        const mockedJournalData: JournalData = {
+          ...journalData[0],
+          browzineEnabled: false,
+        };
+        const mockedApiResult: ApiResult = { ...responseMetaData };
+        mockedApiResult.body.data = { ...mockedArticleData };
+        mockedApiResult.body.included = { ...mockedJournalData };
+
+        const { displayInfo: buttonInfo } = service.displayWaterfall(
+          mockedApiResult,
+          EntityType.Article
+        );
+
+        expect(buttonInfo.showBrowzineButton).toBeFalse();
+      });
+
+      it('should not show Browzine button for Article when user config setting is false', async () => {
+        // Create a new test module with different config
+        const mockConfig = { ...MOCK_MODULE_PARAMETERS };
+        mockConfig.articleBrowZineWebLinkTextEnabled = false;
+
+        const testBed = await createTestModule(mockConfig);
+        const testService = testBed.inject(ButtonInfoService);
+
+        const mockedArticleData: ArticleData = {
+          ...articleData,
+        };
+        const mockedJournalData: JournalData = {
+          ...journalData[0],
+        };
+        const mockedApiResult: ApiResult = { ...responseMetaData };
+        mockedApiResult.body.data = { ...mockedArticleData };
+        mockedApiResult.body.included = { ...mockedJournalData };
+
+        const { displayInfo: buttonInfo } = testService.displayWaterfall(
+          mockedApiResult,
+          EntityType.Article
+        );
+
+        expect(buttonInfo.showBrowzineButton).toBeFalse();
+      });
+
+      it('should not show Browzine button for Article when neither directoToPdf nor articleLink urls are present', () => {
+        const mockedArticleData: ArticleData = {
+          ...articleData,
+          fullTextFile: '',
+          contentLocation: '',
+        };
+        const mockedJournalData: JournalData = {
+          ...journalData[0],
+        };
+        const mockedApiResult: ApiResult = { ...responseMetaData };
+        mockedApiResult.body.data = { ...mockedArticleData };
+        mockedApiResult.body.included = { ...mockedJournalData };
+
+        const { displayInfo: buttonInfo } = service.displayWaterfall(
+          mockedApiResult,
+          EntityType.Article
+        );
+
+        expect(buttonInfo.showBrowzineButton).toBeFalse();
+      });
     });
 
     // based on config, we may show both the Download PDF and the Article Link buttons
     describe('for secondary (Article Link) button', () => {
-      it('should not show secondary button if main button is an alert type', () => {});
-      it('should not show secondary button if main button is already Article Link type', () => {});
-      it('should show secondary button if config showFormatChoice is true', () => {});
+      it('should not show secondary button if main button is an alert type', () => {
+        const mockedArticleData: ArticleData = {
+          ...articleData,
+          // Keep retraction URL to trigger alert button
+        };
+        const mockedApiResult: ApiResult = { ...responseMetaData };
+        mockedApiResult.body.data = mockedArticleData;
+        mockedApiResult.body.included = undefined;
+
+        const { displayInfo: buttonInfo } = service.displayWaterfall(
+          mockedApiResult,
+          EntityType.Article
+        );
+
+        expect(buttonInfo.mainButtonType).toBe(ButtonType.Retraction);
+        expect(buttonInfo.showSecondaryButton).toBeFalse();
+        expect(buttonInfo.secondaryUrl).toBe('');
+      });
+
+      it('should not show secondary button if main button is already Article Link type', () => {
+        const mockedArticleData: ArticleData = {
+          ...articleData,
+          retractionNoticeUrl: '',
+          expressionOfConcernNoticeUrl: '',
+          problematicJournalArticleNoticeUrl: '',
+          fullTextFile: '',
+          // Keep contentLocation to trigger Article Link button
+        };
+        const mockedApiResult: ApiResult = { ...responseMetaData };
+        mockedApiResult.body.data = mockedArticleData;
+        mockedApiResult.body.included = undefined;
+
+        const { displayInfo: buttonInfo } = service.displayWaterfall(
+          mockedApiResult,
+          EntityType.Article
+        );
+
+        expect(buttonInfo.mainButtonType).toBe(ButtonType.ArticleLink);
+        expect(buttonInfo.showSecondaryButton).toBeFalse();
+        expect(buttonInfo.secondaryUrl).toBe('');
+      });
+
+      it('should show secondary button if config showFormatChoice is true', () => {
+        const mockedArticleData: ArticleData = {
+          ...articleData,
+          retractionNoticeUrl: '',
+          expressionOfConcernNoticeUrl: '',
+          problematicJournalArticleNoticeUrl: '',
+          // Keep directToPDF to trigger main button that is not Article Link
+        };
+        const mockedApiResult: ApiResult = { ...responseMetaData };
+        mockedApiResult.body.data = mockedArticleData;
+        mockedApiResult.body.included = undefined;
+
+        const { displayInfo: buttonInfo } = service.displayWaterfall(
+          mockedApiResult,
+          EntityType.Article
+        );
+
+        expect(buttonInfo.mainButtonType).toBe(ButtonType.DirectToPDF);
+        expect(buttonInfo.showSecondaryButton).toBeTrue();
+        expect(buttonInfo.secondaryUrl).toBe(articleData.contentLocation);
+      });
+
+      it('should not show secondary button if config showFormatChoice is false', async () => {
+        // Create a new test module with different config
+        const mockConfig = { ...MOCK_MODULE_PARAMETERS };
+        mockConfig.showFormatChoice = false;
+
+        const testBed = await createTestModule(mockConfig);
+        const testService = testBed.inject(ButtonInfoService);
+
+        const mockedArticleData: ArticleData = {
+          ...articleData,
+          retractionNoticeUrl: '',
+          expressionOfConcernNoticeUrl: '',
+          problematicJournalArticleNoticeUrl: '',
+          // Keep directToPDF to trigger main button that is not Article Link
+        };
+        const mockedApiResult: ApiResult = { ...responseMetaData };
+        mockedApiResult.body.data = mockedArticleData;
+        mockedApiResult.body.included = undefined;
+
+        const { displayInfo: buttonInfo } = testService.displayWaterfall(
+          mockedApiResult,
+          EntityType.Article
+        );
+
+        expect(buttonInfo.mainButtonType).toBe(ButtonType.DirectToPDF);
+        expect(buttonInfo.showSecondaryButton).toBeFalse();
+        expect(buttonInfo.secondaryUrl).toBe('');
+      });
     });
 
     describe('for the general button, with a Journal response', () => {
@@ -312,6 +750,25 @@ describe('ButtonInfoService', () => {
 
         validateButton(buttonInfo, expectedValues);
       });
+
+      it('should handle journal with no browzine data', () => {
+        const journalWithoutBrowzine: JournalData = {
+          ...journalData[0],
+          browzineEnabled: true, // Keep true so journal isn't filtered out
+          browzineWebLink: '', // Use empty string to test no browzine web link
+        };
+
+        const mockedApiResult: ApiResult = { ...responseMetaData };
+        mockedApiResult.body.data = [{ ...journalWithoutBrowzine }];
+
+        const { displayInfo: buttonInfo } = service.displayWaterfall(
+          mockedApiResult,
+          EntityType.Journal
+        );
+
+        expect(buttonInfo.showBrowzineButton).toBeFalse();
+        expect(buttonInfo.browzineUrl).toBe('');
+      });
     });
     describe('for the general button, with an Article response without a Journal included', () => {
       it('should return a Retraction type button with corresponding link and image for Article with retraction url', () => {
@@ -321,8 +778,6 @@ describe('ButtonInfoService', () => {
         const mockedApiResult: ApiResult = { ...responseMetaData };
         mockedApiResult.body.data = mockedArticleData;
         mockedApiResult.body.included = undefined;
-
-        console.log('mockedApiResult', mockedApiResult);
 
         const { displayInfo: buttonInfo } = service.displayWaterfall(
           mockedApiResult,
@@ -353,8 +808,6 @@ describe('ButtonInfoService', () => {
         mockedApiResult.body.data = mockedArticleData;
         mockedApiResult.body.included = undefined;
 
-        console.log('mockedApiResult', mockedApiResult);
-
         const { displayInfo: buttonInfo } = service.displayWaterfall(
           mockedApiResult,
           EntityType.Article
@@ -381,8 +834,6 @@ describe('ButtonInfoService', () => {
         const mockedApiResult: ApiResult = { ...responseMetaData };
         mockedApiResult.body.data = mockedArticleData;
         mockedApiResult.body.included = undefined;
-
-        console.log('mockedApiResult', mockedApiResult);
 
         const { displayInfo: buttonInfo } = service.displayWaterfall(
           mockedApiResult,
@@ -526,196 +977,170 @@ describe('ButtonInfoService', () => {
 
         validateButton(buttonInfo, expectedValues);
       });
+
+      it('should handle article with included journal but no browzine data', () => {
+        const testArticleData: ArticleData = {
+          ...articleData,
+        };
+        const journalWithoutBrowzine: JournalData = {
+          ...journalData[0],
+          browzineEnabled: false, // Use false instead of undefined
+        };
+
+        const mockedApiResult: ApiResult = { ...responseMetaData };
+        mockedApiResult.body.data = { ...testArticleData };
+        mockedApiResult.body.included = { ...journalWithoutBrowzine };
+
+        const { displayInfo: buttonInfo } = service.displayWaterfall(
+          mockedApiResult,
+          EntityType.Article
+        );
+
+        expect(buttonInfo.showBrowzineButton).toBeFalse();
+      });
     });
   });
 
-  // private methods, recommended not to test directly
-  // describe('#getBrowZineWebLink', () => {
-  //   it('should return the browzineWebLink string from Journal', () => {
-  //     const mockedJournalData: JournalData = {
-  //       ...journalData[0],
-  //       browzineWebLink: 'www.expected.web.link.com',
-  //     };
+  // Additional test cases for edge cases and miscellaneous functionality
+  describe('Edge cases and additional functionality', () => {
+    it('should handle article with avoidUnpaywallPublisherLinks flag', async () => {
+      const articleWithAvoidFlag: ArticleData = {
+        ...articleData,
+        avoidUnpaywallPublisherLinks: true,
+        fullTextFile: '',
+        contentLocation: '',
+        retractionNoticeUrl: '',
+        expressionOfConcernNoticeUrl: '',
+        problematicJournalArticleNoticeUrl: '',
+        documentDeliveryFulfillmentUrl: '',
+      };
 
-  //     expect(service.getBrowZineWebLink(mockedJournalData)).toBe(
-  //       'www.expected.web.link.com'
-  //     );
-  //   });
-  //   it('should return the browzineWebLink string from Article', () => {
-  //     const mockedArticleData: ArticleData = {
-  //       ...articleData,
-  //       browzineWebLink: 'www.expected.web.link.com',
-  //     };
-  //     expect(service.getBrowZineWebLink(mockedArticleData)).toBe(
-  //       'www.expected.web.link.com'
-  //     );
-  //   });
-  //   it('should return empty string if browzineWebLink is undefined on Article', () => {
-  //     const mockedArticleData: ArticleData = {
-  //       ...articleData,
-  //     };
-  //     delete mockedArticleData.browzineWebLink;
-  //     expect(service.getBrowZineWebLink(mockedArticleData)).toBe('');
-  //   });
-  // });
+      const buttonInfo$ = service.getDisplayInfo(articleSearchEntity);
+      const articlePromise = firstValueFrom(buttonInfo$);
 
-  // describe('#getBrowZineEnabled', () => {
-  //   it('should return true for a Journal with browzineEnabled = true', () => {
-  //     const mockedJournalData: JournalData = {
-  //       ...journalData[0],
-  //       browzineEnabled: true,
-  //     };
-  //     expect(
-  //       service.getBrowZineEnabled(EntityType.Journal, mockedJournalData, null)
-  //     ).toBeTrue();
-  //   });
-  //   it('should return false for a Journal with browzineEnabled = false', () => {
-  //     const mockedJournalData: JournalData = {
-  //       ...journalData[0],
-  //       browzineEnabled: false,
-  //     };
-  //     expect(
-  //       service.getBrowZineEnabled(EntityType.Journal, mockedJournalData, null)
-  //     ).toBeFalse();
-  //   });
-  //   it('should return true for an Article with associated Journal data with browzineEnabled = true', () => {
-  //     const mockedJournal: JournalData = {
-  //       ...journalData[0],
-  //       browzineEnabled: true,
-  //     };
-  //     expect(
-  //       service.getBrowZineEnabled(
-  //         EntityType.Article,
-  //         articleData,
-  //         mockedJournal
-  //       )
-  //     ).toBeTrue();
-  //   });
-  //   it('should return false for an Article with associated Journal data with browzineEnabled = false', () => {
-  //     const mockedJournal: JournalData = {
-  //       ...journalData[0],
-  //       browzineEnabled: false,
-  //     };
+      const req = httpTesting.expectOne(articlePath);
+      req.flush({
+        data: articleWithAvoidFlag,
+      });
 
-  //     expect(
-  //       service.getBrowZineEnabled(
-  //         EntityType.Article,
-  //         articleData,
-  //         mockedJournal
-  //       )
-  //     ).toBeFalse();
-  //   });
-  // });
+      // Should still make Unpaywall call but with avoidUnpaywallPublisherLinks flag
+      const unpaywallReq = httpTesting.expectOne(
+        `https://api.unpaywall.org/v2/10.1002%2Fijc.25451?email=info@thirdiron.com`
+      );
+      unpaywallReq.flush({
+        data: {
+          best_open_access_location: { url: 'https://unpaywall.org/pdf' },
+        },
+      });
 
-  // describe('#getDirectToPDFUrl', () => {
-  //   it('should return the fullTextFile string for an Article', () => {
-  //     const mockedArticleData: ArticleData = {
-  //       ...articleData,
-  //       fullTextFile: 'www.expected.full.text.com',
-  //     };
-  //     expect(
-  //       service.getDirectToPDFUrl(EntityType.Article, mockedArticleData)
-  //     ).toBe('www.expected.full.text.com');
-  //   });
-  //   // TODO @Karl - is this logic expected?
-  //   it('should return empty string if not an Article', () => {
-  //     const mockedArticleData: ArticleData = {
-  //       ...articleData,
-  //       fullTextFile: 'www.expected.full.text.com',
-  //     };
-  //     expect(
-  //       service.getDirectToPDFUrl(EntityType.Journal, mockedArticleData)
-  //     ).toBe('');
-  //   });
-  // });
+      const result = await articlePromise;
+      expect(result).toBeDefined();
+      httpTesting.verify();
+    });
 
-  // describe('#getArticleLinkUrl', () => {
-  //   it('should return the contentLocation string for an Article', () => {
-  //     const mockedArticleData: ArticleData = {
-  //       ...articleData,
-  //       contentLocation: 'www.expected.content.location.com',
-  //     };
-  //     expect(
-  //       service.getArticleLinkUrl(EntityType.Article, mockedArticleData)
-  //     ).toBe('www.expected.content.location.com');
-  //   });
-  //   it('should return empty string if not an Article', () => {
-  //     const mockedArticleData: ArticleData = {
-  //       ...articleData,
-  //       contentLocation: 'www.expected.content.location.com',
-  //     };
-  //     expect(
-  //       service.getArticleLinkUrl(EntityType.Journal, mockedArticleData)
-  //     ).toBe('');
-  //   });
-  // });
+    it('should return default response for unknown entity type', async () => {
+      const unknownSearchEntity: SearchEntity = {
+        pnx: {
+          addata: {},
+          display: {
+            title: ['unknown entity'],
+            type: ['unknown'],
+          },
+        },
+      };
 
-  // describe('#getArticleRetractionUrl', () => {
-  //   it('should return the retractionNoticeUrl string for an Article', () => {
-  //     const mockedArticleData: ArticleData = {
-  //       ...articleData,
-  //       retractionNoticeUrl: 'www.expected.retraction.url.com',
-  //     };
-  //     expect(
-  //       service.getArticleRetractionUrl(EntityType.Article, mockedArticleData)
-  //     ).toBe('www.expected.retraction.url.com');
-  //   });
-  //   it('should return empty string if not an Article', () => {
-  //     const mockedArticleData: ArticleData = {
-  //       ...articleData,
-  //       retractionNoticeUrl: 'www.expected.retraction.url.com',
-  //     };
-  //     expect(
-  //       service.getArticleRetractionUrl(EntityType.Journal, mockedArticleData)
-  //     ).toBe('');
-  //   });
-  // });
+      const result$ = service.getDisplayInfo(unknownSearchEntity);
+      const result = await firstValueFrom(result$);
 
-  // describe('#getArticleEOCNoticeUrl', () => {
-  //   it('should return the expressionOfConcernNoticeUrl string for an Article', () => {
-  //     const mockedArticleData: ArticleData = {
-  //       ...articleData,
-  //       expressionOfConcernNoticeUrl: 'www.expected.eoc.url.com',
-  //     };
-  //     expect(
-  //       service.getArticleEOCNoticeUrl(EntityType.Article, mockedArticleData)
-  //     ).toBe('www.expected.eoc.url.com');
-  //   });
-  //   it('should return empty string if not an Article', () => {
-  //     const mockedArticleData: ArticleData = {
-  //       ...articleData,
-  //       expressionOfConcernNoticeUrl: 'www.expected.eoc.url.com',
-  //     };
-  //     expect(
-  //       service.getArticleEOCNoticeUrl(EntityType.Journal, mockedArticleData)
-  //     ).toBe('');
-  //   });
-  // });
+      expect(result).toEqual({
+        entityType: EntityType.Unknown,
+        mainButtonType: ButtonType.None,
+        mainUrl: '',
+        secondaryUrl: '',
+        showSecondaryButton: false,
+        showBrowzineButton: false,
+      });
+    });
 
-  // describe('#getProblematicJournalArticleNoticeUrl', () => {
-  //   it('should return the contentLocation string for an Article', () => {
-  //     const mockedArticleData: ArticleData = {
-  //       ...articleData,
-  //       problematicJournalArticleNoticeUrl: 'www.expected.problematic.url.com',
-  //     };
-  //     expect(
-  //       service.getProblematicJournalArticleNoticeUrl(
-  //         EntityType.Article,
-  //         mockedArticleData
-  //       )
-  //     ).toBe('www.expected.problematic.url.com');
-  //   });
-  //   it('should return empty string if not an Article', () => {
-  //     const mockedArticleData: ArticleData = {
-  //       ...articleData,
-  //       problematicJournalArticleNoticeUrl: 'www.expected.problematic.url.com',
-  //     };
-  //     expect(
-  //       service.getProblematicJournalArticleNoticeUrl(
-  //         EntityType.Journal,
-  //         mockedArticleData
-  //       )
-  //     ).toBe('');
-  //   });
-  // });
+    it('should return default response when entity type cannot be determined', async () => {
+      const invalidSearchEntity: SearchEntity = {
+        pnx: {
+          addata: {},
+          display: {
+            title: ['invalid entity'],
+            type: [],
+          },
+        },
+      };
+
+      const result$ = service.getDisplayInfo(invalidSearchEntity);
+      const result = await firstValueFrom(result$);
+
+      expect(result).toEqual({
+        entityType: EntityType.Unknown,
+        mainButtonType: ButtonType.None,
+        mainUrl: '',
+        secondaryUrl: '',
+        showSecondaryButton: false,
+        showBrowzineButton: false,
+      });
+    });
+
+    it('should handle article with no URLs and config disabled', async () => {
+      // Create a new test module with different config
+      const mockConfig = { ...MOCK_MODULE_PARAMETERS };
+      mockConfig.articlePDFDownloadLinkEnabled = false;
+      mockConfig.articleLinkEnabled = false;
+      mockConfig.articleRetractionWatchEnabled = false;
+      mockConfig.articleExpressionOfConcernEnabled = false;
+      mockConfig.documentDeliveryFulfillmentEnabled = false;
+      mockConfig.articlePDFDownloadViaUnpaywallEnabled = false;
+      mockConfig.articleLinkViaUnpaywallEnabled = false;
+
+      const testBed = await createTestModule(mockConfig);
+      const testService = testBed.inject(ButtonInfoService);
+
+      const articleWithNoUrls: ArticleData = {
+        ...articleData,
+        fullTextFile: '',
+        contentLocation: '',
+        retractionNoticeUrl: '',
+        expressionOfConcernNoticeUrl: '',
+        problematicJournalArticleNoticeUrl: '',
+        documentDeliveryFulfillmentUrl: '',
+      };
+
+      const mockedApiResult: ApiResult = { ...responseMetaData };
+      mockedApiResult.body.data = articleWithNoUrls;
+      mockedApiResult.body.included = undefined;
+
+      const { displayInfo: buttonInfo } = testService.displayWaterfall(
+        mockedApiResult,
+        EntityType.Article
+      );
+
+      expect(buttonInfo.mainButtonType).toBe(ButtonType.None);
+      expect(buttonInfo.mainUrl).toBe('');
+      expect(buttonInfo.showBrowzineButton).toBeFalse();
+      expect(buttonInfo.showSecondaryButton).toBeFalse();
+    });
+
+    it('should handle invalid API response data', () => {
+      const invalidApiResult: ApiResult = {
+        ...responseMetaData,
+        body: {
+          data: {} as any, // Use empty object instead of null
+        },
+      };
+
+      const { displayInfo: buttonInfo } = service.displayWaterfall(
+        invalidApiResult,
+        EntityType.Article
+      );
+
+      expect(buttonInfo.mainButtonType).toBe(ButtonType.None);
+      expect(buttonInfo.mainUrl).toBe('');
+      expect(buttonInfo.entityType).toBe(EntityType.Unknown);
+    });
+  });
 });

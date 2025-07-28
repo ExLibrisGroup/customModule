@@ -5,6 +5,7 @@ import { SearchEntityService } from './search-entity.service';
 import { EntityType } from '../shared/entity-type.enum';
 import { HttpService } from './http.service';
 import { ApiResult, ArticleData, JournalData } from '../types/tiData.types';
+import { ConfigService } from './config.service';
 
 export const DEFAULT_JOURNAL_COVER_INFO = {
   ariaLabel: '',
@@ -27,7 +28,7 @@ export class JournalCoverService {
   constructor(
     private httpService: HttpService,
     private searchEntityService: SearchEntityService,
-    @Inject('MODULE_PARAMETERS') public moduleParameters: any
+    private configService: ConfigService
   ) {}
 
   getJournalCoverUrl(entity: SearchEntity): Observable<string> {
@@ -69,9 +70,11 @@ export class JournalCoverService {
     const coverImageUrl = this.getCoverImageUrl(type, data, journal);
     const defaultCoverImage = this.isDefaultCoverImage(coverImageUrl);
 
-    // console.log('journal cover url', coverImageUrl);
-
-    if (coverImageUrl && !defaultCoverImage && this.showJournalCoverImages()) {
+    if (
+      coverImageUrl &&
+      !defaultCoverImage &&
+      this.configService.showJournalCoverImages()
+    ) {
       return coverImageUrl;
     }
 
@@ -104,16 +107,5 @@ export class JournalCoverService {
     return !!(
       coverImageUrl && coverImageUrl.toLowerCase().indexOf('default') > -1
     );
-  }
-
-  private showJournalCoverImages() {
-    let featureEnabled = false;
-    const config = this.moduleParameters.journalCoverImagesEnabled;
-
-    if (typeof config === 'undefined' || config === null || config === true) {
-      featureEnabled = true;
-    }
-
-    return featureEnabled;
   }
 }
