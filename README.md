@@ -58,7 +58,7 @@ Default configuration JSON:
     "articleLinkEnabled": "true",
     "printRecordsIntegrationEnabled": "true",
     "showFormatChoice": "false",
-    "showLinkResolverLink": "true",
+    "showLinkResolverLink": "false",
     "enableLinkOptimizer": "true",
     "articleRetractionWatchEnabled": "true",
     "articleExpressionOfConcernEnabled": "true",
@@ -66,7 +66,7 @@ Default configuration JSON:
     "articlePDFDownloadViaUnpaywallEnabled": "true",
     "articleLinkViaUnpaywallEnabled": "true",
     "articleAcceptedManuscriptPDFViaUnpaywallEnabled": "true",
-    "articleAcceptedManuscriptArticleLinkViaUnpaywallEnabled": "true",
+    "articleAcceptedManuscriptArticleLinkViaUnpaywallEnabled": "true"
   }
 ```
 
