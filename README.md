@@ -95,6 +95,22 @@ Default configuration JSON:
 3. A new case for the switch statement in the svg-icon component template file `svg-icon.component.html` also needs to be added.
 4. Also, for icon positioning, make sure to add a class to the svg-icon component's style file (`svg-icon.component.scss`) specific to the new icon or extend existing style classes.
 
+### Environment Variables
+
+The following environment variables are used in CircleCI:
+
+AWS Deployment
+
+- `AWS_ACCESS_KEY` : value stored in keepass
+- `AWS_ACCESS_KEY_ID` : value stored in keepass
+- `AWS_BUCKET` : thirdiron-adapters
+- `AWS_DEFAULT_REGION` : us-east-1
+- `AWS_SECRET_ACCESS_KEY` : value stored in keepass
+
+Release Notes Generator
+
+- `RENOGEN_GITHUB_OAUTH_TOKEN` : value stored in keepass
+
 ## Additional Resources
 
 ### Live Demo Tutorial
