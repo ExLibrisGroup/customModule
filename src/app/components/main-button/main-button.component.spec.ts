@@ -5,6 +5,13 @@ import { ComponentRef } from '@angular/core';
 import { ButtonType } from 'src/app/shared/button-type.enum';
 import { BaseButtonComponent } from '../base-button/base-button.component';
 import { IconType } from 'src/app/shared/icon-type.enum';
+import { TranslateService } from '@ngx-translate/core';
+
+// Minimal mock for TranslateService
+const minimalMockTranslateService = {
+  instant: (key: string) =>
+    key === 'LibKey.articlePDFDownloadLinkText' ? 'Download PDF' : key,
+};
 
 const validateButtonProps = (
   buttonElement: HTMLElement,
@@ -42,6 +49,9 @@ describe('MainButtonComponent', () => {
   beforeEach(() => {
     TestBed.configureTestingModule({
       imports: [MainButtonComponent, BaseButtonComponent],
+      providers: [
+        { provide: TranslateService, useValue: minimalMockTranslateService },
+      ],
     }).compileComponents();
     fixture = TestBed.createComponent(MainButtonComponent);
     component = fixture.componentInstance;
