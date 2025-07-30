@@ -49,34 +49,55 @@ export class MainButtonComponent {
     let text = '';
     switch (buttonType) {
       case ButtonType.Retraction:
-        text = 'Retracted Article'; // TODO - add config: browzine.articleRetractionWatchText;
+        text =
+          this.translate.instant('LibKey.articleRetractionWatchText') ||
+          'Retracted Article';
         break;
       case ButtonType.ExpressionOfConcern:
-        text = 'Expression of Concern'; // TODO - add config: browzine.articleExpressionOfConcernText
+        text =
+          this.translate.instant('LibKey.articleExpressionOfConcernText') ||
+          'Expression of Concern';
         break;
       case ButtonType.ProblematicJournalArticle:
-        text = 'Problematic Journal'; // TODO - add config: browzine.problematicJournalText
+        text =
+          this.translate.instant('LibKey.problematicJournalText') ||
+          'Problematic Journal';
         break;
       case ButtonType.DirectToPDF:
-        text = this.translate.instant('LibKey.articlePDFDownloadLinkText'); //'Download PDF'; // TODO - add config: browzine.articlePDFDownloadLinkText || browzine.primoArticlePDFDownloadLinkText
+        text =
+          this.translate.instant('LibKey.articlePDFDownloadLinkText') ||
+          'Download PDF';
         break;
       case ButtonType.ArticleLink:
-        text = 'Read Article'; // TODO - add config: browzine.articleLinkText
+        text =
+          this.translate.instant('LibKey.articleLinkText') || 'Read Article';
         break;
       case ButtonType.DocumentDelivery:
-        text = 'Request PDF'; // TODO - add config: browzine.documentDeliveryFulfillmentText
+        text =
+          this.translate.instant('LibKey.documentDeliveryFulfillmentText') ||
+          'Request PDF';
         break;
       case ButtonType.UnpaywallDirectToPDF:
-        text = 'Download PDF (via Unpaywall)'; // TODO load config: && browzine.articlePDFDownloadViaUnpaywallText
+        text =
+          this.translate.instant('LibKey.articlePDFDownloadViaUnpaywallText') ||
+          'Download PDF (via Unpaywall)';
         break;
       case ButtonType.UnpaywallArticleLink:
-        text = 'Read Article (via Unpaywall)'; // TODO - add config: browzine.articleLinkViaUnpaywallText
+        text =
+          this.translate.instant('LibKey.articleLinkViaUnpaywallText') ||
+          'Read Article (via Unpaywall)';
         break;
       case ButtonType.UnpaywallManuscriptPDF:
-        text = 'Download PDF (Accepted Manuscript via Unpaywall)'; // TODO - add config: browzine.articleAcceptedManuscriptPDFViaUnpaywallText
+        text =
+          this.translate.instant(
+            'LibKey.articleAcceptedManuscriptPDFViaUnpaywallText'
+          ) || 'Download PDF (Accepted Manuscript via Unpaywall)';
         break;
       case ButtonType.UnpaywallManuscriptLink:
-        text = 'Read Article (Accepted Manuscript via Unpaywall)'; // TODO - add config: browzine.articleAcceptedManuscriptArticleLinkViaUnpaywallText
+        text =
+          this.translate.instant(
+            'LibKey.articleAcceptedManuscriptArticleLinkViaUnpaywallText'
+          ) || 'Read Article (Accepted Manuscript via Unpaywall)';
         break;
     }
 
