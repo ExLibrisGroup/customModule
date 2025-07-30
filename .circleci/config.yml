@@ -154,8 +154,7 @@ workflows:
             - build-and-test
           filters:
             branches:
-              # only: develop
-              only: /feature\/.*/
+              only: develop
       - deploy-to-production:
           requires:
             - build-and-test
