@@ -1,8 +1,8 @@
 import { Component, effect, input } from '@angular/core';
+import { TranslateService } from '@ngx-translate/core';
 import { IconType } from 'src/app/shared/icon-type.enum';
 import { BaseButtonComponent } from '../base-button/base-button.component';
 import { ButtonType } from 'src/app/shared/button-type.enum';
-import { TranslateService } from '@ngx-translate/core';
 
 @Component({
   selector: 'main-button',
@@ -26,12 +26,6 @@ export class MainButtonComponent {
     });
   }
 
-  ngOnInit() {
-    const translatedText = this.translate.instant(
-      'LibKey.articlePDFDownloadLinkText'
-    );
-    console.log('translatedText', translatedText);
-  }
   onClick(event: MouseEvent) {
     // We’ve seen some discovery services intercept basic a href links, and have
     // been encouraged to intercept clicks more closely. We should continue
