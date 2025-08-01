@@ -1,5 +1,5 @@
 import { Component, ElementRef, Input } from '@angular/core';
-import { Observable } from 'rxjs';
+import { Observable, tap } from 'rxjs';
 import { BrowzineButtonComponent } from '../../components/browzine-button/browzine-button.component';
 import { SearchEntity } from '../../types/searchEntity.types';
 import { DisplayWaterfallResponse } from '../../types/displayWaterfallResponse.types';
@@ -41,7 +41,12 @@ export class ThirdIronButtonsComponent {
 
   ngOnInit() {
     // Start the process for determining if a button should be displayed and with what info
-    this.enhance(this.hostComponent.searchResult);
+    this.hostComponent.viewModel$.pipe(
+      tap((viewModel: any) => {
+        console.log('ViewModel:', JSON.stringify(viewModel));
+      })
+    );
+    //this.enhance(this.hostComponent.searchResult);
   }
 
   enhance = (searchResult: SearchEntity) => {
@@ -78,7 +83,9 @@ export class ThirdIronButtonsComponent {
     }
   };
 
+  // For NoStack option only
   shouldRemoveLinkResolverLink = (displayInfo: DisplayWaterfallResponse) => {
+    // TODO: if configService.getViewOption() !== ViewOptionType.NoStack, then always return true
     return (
       !this.configService.showLinkResolverLink() &&
       displayInfo.mainButtonType !== ButtonType.None

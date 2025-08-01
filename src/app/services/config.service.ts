@@ -108,6 +108,6 @@ export class ConfigService {
     const viewOption = this.moduleParameters.viewOption;
     return Object.values(ViewOptionType).includes(viewOption)
       ? viewOption
-      : ViewOptionType.NoStack;
+      : ViewOptionType.NoStack; //TODO: check with JohnS for what default should be
   }
 }
