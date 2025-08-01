@@ -11,6 +11,7 @@ import { ArticleLinkButtonComponent } from 'src/app/components/article-link-butt
 import { MainButtonComponent } from 'src/app/components/main-button/main-button.component';
 import { ButtonType } from 'src/app/shared/button-type.enum';
 import { PrimoViewModel } from 'src/app/types/primoViewModel.types';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 
 @Component({
   selector: 'custom-third-iron-buttons',
@@ -20,6 +21,7 @@ import { PrimoViewModel } from 'src/app/types/primoViewModel.types';
     BrowzineButtonComponent,
     ArticleLinkButtonComponent,
     AsyncPipe,
+    MatProgressSpinnerModule,
   ],
   templateUrl: './third-iron-buttons.component.html',
   styleUrl: './third-iron-buttons.component.scss',
