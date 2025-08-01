@@ -86,6 +86,50 @@ Default configuration JSON:
    - **Add-on URL** – The location where the add-on is hosted (static folder to load the add-on at runtime). The current URL for the LibKey adaptor is `https://browzine-adapters.s3.amazonaws.com/primo-nde/production/` (keep the trailing '/')
    - **Add-on Configuration File** – JSON-based config parameters to be referenced at runtime by the add-on. Upload your modified JSON configuration file from Step 2.
 
+## Custom Labels and Translation
+
+Button label text can be customized and translated by setting up label codes in the Alma database. This can be done manually in a one-by-one way for each label, or en masse by importing a file with multiple labels with their corresponding custom text and translation values.
+
+### Manual entry
+
+1. In Alma, navigate to Discovery > Labels
+
+   ![Alma Discovery](./readme-files/alma-discovery.png)
+
+   ![Alma Labels](./readme-files/alma-labels.png)
+
+2. find "View Labels" table and click the hamburger menu on the right to find the "edit" option. Then click "Add Row"
+
+   ![Alma View Labels](./readme-files/alma-view-labels.png)
+
+   ![Alma View Labels Edit](./readme-files/alma-view-labels-edit.png)
+
+   ![Alma Add Row](./readme-files/alma-add-row.png)
+
+3. The available label codes are as follows:
+
+   - LibKey.articleExpressionOfConcernText
+   - LibKey.problematicJournalText
+   - LibKey.articlePDFDownloadLinkText
+   - LibKey.articleLinkText
+   - LibKey.documentDeliveryFulfillmentText
+   - LibKey.articlePDFDownloadViaUnpaywallText
+   - LibKey.articleLinkViaUnpaywallText
+   - LibKey.articleAcceptedManuscriptPDFViaUnpaywallText
+   - LibKey.articleAcceptedManuscriptArticleLinkViaUnpaywallText
+   - LibKey.journalBrowZineWebLinkText
+   - LibKey.articleBrowZineWebLinkText
+
+   Enter one of the above code values in the "Code" field with the English label in the "Description" field
+
+   ![Alma Add Row](./readme-files/alma-expression-of-concern-label.png)
+
+4. To add a translation for different languages, select the language in the Filter top section of the View Labels table view, then add the desired translation string to the "Translation" column for the given label Code.
+
+   ![Alma Add Row](./readme-files/alma-language-select.png)
+
+   ![Alma Add Row](./readme-files/alma-translation-field.png)
+
 ## Developer notes
 
 ### Adding new icons
