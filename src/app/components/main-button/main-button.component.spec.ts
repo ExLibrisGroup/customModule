@@ -295,7 +295,7 @@ describe('MainButtonComponent', () => {
           const customTranslations: { [key: string]: string } = {
             'LibKey.articlePDFDownloadLinkText': 'Custom Download Text', // just testing one key for PDF download here
           };
-          return customTranslations[key];
+          return customTranslations[key] || key;
         },
       };
 
@@ -325,7 +325,7 @@ describe('MainButtonComponent', () => {
           const translations: { [key: string]: string } = {
             'LibKey.articlePDFDownloadLinkText': 'Download PDF', // Only this one has translation
           };
-          return translations[key];
+          return translations[key] || key; // Return key for missing translations
         },
       };
 
@@ -353,7 +353,7 @@ describe('MainButtonComponent', () => {
           const customTranslations: { [key: string]: string } = {
             'LibKey.articleRetractionWatchText': 'Custom Retraction Alert',
           };
-          return customTranslations[key];
+          return customTranslations[key] || key;
         },
       };
 
@@ -381,7 +381,7 @@ describe('MainButtonComponent', () => {
           const translations: { [key: string]: string } = {
             'LibKey.articlePDFDownloadLinkText': 'Download PDF', // Only this one has translation
           };
-          return translations[key];
+          return translations[key] || key; // Return the key for missing translations
         },
       };
 
@@ -411,7 +411,7 @@ describe('MainButtonComponent', () => {
           const customTranslations: { [key: string]: string } = {
             'LibKey.documentDeliveryFulfillmentText': 'Custom Document Request',
           };
-          return customTranslations[key];
+          return customTranslations[key] || key;
         },
       };
 

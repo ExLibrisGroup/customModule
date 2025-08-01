@@ -26,10 +26,26 @@ export class BrowzineButtonComponent {
   }
 
   private getButtonText(entityType: EntityType): string {
-    return entityType === EntityType.Journal
-      ? this.translate.instant('LibKey.journalBrowZineWebLinkText') ||
-          'View Journal Contents'
-      : this.translate.instant('LibKey.articleBrowZineWebLinkText') ||
-          'View Issue Contents';
+    if (entityType === EntityType.Journal) {
+      return this.getTranslatedText(
+        'LibKey.journalBrowZineWebLinkText',
+        'View Journal Contents'
+      );
+    } else {
+      return this.getTranslatedText(
+        'LibKey.articleBrowZineWebLinkText',
+        'View Issue Contents'
+      );
+    }
+  }
+
+  private getTranslatedText(
+    translationKey: string,
+    fallbackText: string
+  ): string {
+    const translatedText = this.translate.instant(translationKey);
+    return translatedText && translatedText !== translationKey
+      ? translatedText
+      : fallbackText;
   }
 }

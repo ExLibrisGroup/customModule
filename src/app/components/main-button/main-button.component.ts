@@ -43,59 +43,75 @@ export class MainButtonComponent {
     let text = '';
     switch (buttonType) {
       case ButtonType.Retraction:
-        text =
-          this.translate.instant('LibKey.articleRetractionWatchText') ||
-          'Retracted Article';
+        text = this.getTranslatedText(
+          'LibKey.articleRetractionWatchText',
+          'Retracted Article'
+        );
         break;
       case ButtonType.ExpressionOfConcern:
-        text =
-          this.translate.instant('LibKey.articleExpressionOfConcernText') ||
-          'Expression of Concern';
+        text = this.getTranslatedText(
+          'LibKey.articleExpressionOfConcernText',
+          'Expression of Concern'
+        );
         break;
       case ButtonType.ProblematicJournalArticle:
-        text =
-          this.translate.instant('LibKey.problematicJournalText') ||
-          'Problematic Journal';
+        text = this.getTranslatedText(
+          'LibKey.problematicJournalText',
+          'Problematic Journal'
+        );
         break;
       case ButtonType.DirectToPDF:
-        text =
-          this.translate.instant('LibKey.articlePDFDownloadLinkText') ||
-          'Download PDF';
+        text = this.getTranslatedText(
+          'LibKey.articlePDFDownloadLinkText',
+          'Download PDF'
+        );
         break;
       case ButtonType.ArticleLink:
-        text =
-          this.translate.instant('LibKey.articleLinkText') || 'Read Article';
+        text = this.getTranslatedText('LibKey.articleLinkText', 'Read Article');
         break;
       case ButtonType.DocumentDelivery:
-        text =
-          this.translate.instant('LibKey.documentDeliveryFulfillmentText') ||
-          'Request PDF';
+        text = this.getTranslatedText(
+          'LibKey.documentDeliveryFulfillmentText',
+          'Request PDF'
+        );
         break;
       case ButtonType.UnpaywallDirectToPDF:
-        text =
-          this.translate.instant('LibKey.articlePDFDownloadViaUnpaywallText') ||
-          'Download PDF (via Unpaywall)';
+        text = this.getTranslatedText(
+          'LibKey.articlePDFDownloadViaUnpaywallText',
+          'Download PDF (via Unpaywall)'
+        );
         break;
       case ButtonType.UnpaywallArticleLink:
-        text =
-          this.translate.instant('LibKey.articleLinkViaUnpaywallText') ||
-          'Read Article (via Unpaywall)';
+        text = this.getTranslatedText(
+          'LibKey.articleLinkViaUnpaywallText',
+          'Read Article (via Unpaywall)'
+        );
         break;
       case ButtonType.UnpaywallManuscriptPDF:
-        text =
-          this.translate.instant(
-            'LibKey.articleAcceptedManuscriptPDFViaUnpaywallText'
-          ) || 'Download PDF (Accepted Manuscript via Unpaywall)';
+        text = this.getTranslatedText(
+          'LibKey.articleAcceptedManuscriptPDFViaUnpaywallText',
+          'Download PDF (Accepted Manuscript via Unpaywall)'
+        );
         break;
       case ButtonType.UnpaywallManuscriptLink:
-        text =
-          this.translate.instant(
-            'LibKey.articleAcceptedManuscriptArticleLinkViaUnpaywallText'
-          ) || 'Read Article (Accepted Manuscript via Unpaywall)';
+        text = this.getTranslatedText(
+          'LibKey.articleAcceptedManuscriptArticleLinkViaUnpaywallText',
+          'Read Article (Accepted Manuscript via Unpaywall)'
+        );
         break;
     }
 
     return text;
+  }
+
+  private getTranslatedText(
+    translationKey: string,
+    fallbackText: string
+  ): string {
+    const translatedText = this.translate.instant(translationKey);
+    return translatedText && translatedText !== translationKey
+      ? translatedText
+      : fallbackText;
   }
 
   getButtonIcon(buttonType: ButtonType): string {
