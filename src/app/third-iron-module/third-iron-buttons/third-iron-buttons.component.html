@@ -1,4 +1,4 @@
-@if(displayInfo$ | async; as displayInfo){
+<!-- @if(displayInfo$ | async; as displayInfo){
 <span>
   @if(displayInfo.mainUrl !== '') {
   <main-button class="ti-single-button" [url]="displayInfo.mainUrl" [buttonType]="displayInfo.mainButtonType">
@@ -14,7 +14,7 @@
   }
 </span>
 }
-@else {
+@else { -->
 <span class="ti-loading-container">
   <div class="ti-loading-placeholder">
     <mat-spinner class="ti-loading-spinner" [diameter]="20" [strokeWidth]="2" color="primary">
@@ -22,4 +22,4 @@
     <div class="ti-loading-text">Loading buttons...</div>
   </div>
 </span>
-}
+<!-- } -->
