@@ -10,6 +10,7 @@ import { AsyncPipe } from '@angular/common';
 import { ArticleLinkButtonComponent } from 'src/app/components/article-link-button/article-link-button.component';
 import { MainButtonComponent } from 'src/app/components/main-button/main-button.component';
 import { ButtonType } from 'src/app/shared/button-type.enum';
+import { PrimoViewModel } from 'src/app/types/primoViewModel.types';
 
 @Component({
   selector: 'custom-third-iron-buttons',
@@ -27,6 +28,7 @@ import { ButtonType } from 'src/app/shared/button-type.enum';
 export class ThirdIronButtonsComponent {
   @Input() hostComponent!: any;
   elementRef: ElementRef;
+  onlineServices: any[] = []; // used to build custom merged array of online services for stack views
 
   displayInfo$!: Observable<DisplayWaterfallResponse>;
 
@@ -40,16 +42,15 @@ export class ThirdIronButtonsComponent {
   }
 
   ngOnInit() {
-    // Start the process for determining if a button should be displayed and with what info
-    console.log('third-iron-buttons.component.ts: ngOnInit');
-    console.log(this.hostComponent);
     this.hostComponent.viewModel$
       .pipe(
-        tap((viewModel: any) => {
+        tap((viewModel: PrimoViewModel) => {
           console.log('ViewModel:', JSON.stringify(viewModel));
         })
       )
       .subscribe();
+
+    // Start the process for determining if a button should be displayed and with what info
     //this.enhance(this.hostComponent.searchResult);
   }
 
