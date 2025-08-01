@@ -43,11 +43,13 @@ export class ThirdIronButtonsComponent {
     // Start the process for determining if a button should be displayed and with what info
     console.log('third-iron-buttons.component.ts: ngOnInit');
     console.log(this.hostComponent);
-    this.hostComponent.viewModel$.pipe(
-      tap((viewModel: any) => {
-        console.log('ViewModel:', JSON.stringify(viewModel));
-      })
-    );
+    this.hostComponent.viewModel$
+      .pipe(
+        tap((viewModel: any) => {
+          console.log('ViewModel:', JSON.stringify(viewModel));
+        })
+      )
+      .subscribe();
     //this.enhance(this.hostComponent.searchResult);
   }
 
