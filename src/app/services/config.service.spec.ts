@@ -17,8 +17,9 @@ export const MOCK_MODULE_PARAMETERS = {
   articleBrowZineWebLinkTextEnabled: true,
   documentDeliveryFulfillmentEnabled: true,
   showLinkResolverLink: true,
-  unpaywallEmailAddressKey: 'info@thirdiron.com',
+  viewOption: 'no-stack',
   // Unpaywall-specific parameters
+  unpaywallEmailAddressKey: 'info@thirdiron.com',
   articlePDFDownloadViaUnpaywallEnabled: true,
   articleLinkViaUnpaywallEnabled: true,
   articleAcceptedManuscriptPDFViaUnpaywallEnabled: true,
@@ -366,6 +367,129 @@ describe('ConfigService', () => {
   describe('getEmailAddressKey', () => {
     it('should return the correct email address key', () => {
       expect(service.getEmailAddressKey()).toBe('info@thirdiron.com');
+    });
+  });
+
+  describe('getViewOption', () => {
+    it('should return StackPlusBrowzine when viewOption is set to stack-plus-browzine', async () => {
+      const configWithStackPlusBrowzine = {
+        ...MOCK_MODULE_PARAMETERS,
+        viewOption: 'stack-plus-browzine',
+      };
+
+      const testBed = await createTestModule(configWithStackPlusBrowzine);
+      const testService = testBed.inject(ConfigService);
+
+      expect(testService.getViewOption()).toBe('stack-plus-browzine');
+    });
+
+    it('should return SingleStack when viewOption is set to single-stack', async () => {
+      const configWithSingleStack = {
+        ...MOCK_MODULE_PARAMETERS,
+        viewOption: 'single-stack',
+      };
+
+      const testBed = await createTestModule(configWithSingleStack);
+      const testService = testBed.inject(ConfigService);
+
+      expect(testService.getViewOption()).toBe('single-stack');
+    });
+
+    it('should return NoStack when viewOption is set to no-stack', async () => {
+      const configWithNoStack = {
+        ...MOCK_MODULE_PARAMETERS,
+        viewOption: 'no-stack',
+      };
+
+      const testBed = await createTestModule(configWithNoStack);
+      const testService = testBed.inject(ConfigService);
+
+      expect(testService.getViewOption()).toBe('no-stack');
+    });
+
+    it('should return NoStack as default when viewOption is missing', async () => {
+      const configWithoutViewOption = {
+        ...MOCK_MODULE_PARAMETERS,
+      };
+      // Use type assertion to allow deletion
+      delete (configWithoutViewOption as any).viewOption;
+
+      const testBed = await createTestModule(configWithoutViewOption);
+      const testService = testBed.inject(ConfigService);
+
+      expect(testService.getViewOption()).toBe('no-stack');
+    });
+
+    it('should return NoStack when viewOption is null', async () => {
+      const configWithNullViewOption = {
+        ...MOCK_MODULE_PARAMETERS,
+        viewOption: null,
+      };
+
+      const testBed = await createTestModule(configWithNullViewOption);
+      const testService = testBed.inject(ConfigService);
+
+      expect(testService.getViewOption()).toBe('no-stack');
+    });
+
+    it('should return NoStack when viewOption is undefined', async () => {
+      const configWithUndefinedViewOption = {
+        ...MOCK_MODULE_PARAMETERS,
+        viewOption: undefined,
+      };
+
+      const testBed = await createTestModule(configWithUndefinedViewOption);
+      const testService = testBed.inject(ConfigService);
+
+      expect(testService.getViewOption()).toBe('no-stack');
+    });
+
+    it('should return NoStack when viewOption is an invalid value', async () => {
+      const configWithInvalidViewOption = {
+        ...MOCK_MODULE_PARAMETERS,
+        viewOption: 'invalid-view-option',
+      };
+
+      const testBed = await createTestModule(configWithInvalidViewOption);
+      const testService = testBed.inject(ConfigService);
+
+      expect(testService.getViewOption()).toBe('no-stack');
+    });
+
+    it('should return NoStack when viewOption is empty string', async () => {
+      const configWithEmptyViewOption = {
+        ...MOCK_MODULE_PARAMETERS,
+        viewOption: '',
+      };
+
+      const testBed = await createTestModule(configWithEmptyViewOption);
+      const testService = testBed.inject(ConfigService);
+
+      expect(testService.getViewOption()).toBe('no-stack');
+    });
+
+    it('should return NoStack when viewOption is a number', async () => {
+      const configWithNumberViewOption = {
+        ...MOCK_MODULE_PARAMETERS,
+        viewOption: 123,
+      };
+
+      const testBed = await createTestModule(configWithNumberViewOption);
+      const testService = testBed.inject(ConfigService);
+
+      expect(testService.getViewOption()).toBe('no-stack');
+    });
+
+    it('should return NoStack when viewOption is an object', async () => {
+      const configWithObjectViewOption = {
+        ...MOCK_MODULE_PARAMETERS,
+        viewOption: { someProperty: 'value' },
+      };
+
+      const testBed = await createTestModule(configWithObjectViewOption);
+      const testService = testBed.inject(ConfigService);
+
+      expect(testService.getViewOption()).toBe('no-stack');
     });
   });
 

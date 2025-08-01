@@ -1,4 +1,5 @@
 import { Injectable, Inject } from '@angular/core';
+import { ViewOptionType } from '../shared/view-option.enum';
 
 /**
  * This Service is responsible for getting config values from the corresponding
@@ -101,5 +102,12 @@ export class ConfigService {
 
   getEmailAddressKey(): string {
     return this.moduleParameters.unpaywallEmailAddressKey;
+  }
+
+  getViewOption(): ViewOptionType {
+    const viewOption = this.moduleParameters.viewOption;
+    return Object.values(ViewOptionType).includes(viewOption)
+      ? viewOption
+      : ViewOptionType.NoStack;
   }
 }
