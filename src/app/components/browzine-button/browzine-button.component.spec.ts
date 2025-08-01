@@ -117,7 +117,7 @@ describe('BrowzineButtonComponent', () => {
             'LibKey.articleBrowZineWebLinkText': 'Custom Article Text',
             'LibKey.journalBrowZineWebLinkText': 'Custom Journal Text',
           };
-          return customTranslations[key];
+          return customTranslations[key] || key;
         },
       };
 
@@ -145,7 +145,7 @@ describe('BrowzineButtonComponent', () => {
           const translations: { [key: string]: string } = {
             'LibKey.journalBrowZineWebLinkText': 'View Journal Contents',
           };
-          return translations[key];
+          return translations[key] || key;
         },
       };
 
@@ -173,7 +173,7 @@ describe('BrowzineButtonComponent', () => {
           const translations: { [key: string]: string } = {
             'LibKey.articleBrowZineWebLinkText': 'View Issue Contents',
           };
-          return translations[key];
+          return translations[key] || key;
         },
       };
 
