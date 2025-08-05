@@ -135,8 +135,6 @@ jobs:
 workflows:
   build-test-deploy:
     jobs:
-      # - build
-      - build-and-test
       # - deploy-hotfix:
       #     requires:
       #       - build-and-test
@@ -149,21 +147,23 @@ workflows:
       #     filters:
       #       branches:
       #         only: /feature\/.*/
+      # TODO add this line back in! - build-and-test
       - deploy-to-staging:
-          requires:
-            - build-and-test
+          # requires:
+          #   - build-and-test
           filters:
             branches:
-              only: develop
+              # TODO: change back! only: develop
+              only: /feature\/.*/
       - deploy-to-production:
-          requires:
-            - build-and-test
+          # requires:
+          #   - build-and-test
           filters:
             branches:
               only: main
       - renogen:
-          requires:
-            - build-and-test
+          # requires:
+          #   - build-and-test
           filters:
             branches:
               only:
