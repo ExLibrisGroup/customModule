@@ -10,8 +10,12 @@ import { AsyncPipe } from '@angular/common';
 import { ArticleLinkButtonComponent } from 'src/app/components/article-link-button/article-link-button.component';
 import { MainButtonComponent } from 'src/app/components/main-button/main-button.component';
 import { ButtonType } from 'src/app/shared/button-type.enum';
-import { PrimoViewModel } from 'src/app/types/primoViewModel.types';
+import {
+  OnlineService,
+  PrimoViewModel,
+} from 'src/app/types/primoViewModel.types';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { ViewOptionType } from 'src/app/shared/view-option.enum';
 
 @Component({
   selector: 'custom-third-iron-buttons',
@@ -30,7 +34,7 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 export class ThirdIronButtonsComponent {
   @Input() hostComponent!: any;
   elementRef: ElementRef;
-  onlineServices: any[] = []; // used to build custom merged array of online services for stack views
+  onlineServices: OnlineService[] = []; // used to build custom merged array of online services for stack views
 
   displayInfo$!: Observable<DisplayWaterfallResponse>;
 
@@ -44,14 +48,6 @@ export class ThirdIronButtonsComponent {
   }
 
   ngOnInit() {
-    this.hostComponent.viewModel$
-      .pipe(
-        tap((viewModel: PrimoViewModel) => {
-          console.log('ViewModel:', JSON.stringify(viewModel));
-        })
-      )
-      .subscribe();
-
     // Start the process for determining if a button should be displayed and with what info
     //this.enhance(this.hostComponent.searchResult);
   }
@@ -65,7 +61,48 @@ export class ThirdIronButtonsComponent {
 
     // subscribe to displayInfo$ observable to continue only after we have a response
     this.displayInfo$.subscribe((displayInfo) => {
-      if (this.shouldRemoveLinkResolverLink(displayInfo)) {
+      //TODO: (this.configService.getViewOption() !== ViewOptionType.NoStack) {
+      if (true) {
+        this.hostComponent.viewModel$
+          .pipe(
+            tap((viewModel: PrimoViewModel) => {
+              console.log('ViewModel:', JSON.stringify(viewModel));
+
+              // Handle directLink (string) and ariaLabel
+              if (viewModel.directLink) {
+                this.onlineServices.push({
+                  type: 'directLink',
+                  url: viewModel.directLink,
+                  ariaLabel: viewModel.ariaLabel || '',
+                });
+              }
+
+              // Handle onlineLinks (array of Link objects)
+              if (viewModel.onlineLinks && viewModel.onlineLinks.length > 0) {
+                // this.onlineServices.push(
+                //   ...viewModel.onlineLinks.map(
+                //     (link: { source: string; type: string; url: string }) => ({
+                //       ...link,
+                //       type: 'onlineLink',
+                //       ariaLabel: link.source || '',
+                //     }))
+                //   );
+                // }
+                viewModel.onlineLinks.forEach((link) => {
+                  this.onlineServices.push({
+                    source: link.source,
+                    type: 'onlineLink',
+                    url: link.url,
+                    ariaLabel: link.source || '',
+                  });
+                });
+              }
+
+              console.log('Online services:', this.onlineServices);
+            })
+          )
+          .subscribe();
+      } else if (this.shouldRemoveLinkResolverLink(displayInfo)) {
         // remove primo button
         const hostElem = this.elementRef.nativeElement; // this component's template element
         this.removeLinkResolverLink(hostElem);
