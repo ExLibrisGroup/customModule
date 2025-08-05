@@ -49,7 +49,7 @@ export class ThirdIronButtonsComponent {
 
   ngOnInit() {
     // Start the process for determining if a button should be displayed and with what info
-    //this.enhance(this.hostComponent.searchResult);
+    this.enhance(this.hostComponent.searchResult);
   }
 
   enhance = (searchResult: SearchEntity) => {
