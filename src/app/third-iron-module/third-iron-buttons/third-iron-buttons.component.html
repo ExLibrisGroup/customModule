@@ -1,5 +1,42 @@
 @if(displayInfo$ | async; as displayInfo){
-<span>
+@if(onlineServices.length > 1){
+<!-- <stacked-dropdown [onlineServices]="onlineServices"></stacked-dropdown> -->
+<div class="dropdown-group flex-row flex-layout-center">
+  <button mat-flat-button type="button" color="primary" class="ti-dropdown-button quicklink-button"
+    [attr.aria-label]="onlineServices[0].ariaLabel || ''" (click)="openService(onlineServices[0])">
+    <span class="quicklink-button-text mdc-button__label">
+      {{ onlineServices[0].label || onlineServices[0].source || onlineServices[0].type }}
+    </span>
+    <mat-icon _ngcontent-ng-c1659680668="" role="img" iconpositionend="" color="primary"
+      class="quicklink-button-icon mat-icon notranslate nde-mat-icon-size-small icon-primary-fill mat-primary"
+      aria-hidden="true" data-mat-icon-type="svg" data-mat-icon-name="PDF"><svg xmlns="http://www.w3.org/2000/svg"
+        width="100%" height="100%" viewBox="0 0 20 20" fill="none" fit="" preserveAspectRatio="xMidYMid meet"
+        focusable="false">
+        <path
+          d="M5.02965 16.6022C4.72643 16.4809 4.48213 16.2466 4.34824 15.9488C4.04488 15.3451 4.146 14.7415 4.4727 14.2344C4.78073 13.7568 5.29101 13.3507 5.86818 13.01C6.59927 12.5954 7.37207 12.259 8.17375 12.0066C8.79633 10.8874 9.34814 9.73024 9.82592 8.54199C9.54026 7.8929 9.31629 7.21838 9.15696 6.52733C9.02317 5.90505 8.97183 5.28898 9.0854 4.76004C9.20208 4.20932 9.51167 3.7146 10.0966 3.47968C10.3953 3.35989 10.7189 3.293 11.0332 3.35989C11.1912 3.39355 11.3398 3.46196 11.4682 3.56018C11.5965 3.65839 11.7014 3.78395 11.7752 3.92773C11.9121 4.18287 11.9619 4.48157 11.9728 4.76471C11.9837 5.05718 11.9541 5.38077 11.8997 5.71992C11.769 6.51333 11.4796 7.4841 11.0907 8.51087C11.5199 9.42877 12.0302 10.3066 12.6153 11.1338C13.3078 11.0791 14.0042 11.1052 14.6906 11.2116C15.2569 11.3143 15.8325 11.515 16.1841 11.935C16.3708 12.159 16.4844 12.4328 16.4953 12.7409C16.5062 13.0396 16.4222 13.3352 16.2806 13.6167C16.158 13.8777 15.9678 14.1011 15.7299 14.2639C15.4946 14.4173 15.2169 14.4925 14.9365 14.4786C14.4215 14.4568 13.919 14.1737 13.485 13.8299C12.9572 13.3935 12.4816 12.8975 12.0677 12.3519C11.0157 12.4713 9.9761 12.6827 8.96094 12.9836C8.49606 13.808 7.96539 14.5936 7.37411 15.3327C6.91984 15.8772 6.42668 16.3532 5.93196 16.557C5.64771 16.6856 5.3253 16.7018 5.02965 16.6022ZM7.17498 13.6447C6.91673 13.763 6.67715 13.8874 6.46091 14.015C5.95063 14.3168 5.61926 14.6108 5.45436 14.866C5.30812 15.0916 5.30501 15.2549 5.39213 15.4276C5.40769 15.4618 5.42324 15.4836 5.43258 15.496C5.45114 15.4911 5.46933 15.4849 5.48703 15.4774C5.70016 15.3903 6.03931 15.1118 6.47491 14.5875C6.72265 14.2842 6.95625 13.9696 7.17498 13.6447ZM9.72636 11.5756C10.2458 11.4544 10.77 11.3542 11.2976 11.2754C11.0144 10.8419 10.7497 10.3966 10.5042 9.94058C10.2602 10.4922 10.0008 11.0369 9.72636 11.5741V11.5756ZM13.5316 12.2757C13.765 12.5293 13.9921 12.7424 14.2084 12.9136C14.5817 13.2091 14.8416 13.3071 14.9831 13.3118C15.021 13.3168 15.0595 13.3085 15.092 13.2885C15.1567 13.2374 15.2071 13.1704 15.2383 13.094C15.2936 12.9993 15.3251 12.8925 15.33 12.7829C15.3292 12.7463 15.3147 12.7114 15.2896 12.6849C15.2087 12.5884 14.9785 12.4484 14.4837 12.3597C14.1691 12.3071 13.8507 12.2795 13.5316 12.2773V12.2757ZM10.4358 6.82137C10.5667 6.39902 10.6706 5.96877 10.7469 5.53323C10.7951 5.24076 10.8138 4.99962 10.806 4.80982C10.8065 4.70511 10.7896 4.60104 10.7562 4.50179C10.6784 4.51143 10.6024 4.53239 10.5307 4.56402C10.3953 4.61847 10.2849 4.72892 10.2257 5.00429C10.1635 5.30298 10.1791 5.73392 10.2973 6.28309C10.3346 6.45577 10.3813 6.63623 10.4373 6.82137H10.4358Z"
+          fill="#5E42D8"></path>
+      </svg>
+    </mat-icon>
+  </button>
+
+  <span class="ti-dropdown">
+    <mat-select hideSingleSelectionIndicator class="ti-dropdown-toggle">
+      <mat-select-trigger class="mat-mdc-select-trigger">
+        <span class="mat-mdc-select-min-line"></span>
+      </mat-select-trigger>
+      @for(service of onlineServices.slice(1); track service.source){
+      <mat-option [value]="service" class="ti-dropdown-option">
+        <button type="button" class="ti-dropdown-option-button">{{ service.source || service.type }}</button>
+      </mat-option>
+      }
+    </mat-select>
+  </span>
+</div>
+}
+}
+
+
+<!-- <span>
   @if(displayInfo.mainUrl !== '') {
   <main-button class="ti-single-button" [url]="displayInfo.mainUrl" [buttonType]="displayInfo.mainButtonType">
   </main-button>
@@ -12,13 +49,4 @@
   <custom-browzine-button class="ti-single-button" [entityType]="displayInfo.entityType" [url]="displayInfo.browzineUrl"
     class="ti-single-button"></custom-browzine-button>
   }
-</span>
-}
-<!-- @else {
-<span class="ti-loading-container">
-  <div class="ti-loading-placeholder">
-    <mat-spinner class="ti-loading-spinner" [diameter]="20" [strokeWidth]="2" color="primary">
-    </mat-spinner>
-  </div>
-</span>
-} -->
+</span> -->

@@ -1,5 +1,5 @@
-import { Component, ElementRef, Input } from '@angular/core';
-import { Observable, tap } from 'rxjs';
+import { Component, ElementRef, Input, ViewEncapsulation } from '@angular/core';
+import { Observable, tap, combineLatestWith, map } from 'rxjs';
 import { BrowzineButtonComponent } from '../../components/browzine-button/browzine-button.component';
 import { SearchEntity } from '../../types/searchEntity.types';
 import { DisplayWaterfallResponse } from '../../types/displayWaterfallResponse.types';
@@ -14,8 +14,11 @@ import {
   OnlineService,
   PrimoViewModel,
 } from 'src/app/types/primoViewModel.types';
-import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+// import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { MatIconModule } from '@angular/material/icon';
+import { MatSelectModule } from '@angular/material/select';
 import { ViewOptionType } from 'src/app/shared/view-option.enum';
+import { StackedDropdownComponent } from 'src/app/components/stacked-dropdown/stacked-dropdown.component';
 
 @Component({
   selector: 'custom-third-iron-buttons',
@@ -25,18 +28,23 @@ import { ViewOptionType } from 'src/app/shared/view-option.enum';
     BrowzineButtonComponent,
     ArticleLinkButtonComponent,
     AsyncPipe,
-    MatProgressSpinnerModule,
+    StackedDropdownComponent,
+    MatIconModule,
+    MatSelectModule,
   ],
   templateUrl: './third-iron-buttons.component.html',
   styleUrl: './third-iron-buttons.component.scss',
   providers: [SearchEntityService],
+  encapsulation: ViewEncapsulation.None,
 })
 export class ThirdIronButtonsComponent {
   @Input() hostComponent!: any;
   elementRef: ElementRef;
   onlineServices: OnlineService[] = []; // used to build custom merged array of online services for stack views
+  showDropdown = false;
+  viewOption = this.configService.getViewOption();
 
-  displayInfo$!: Observable<DisplayWaterfallResponse>;
+  displayInfo$!: Observable<DisplayWaterfallResponse | null>;
 
   constructor(
     private buttonInfoService: ButtonInfoService,
@@ -57,57 +65,59 @@ export class ThirdIronButtonsComponent {
       return;
     }
 
-    this.displayInfo$ = this.buttonInfoService.getDisplayInfo(searchResult);
+    // Use combineLatestWith (modern approach) to handle both observables together
+    this.displayInfo$ = this.buttonInfoService
+      .getDisplayInfo(searchResult)
+      .pipe(
+        combineLatestWith(
+          this.hostComponent.viewModel$ as Observable<PrimoViewModel>
+        ),
+        map(([displayInfo, viewModel]) => {
+          console.log(
+            'Display info and viewModel combined. VIEW OPTION:',
+            this.viewOption
+          );
 
-    // subscribe to displayInfo$ observable to continue only after we have a response
-    this.displayInfo$.subscribe((displayInfo) => {
-      //TODO: (this.configService.getViewOption() !== ViewOptionType.NoStack) {
-      if (true) {
-        this.hostComponent.viewModel$
-          .pipe(
-            tap((viewModel: PrimoViewModel) => {
-              console.log('ViewModel:', JSON.stringify(viewModel));
+          //TODO: (this.configService.getViewOption() !== ViewOptionType.NoStack) {
+          if (true) {
+            console.log('ViewModel:', JSON.stringify(viewModel));
+            this.onlineServices = [];
 
-              // Handle directLink (string) and ariaLabel
-              if (viewModel.directLink) {
+            // Handle directLink (string) and ariaLabel
+            if (viewModel.directLink) {
+              this.onlineServices.push({
+                type: 'directLink',
+                url: viewModel.directLink,
+                ariaLabel: viewModel.ariaLabel || '',
+              });
+            }
+
+            // Handle onlineLinks (array of Link objects)
+            if (viewModel?.onlineLinks && viewModel.onlineLinks.length > 0) {
+              viewModel.onlineLinks.forEach((link: OnlineService) => {
                 this.onlineServices.push({
-                  type: 'directLink',
-                  url: viewModel.directLink,
-                  ariaLabel: viewModel.ariaLabel || '',
+                  source: link.source,
+                  type: link.type,
+                  url: link.url,
+                  ariaLabel: link.ariaLabel || '',
+                  label:
+                    link.type === 'PDF'
+                      ? 'Read Online'
+                      : 'Other online options',
                 });
-              }
+              });
+            }
 
-              // Handle onlineLinks (array of Link objects)
-              if (viewModel.onlineLinks && viewModel.onlineLinks.length > 0) {
-                // this.onlineServices.push(
-                //   ...viewModel.onlineLinks.map(
-                //     (link: { source: string; type: string; url: string }) => ({
-                //       ...link,
-                //       type: 'onlineLink',
-                //       ariaLabel: link.source || '',
-                //     }))
-                //   );
-                // }
-                viewModel.onlineLinks.forEach((link) => {
-                  this.onlineServices.push({
-                    source: link.source,
-                    type: 'onlineLink',
-                    url: link.url,
-                    ariaLabel: link.source || '',
-                  });
-                });
-              }
+            console.log('Online services:', this.onlineServices);
+          } else if (this.shouldRemoveLinkResolverLink(displayInfo)) {
+            // remove primo button
+            const hostElem = this.elementRef.nativeElement; // this component's template element
+            this.removeLinkResolverLink(hostElem);
+          }
 
-              console.log('Online services:', this.onlineServices);
-            })
-          )
-          .subscribe();
-      } else if (this.shouldRemoveLinkResolverLink(displayInfo)) {
-        // remove primo button
-        const hostElem = this.elementRef.nativeElement; // this component's template element
-        this.removeLinkResolverLink(hostElem);
-      }
-    });
+          return displayInfo;
+        })
+      );
   };
 
   removeLinkResolverLink = (hostElement: HTMLElement) => {
@@ -135,4 +145,10 @@ export class ThirdIronButtonsComponent {
       displayInfo.mainButtonType !== ButtonType.None
     );
   };
+
+  openService(service: OnlineService) {
+    if (service && service.url) {
+      window.open(service.url, '_blank');
+    }
+  }
 }
