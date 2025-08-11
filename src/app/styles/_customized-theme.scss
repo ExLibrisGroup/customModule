@@ -1,5 +1,5 @@
-@use '@angular/material' as mat;
-@use 'm3-theme' as m3-theme;
+@use "@angular/material" as mat;
+@use "m3-theme" as m3-theme;
 
 //uncomment the following lines in order to apply your own theme
 
@@ -7,3 +7,6 @@
 //  @include mat.all-component-colors(m3-theme.$light-theme);
 //  @include mat.system-level-colors(m3-theme.$light-theme);
 //}
+
+/* Include select overrides in the custom.css bundle so the host page loads them */
+@import "../third-iron-module/mat-select-overrides.scss";

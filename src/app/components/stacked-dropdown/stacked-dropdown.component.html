@@ -1,0 +1,22 @@
+<div class="dropdown-group flex-row flex-layout-center">
+  <button mat-flat-button iconPositionEnd type="button" color="primary" class="ti-dropdown-button quicklink-button"
+    [attr.aria-label]="onlineServices()[0].ariaLabel || ''" (click)="openService(onlineServices()[0])">
+    <span class="quicklink-button-text">
+      {{ onlineServices()[0].label || onlineServices()[0].source || onlineServices()[0].type }}
+    </span>
+    <primo-pdf-icon />
+  </button>
+
+  <span class="ti-dropdown">
+    <mat-select hideSingleSelectionIndicator class="ti-dropdown-toggle">
+      <mat-select-trigger class="mat-mdc-select-trigger">
+        <span class="mat-mdc-select-min-line"></span>
+      </mat-select-trigger>
+      @for(service of onlineServices().slice(1); track service.source){
+      <mat-option [value]="service" class="ti-dropdown-option">
+        <button type="button" class="ti-dropdown-option-button">{{ service.source || service.type }}</button>
+      </mat-option>
+      }
+    </mat-select>
+  </span>
+</div>

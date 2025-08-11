@@ -33,7 +33,10 @@ import { StackedDropdownComponent } from 'src/app/components/stacked-dropdown/st
     MatSelectModule,
   ],
   templateUrl: './third-iron-buttons.component.html',
-  styleUrl: './third-iron-buttons.component.scss',
+  styleUrls: [
+    './third-iron-buttons.component.scss',
+    '../mat-select-overrides.scss',
+  ],
   providers: [SearchEntityService],
   encapsulation: ViewEncapsulation.None,
 })
