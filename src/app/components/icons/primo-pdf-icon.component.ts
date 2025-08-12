@@ -8,7 +8,7 @@ import { MatIconModule } from '@angular/material/icon';
   template: `<mat-icon
     role="img"
     color="primary"
-    class="quicklink-button-icon quicklink-primo-pdf-icon mat-icon notranslate icon-primary-fill mat-primary"
+    class="primo-pdf-icon mat-icon notranslate icon-primary-fill mat-primary"
     aria-hidden="true"
     data-mat-icon-type="svg"
     data-mat-icon-name="PDF"
@@ -27,6 +27,5 @@ import { MatIconModule } from '@angular/material/icon';
       ></path>
     </svg>
   </mat-icon>`,
-  styleUrl: './icon.component.scss',
 })
 export class PrimoPdfIconComponent {}

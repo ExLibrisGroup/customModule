@@ -12,9 +12,9 @@ export interface PrimoViewModel {
 // }
 
 export interface OnlineService {
-  type: string;
+  type: string; // PDF, HTML, directLink
   url: string;
   ariaLabel?: string;
-  source?: string;
-  label?: string;
+  source?: string; // quicklink, directLink
+  label?: string; // Get PDF, Read Online, Other online options
 }

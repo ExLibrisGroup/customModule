@@ -33,10 +33,7 @@ import { StackedDropdownComponent } from 'src/app/components/stacked-dropdown/st
     MatSelectModule,
   ],
   templateUrl: './third-iron-buttons.component.html',
-  styleUrls: [
-    './third-iron-buttons.component.scss',
-    '../mat-select-overrides.scss',
-  ],
+  styleUrls: ['./third-iron-buttons.component.scss'],
   providers: [SearchEntityService],
   encapsulation: ViewEncapsulation.None,
 })
@@ -86,15 +83,6 @@ export class ThirdIronButtonsComponent {
             console.log('ViewModel:', JSON.stringify(viewModel));
             this.onlineServices = [];
 
-            // Handle directLink (string) and ariaLabel
-            if (viewModel.directLink) {
-              this.onlineServices.push({
-                type: 'directLink',
-                url: viewModel.directLink,
-                ariaLabel: viewModel.ariaLabel || '',
-              });
-            }
-
             // Handle onlineLinks (array of Link objects)
             if (viewModel?.onlineLinks && viewModel.onlineLinks.length > 0) {
               viewModel.onlineLinks.forEach((link: OnlineService) => {
@@ -103,11 +91,19 @@ export class ThirdIronButtonsComponent {
                   type: link.type,
                   url: link.url,
                   ariaLabel: link.ariaLabel || '',
-                  label:
-                    link.type === 'PDF'
-                      ? 'Read Online'
-                      : 'Other online options',
+                  label: link.type === 'PDF' ? 'Get PDF' : 'Read Online',
                 });
+              });
+            }
+
+            // Handle directLink (string) and ariaLabel
+            if (viewModel.directLink) {
+              this.onlineServices.push({
+                source: 'directLink',
+                type: 'directLink',
+                url: viewModel.directLink,
+                ariaLabel: viewModel.ariaLabel || '',
+                label: 'Other online options',
               });
             }
 
