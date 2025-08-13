@@ -10,6 +10,7 @@
   }
 
   .ti-dropdown-button {
+    white-space: nowrap;
     border-radius: 0.3125rem 0 0 0.3125rem;
     background-color: #fff;
     border: 1px solid var(--sys-primary);
@@ -149,6 +150,7 @@
       -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
 
       .ti-dropdown-option-button {
+        white-space: nowrap;
         margin: 0;
         padding: 0;
         color: var(--sys-primary);

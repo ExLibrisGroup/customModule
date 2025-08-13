@@ -10,10 +10,7 @@ import { AsyncPipe } from '@angular/common';
 import { ArticleLinkButtonComponent } from 'src/app/components/article-link-button/article-link-button.component';
 import { MainButtonComponent } from 'src/app/components/main-button/main-button.component';
 import { ButtonType } from 'src/app/shared/button-type.enum';
-import {
-  OnlineService,
-  PrimoViewModel,
-} from 'src/app/types/primoViewModel.types';
+import { OnlineLink, PrimoViewModel } from 'src/app/types/primoViewModel.types';
 // import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatIconModule } from '@angular/material/icon';
 import { MatSelectModule } from '@angular/material/select';
@@ -40,7 +37,7 @@ import { StackedDropdownComponent } from 'src/app/components/stacked-dropdown/st
 export class ThirdIronButtonsComponent {
   @Input() hostComponent!: any;
   elementRef: ElementRef;
-  onlineServices: OnlineService[] = []; // used to build custom merged array of online services for stack views
+  onlineLinks: OnlineLink[] = []; // used to build custom merged array of online services for stack views
   showDropdown = false;
   viewOption = this.configService.getViewOption();
 
@@ -81,12 +78,12 @@ export class ThirdIronButtonsComponent {
           //TODO: (this.configService.getViewOption() !== ViewOptionType.NoStack) {
           if (true) {
             console.log('ViewModel:', JSON.stringify(viewModel));
-            this.onlineServices = [];
+            this.onlineLinks = [];
 
             // Handle onlineLinks (array of Link objects)
             if (viewModel?.onlineLinks && viewModel.onlineLinks.length > 0) {
-              viewModel.onlineLinks.forEach((link: OnlineService) => {
-                this.onlineServices.push({
+              viewModel.onlineLinks.forEach((link: OnlineLink) => {
+                this.onlineLinks.push({
                   source: link.source,
                   type: link.type,
                   url: link.url,
@@ -97,17 +94,21 @@ export class ThirdIronButtonsComponent {
             }
 
             // Handle directLink (string) and ariaLabel
+            // This anchor tag may change! If the NDE UI site changes, we may need to update this
+            const anchor = '&state=#nui.getit.service_viewit';
             if (viewModel.directLink) {
-              this.onlineServices.push({
+              this.onlineLinks.push({
                 source: 'directLink',
                 type: 'directLink',
-                url: viewModel.directLink,
+                url: viewModel.directLink.includes('/nde')
+                  ? `${viewModel.directLink}${anchor}`
+                  : `/nde${viewModel.directLink}${anchor}`,
                 ariaLabel: viewModel.ariaLabel || '',
                 label: 'Other online options',
               });
             }
 
-            console.log('Online services:', this.onlineServices);
+            console.log('Online links:', this.onlineLinks);
           } else if (this.shouldRemoveLinkResolverLink(displayInfo)) {
             // remove primo button
             const hostElem = this.elementRef.nativeElement; // this component's template element
@@ -145,7 +146,7 @@ export class ThirdIronButtonsComponent {
     );
   };
 
-  openService(service: OnlineService) {
+  openService(service: OnlineLink) {
     if (service && service.url) {
       window.open(service.url, '_blank');
     }

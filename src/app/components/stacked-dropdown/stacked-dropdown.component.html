@@ -1,34 +1,14 @@
 <div class="dropdown-group flex-row flex-layout-center">
-  <!-- TODO: break out shared <button> pieces to custom component -->
-  <button mat-flat-button iconPositionEnd type="button" color="primary" class="ti-dropdown-button quicklink-button"
-    [attr.aria-label]="onlineServices()[0].ariaLabel || ''" (click)="openService(onlineServices()[0])">
-    <span class="quicklink-button-text">
-      {{ onlineServices()[0].label || onlineServices()[0].source || onlineServices()[0].type }}
-    </span>
-    @if(onlineServices()[0].type === 'PDF') {
-    <primo-pdf-icon />
-    } @else if(onlineServices()[0].type === 'HTML') {
-    <primo-html-icon />
-    }
-  </button>
+  <stacked-button [link]="onlineLinks()[0]" buttonType="main"></stacked-button>
 
   <span class="ti-dropdown">
     <mat-select hideSingleSelectionIndicator panelWidth="'auto'" class="ti-dropdown-toggle">
       <mat-select-trigger class="mat-mdc-select-trigger">
         <span class="mat-mdc-select-min-line"></span>
       </mat-select-trigger>
-      @for(service of onlineServices().slice(1); track service.source){
-      <mat-option [value]="service" class="ti-dropdown-option">
-        <button mat-flat-button iconPositionEnd type="button" color="primary" class="ti-dropdown-option-button">
-          <span class="quicklink-button-text">
-            {{ service.label || service.source || service.type}}
-          </span>
-          @if(service.type === 'PDF') {
-          <primo-pdf-icon />
-          } @else if(service.type === 'HTML') {
-          <primo-html-icon />
-          }
-        </button>
+      @for(link of onlineLinks().slice(1); track link.source){
+      <mat-option [value]="link" class="ti-dropdown-option">
+        <stacked-button [link]="link" buttonType="dropdown"></stacked-button>
       </mat-option>
       }
     </mat-select>

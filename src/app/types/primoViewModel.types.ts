@@ -1,17 +1,11 @@
 export interface PrimoViewModel {
-  onlineLinks: OnlineService[];
+  onlineLinks: OnlineLink[];
   consolidatedCoverage: string;
   directLink: string;
   ariaLabel: string;
 }
 
-// export interface Link {
-//   source: string; // quicklink
-//   type: string; // PDF, HTML
-//   url: string;
-// }
-
-export interface OnlineService {
+export interface OnlineLink {
   type: string; // PDF, HTML, directLink
   url: string;
   ariaLabel?: string;
