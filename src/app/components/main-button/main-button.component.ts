@@ -1,8 +1,8 @@
 import { Component, effect, input } from '@angular/core';
-import { TranslateService } from '@ngx-translate/core';
 import { IconType } from 'src/app/shared/icon-type.enum';
 import { BaseButtonComponent } from '../base-button/base-button.component';
 import { ButtonType } from 'src/app/shared/button-type.enum';
+import { TranslationService } from '../../services/translation.service';
 
 @Component({
   selector: 'main-button',
@@ -19,7 +19,7 @@ export class MainButtonComponent {
   buttonIcon: string = '';
   IconType = IconType;
 
-  constructor(private translate: TranslateService) {
+  constructor(private translationService: TranslationService) {
     effect(() => {
       this.buttonText = this.getButtonText(this.buttonType());
       this.buttonIcon = this.getButtonIcon(this.buttonType());
@@ -43,58 +43,61 @@ export class MainButtonComponent {
     let text = '';
     switch (buttonType) {
       case ButtonType.Retraction:
-        text = this.getTranslatedText(
+        text = this.translationService.getTranslatedText(
           'LibKey.articleRetractionWatchText',
           'Retracted Article'
         );
         break;
       case ButtonType.ExpressionOfConcern:
-        text = this.getTranslatedText(
+        text = this.translationService.getTranslatedText(
           'LibKey.articleExpressionOfConcernText',
           'Expression of Concern'
         );
         break;
       case ButtonType.ProblematicJournalArticle:
-        text = this.getTranslatedText(
+        text = this.translationService.getTranslatedText(
           'LibKey.problematicJournalText',
           'Problematic Journal'
         );
         break;
       case ButtonType.DirectToPDF:
-        text = this.getTranslatedText(
+        text = this.translationService.getTranslatedText(
           'LibKey.articlePDFDownloadLinkText',
           'Download PDF'
         );
         break;
       case ButtonType.ArticleLink:
-        text = this.getTranslatedText('LibKey.articleLinkText', 'Read Article');
+        text = this.translationService.getTranslatedText(
+          'LibKey.articleLinkText',
+          'Read Article'
+        );
         break;
       case ButtonType.DocumentDelivery:
-        text = this.getTranslatedText(
+        text = this.translationService.getTranslatedText(
           'LibKey.documentDeliveryFulfillmentText',
           'Request PDF'
         );
         break;
       case ButtonType.UnpaywallDirectToPDF:
-        text = this.getTranslatedText(
+        text = this.translationService.getTranslatedText(
           'LibKey.articlePDFDownloadViaUnpaywallText',
           'Download PDF (via Unpaywall)'
         );
         break;
       case ButtonType.UnpaywallArticleLink:
-        text = this.getTranslatedText(
+        text = this.translationService.getTranslatedText(
           'LibKey.articleLinkViaUnpaywallText',
           'Read Article (via Unpaywall)'
         );
         break;
       case ButtonType.UnpaywallManuscriptPDF:
-        text = this.getTranslatedText(
+        text = this.translationService.getTranslatedText(
           'LibKey.articleAcceptedManuscriptPDFViaUnpaywallText',
           'Download PDF (Accepted Manuscript via Unpaywall)'
         );
         break;
       case ButtonType.UnpaywallManuscriptLink:
-        text = this.getTranslatedText(
+        text = this.translationService.getTranslatedText(
           'LibKey.articleAcceptedManuscriptArticleLinkViaUnpaywallText',
           'Read Article (Accepted Manuscript via Unpaywall)'
         );
@@ -102,16 +105,6 @@ export class MainButtonComponent {
     }
 
     return text;
-  }
-
-  private getTranslatedText(
-    translationKey: string,
-    fallbackText: string
-  ): string {
-    const translatedText = this.translate.instant(translationKey);
-    return translatedText && translatedText !== translationKey
-      ? translatedText
-      : fallbackText;
   }
 
   getButtonIcon(buttonType: ButtonType): string {

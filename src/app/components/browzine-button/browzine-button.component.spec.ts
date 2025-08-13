@@ -3,24 +3,26 @@ import { BrowzineButtonComponent } from './browzine-button.component';
 import { ComponentRef } from '@angular/core';
 import { EntityType } from 'src/app/shared/entity-type.enum';
 import { BaseButtonComponent } from '../base-button/base-button.component';
-import { TranslateService } from '@ngx-translate/core';
+import { TranslationService } from '../../services/translation.service';
 
-// Mock for TranslateService
-const mockTranslateService = {
-  instant: (key: string) => {
+// Mock for TranslationService
+const mockTranslationService = {
+  getTranslatedText: (key: string, fallback: string) => {
     const translations: { [key: string]: string } = {
       'LibKey.journalBrowZineWebLinkText': 'View Journal Contents',
       'LibKey.articleBrowZineWebLinkText': 'View Issue Contents',
     };
-    return translations[key] || key;
+    return translations[key] || fallback;
   },
 };
 
-const createTestModule = async (translateServiceMock: any) => {
+const createTestModule = async (translationServiceMock: any) => {
   TestBed.resetTestingModule();
   TestBed.configureTestingModule({
     imports: [BrowzineButtonComponent, BaseButtonComponent],
-    providers: [{ provide: TranslateService, useValue: translateServiceMock }],
+    providers: [
+      { provide: TranslationService, useValue: translationServiceMock },
+    ],
   });
   await TestBed.compileComponents();
   return TestBed;
@@ -36,7 +38,7 @@ describe('BrowzineButtonComponent', () => {
     TestBed.configureTestingModule({
       imports: [BrowzineButtonComponent, BaseButtonComponent],
       providers: [
-        { provide: TranslateService, useValue: mockTranslateService },
+        { provide: TranslationService, useValue: mockTranslationService },
       ],
     });
 

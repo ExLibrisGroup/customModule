@@ -1,8 +1,8 @@
 import { Component, effect, input } from '@angular/core';
-import { TranslateService } from '@ngx-translate/core';
 import { EntityType } from 'src/app/shared/entity-type.enum';
 import { IconType } from 'src/app/shared/icon-type.enum';
 import { BaseButtonComponent } from '../base-button/base-button.component';
+import { TranslationService } from '../../services/translation.service';
 
 @Component({
   selector: 'custom-browzine-button',
@@ -19,7 +19,7 @@ export class BrowzineButtonComponent {
   EntityType = EntityType;
   IconType = IconType;
 
-  constructor(private translate: TranslateService) {
+  constructor(private translationService: TranslationService) {
     effect(() => {
       this.buttonText = this.getButtonText(this.entityType());
     });
@@ -27,25 +27,15 @@ export class BrowzineButtonComponent {
 
   private getButtonText(entityType: EntityType): string {
     if (entityType === EntityType.Journal) {
-      return this.getTranslatedText(
+      return this.translationService.getTranslatedText(
         'LibKey.journalBrowZineWebLinkText',
         'View Journal Contents'
       );
     } else {
-      return this.getTranslatedText(
+      return this.translationService.getTranslatedText(
         'LibKey.articleBrowZineWebLinkText',
         'View Issue Contents'
       );
     }
-  }
-
-  private getTranslatedText(
-    translationKey: string,
-    fallbackText: string
-  ): string {
-    const translatedText = this.translate.instant(translationKey);
-    return translatedText && translatedText !== translationKey
-      ? translatedText
-      : fallbackText;
   }
 }

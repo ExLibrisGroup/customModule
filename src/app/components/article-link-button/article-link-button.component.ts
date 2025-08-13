@@ -1,8 +1,8 @@
 import { Component, effect, input } from '@angular/core';
-import { TranslateService } from '@ngx-translate/core';
 import { EntityType } from 'src/app/shared/entity-type.enum';
 import { IconType } from 'src/app/shared/icon-type.enum';
 import { BaseButtonComponent } from '../base-button/base-button.component';
+import { TranslationService } from '../../services/translation.service';
 
 @Component({
   selector: 'article-link-button',
@@ -18,16 +18,16 @@ export class ArticleLinkButtonComponent {
   EntityTypeEnum = EntityType;
   IconType = IconType;
 
-  constructor(private translate: TranslateService) {
+  constructor(private translationService: TranslationService) {
     effect(() => {
       this.buttonText = this.getButtonText();
     });
   }
 
   private getButtonText(): string {
-    const articleLinkText = this.translate.instant('LibKey.articleLinkText');
-    return articleLinkText && articleLinkText !== 'LibKey.articleLinkText'
-      ? articleLinkText
-      : 'Read Article';
+    return this.translationService.getTranslatedText(
+      'LibKey.articleLinkText',
+      'Read Article'
+    );
   }
 }

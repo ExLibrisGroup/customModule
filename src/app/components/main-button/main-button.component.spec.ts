@@ -4,11 +4,11 @@ import { ComponentRef } from '@angular/core';
 import { ButtonType } from 'src/app/shared/button-type.enum';
 import { BaseButtonComponent } from '../base-button/base-button.component';
 import { IconType } from 'src/app/shared/icon-type.enum';
-import { TranslateService } from '@ngx-translate/core';
+import { TranslationService } from '../../services/translation.service';
 
-// Minimal mock for TranslateService
-const minimalMockTranslateService = {
-  instant: (key: string) => {
+// Minimal mock for TranslationService
+const minimalMockTranslationService = {
+  getTranslatedText: (key: string, fallback: string) => {
     const translations: { [key: string]: string } = {
       'LibKey.articleRetractionWatchText': 'Retracted Article',
       'LibKey.articleExpressionOfConcernText': 'Expression of Concern',
@@ -24,15 +24,17 @@ const minimalMockTranslateService = {
       'LibKey.articleAcceptedManuscriptArticleLinkViaUnpaywallText':
         'Read Article (Accepted Manuscript via Unpaywall)',
     };
-    return translations[key] || key; // Return translation if exists, otherwise return the key
+    return translations[key] || fallback; // Return translation if exists, otherwise return fallback
   },
 };
 
-const createTestModule = async (translateServiceMock: any) => {
+const createTestModule = async (translationServiceMock: any) => {
   TestBed.resetTestingModule();
   TestBed.configureTestingModule({
     imports: [MainButtonComponent, BaseButtonComponent],
-    providers: [{ provide: TranslateService, useValue: translateServiceMock }],
+    providers: [
+      { provide: TranslationService, useValue: translationServiceMock },
+    ],
   });
   await TestBed.compileComponents();
   return TestBed;
@@ -75,7 +77,10 @@ describe('MainButtonComponent', () => {
     TestBed.configureTestingModule({
       imports: [MainButtonComponent, BaseButtonComponent],
       providers: [
-        { provide: TranslateService, useValue: minimalMockTranslateService },
+        {
+          provide: TranslationService,
+          useValue: minimalMockTranslationService,
+        },
       ],
     }).compileComponents();
     fixture = TestBed.createComponent(MainButtonComponent);
@@ -290,16 +295,16 @@ describe('MainButtonComponent', () => {
   describe('Custom text behavior', () => {
     it('should display custom text value when provided', async () => {
       // Create a mock with custom translation values
-      const customMockTranslateService = {
-        instant: (key: string) => {
+      const customMockTranslationService = {
+        getTranslatedText: (key: string, fallback: string) => {
           const customTranslations: { [key: string]: string } = {
             'LibKey.articlePDFDownloadLinkText': 'Custom Download Text', // just testing one key for PDF download here
           };
-          return customTranslations[key] || key;
+          return customTranslations[key] || fallback;
         },
       };
 
-      const testBed = await createTestModule(customMockTranslateService);
+      const testBed = await createTestModule(customMockTranslationService);
       const customFixture = testBed.createComponent(MainButtonComponent);
       const customComponentRef = customFixture.componentRef;
 
@@ -348,16 +353,16 @@ describe('MainButtonComponent', () => {
     });
 
     it('should display custom text for Retraction button', async () => {
-      const customMockTranslateService = {
-        instant: (key: string) => {
+      const customMockTranslationService = {
+        getTranslatedText: (key: string, fallback: string) => {
           const customTranslations: { [key: string]: string } = {
             'LibKey.articleRetractionWatchText': 'Custom Retraction Alert',
           };
-          return customTranslations[key] || key;
+          return customTranslations[key] || fallback;
         },
       };
 
-      const testBed = await createTestModule(customMockTranslateService);
+      const testBed = await createTestModule(customMockTranslationService);
       const customFixture = testBed.createComponent(MainButtonComponent);
       const customComponentRef = customFixture.componentRef;
 
@@ -375,17 +380,17 @@ describe('MainButtonComponent', () => {
     });
 
     it('should display fallback for Expression of Concern when custom text missing', async () => {
-      const fallbackMockTranslateService = {
-        instant: (key: string) => {
+      const fallbackMockTranslationService = {
+        getTranslatedText: (key: string, fallback: string) => {
           // Don't provide translation for Expression of Concern
           const translations: { [key: string]: string } = {
             'LibKey.articlePDFDownloadLinkText': 'Download PDF', // Only this one has translation
           };
-          return translations[key] || key; // Return the key for missing translations
+          return translations[key] || fallback; // Return fallback for missing translations
         },
       };
 
-      const testBed = await createTestModule(fallbackMockTranslateService);
+      const testBed = await createTestModule(fallbackMockTranslationService);
       const fallbackFixture = testBed.createComponent(MainButtonComponent);
       const fallbackComponentRef = fallbackFixture.componentRef;
 
@@ -406,16 +411,16 @@ describe('MainButtonComponent', () => {
     });
 
     it('should display custom text for Document Delivery button', async () => {
-      const customMockTranslateService = {
-        instant: (key: string) => {
+      const customMockTranslationService = {
+        getTranslatedText: (key: string, fallback: string) => {
           const customTranslations: { [key: string]: string } = {
             'LibKey.documentDeliveryFulfillmentText': 'Custom Document Request',
           };
-          return customTranslations[key] || key;
+          return customTranslations[key] || fallback;
         },
       };
 
-      const testBed = await createTestModule(customMockTranslateService);
+      const testBed = await createTestModule(customMockTranslationService);
       const customFixture = testBed.createComponent(MainButtonComponent);
       const customComponentRef = customFixture.componentRef;
 
@@ -433,13 +438,13 @@ describe('MainButtonComponent', () => {
     });
 
     it('should handle translation service returning empty string', async () => {
-      const emptyMockTranslateService = {
-        instant: (key: string) => {
+      const emptyMockTranslationService = {
+        getTranslatedText: (key: string, fallback: string) => {
           return ''; // Return empty string for all translations
         },
       };
 
-      const testBed = await createTestModule(emptyMockTranslateService);
+      const testBed = await createTestModule(emptyMockTranslationService);
       const customFixture = testBed.createComponent(MainButtonComponent);
       const customComponentRef = customFixture.componentRef;
 
@@ -457,13 +462,13 @@ describe('MainButtonComponent', () => {
     });
 
     it('should handle translation service returning null', async () => {
-      const nullMockTranslateService = {
-        instant: (key: string) => {
+      const nullMockTranslationService = {
+        getTranslatedText: (key: string, fallback: string) => {
           return null as any; // Return null for all translations
         },
       };
 
-      const testBed = await createTestModule(nullMockTranslateService);
+      const testBed = await createTestModule(nullMockTranslationService);
       const customFixture = testBed.createComponent(MainButtonComponent);
       const customComponentRef = customFixture.componentRef;
 

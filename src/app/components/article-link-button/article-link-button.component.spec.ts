@@ -5,23 +5,25 @@ import { DisplayWaterfallResponse } from 'src/app/types/displayWaterfallResponse
 import { ButtonType } from 'src/app/shared/button-type.enum';
 import { EntityType } from 'src/app/shared/entity-type.enum';
 import { BaseButtonComponent } from '../base-button/base-button.component';
-import { TranslateService } from '@ngx-translate/core';
+import { TranslationService } from '../../services/translation.service';
 
-// Mock for TranslateService
-const mockTranslateService = {
-  instant: (key: string) => {
+// Mock for TranslationService
+const mockTranslationService = {
+  getTranslatedText: (key: string, fallback: string) => {
     const translations: { [key: string]: string } = {
       'LibKey.articleLinkText': 'Read Article',
     };
-    return translations[key] || key;
+    return translations[key] || fallback;
   },
 };
 
-const createTestModule = async (translateServiceMock: any) => {
+const createTestModule = async (translationServiceMock: any) => {
   TestBed.resetTestingModule();
   TestBed.configureTestingModule({
     imports: [ArticleLinkButtonComponent, BaseButtonComponent],
-    providers: [{ provide: TranslateService, useValue: translateServiceMock }],
+    providers: [
+      { provide: TranslationService, useValue: translationServiceMock },
+    ],
   });
   await TestBed.compileComponents();
   return TestBed;
@@ -45,7 +47,7 @@ describe('ArticleLinkButtonComponent', () => {
     TestBed.configureTestingModule({
       imports: [ArticleLinkButtonComponent, BaseButtonComponent],
       providers: [
-        { provide: TranslateService, useValue: mockTranslateService },
+        { provide: TranslationService, useValue: mockTranslationService },
       ],
     });
 
