@@ -6,12 +6,12 @@ import { DisplayWaterfallResponse } from '../../types/displayWaterfallResponse.t
 import { SearchEntityService } from '../../services/search-entity.service';
 import { ButtonInfoService } from '../../services/button-info.service';
 import { ConfigService } from 'src/app/services/config.service';
+import { TranslationService } from 'src/app/services/translation.service';
 import { AsyncPipe } from '@angular/common';
 import { ArticleLinkButtonComponent } from 'src/app/components/article-link-button/article-link-button.component';
 import { MainButtonComponent } from 'src/app/components/main-button/main-button.component';
 import { ButtonType } from 'src/app/shared/button-type.enum';
 import { OnlineLink, PrimoViewModel } from 'src/app/types/primoViewModel.types';
-// import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatIconModule } from '@angular/material/icon';
 import { MatSelectModule } from '@angular/material/select';
 import { ViewOptionType } from 'src/app/shared/view-option.enum';
@@ -47,6 +47,7 @@ export class ThirdIronButtonsComponent {
     private buttonInfoService: ButtonInfoService,
     private searchEntityService: SearchEntityService,
     private configService: ConfigService,
+    private translationService: TranslationService,
     elementRef: ElementRef
   ) {
     this.elementRef = elementRef;
@@ -82,13 +83,27 @@ export class ThirdIronButtonsComponent {
 
             // Handle onlineLinks (array of Link objects)
             if (viewModel?.onlineLinks && viewModel.onlineLinks.length > 0) {
+              const primoFullDisplayHTMLText =
+                this.translationService.getTranslatedText(
+                  'fulldisplay.HTML',
+                  'Read Online'
+                );
+              const primoFullDisplayPDFText =
+                this.translationService.getTranslatedText(
+                  'fulldisplay.PDF',
+                  'Get PDF'
+                );
+
               viewModel.onlineLinks.forEach((link: OnlineLink) => {
                 this.onlineLinks.push({
                   source: link.source,
                   type: link.type,
                   url: link.url,
                   ariaLabel: link.ariaLabel || '',
-                  label: link.type === 'PDF' ? 'Get PDF' : 'Read Online',
+                  label:
+                    link.type === 'PDF'
+                      ? primoFullDisplayPDFText
+                      : primoFullDisplayHTMLText,
                 });
               });
             }
