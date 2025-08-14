@@ -54,6 +54,7 @@
     "karma-jasmine": "~5.1.0",
     "karma-jasmine-html-reporter": "~2.1.0",
     "ngx-build-plus": "^18.0.0",
+    "prettier": "^3.6.2",
     "typescript": "^5.5.4",
     "webpack": "^5.88.2",
     "webpack-cli": "^5.1.4",
