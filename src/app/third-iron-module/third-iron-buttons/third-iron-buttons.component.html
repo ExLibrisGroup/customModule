@@ -1,21 +1,45 @@
-@if(displayInfo$ | async; as displayInfo){
-@if(onlineLinks.length > 1){
-<stacked-dropdown [onlineLinks]="onlineLinks"></stacked-dropdown>
+@if (displayInfo$ | async; as displayInfo) {
+  @if (onlineLinks.length > 1) {
+    <!-- dealing with stack options -->
+    @if (viewOption === ViewOptionType.StackPlusBrowzine) {
+      <!-- for Stack + Browzine view option -->
+      <stacked-dropdown [onlineLinks]="onlineLinks"></stacked-dropdown>
+      @if (displayInfo.showBrowzineButton && displayInfo.browzineUrl) {
+        <custom-browzine-button
+          class="ti-single-button"
+          [entityType]="displayInfo.entityType"
+          [url]="displayInfo.browzineUrl"
+          class="ti-single-button"
+        ></custom-browzine-button>
+      }
+    } @else if (viewOption === ViewOptionType.SingleStack) {
+      <!-- for Single Stack view option -->
+      <stacked-dropdown [onlineLinks]="onlineLinks"></stacked-dropdown>
+    }
+  } @else {
+    <span>
+      @if (displayInfo.mainUrl !== '') {
+        <main-button
+          class="ti-single-button"
+          [url]="displayInfo.mainUrl"
+          [buttonType]="displayInfo.mainButtonType"
+        ></main-button>
+      }
+      @if (displayInfo.showSecondaryButton && displayInfo.secondaryUrl) {
+        <article-link-button
+          class="ti-single-button"
+          [url]="displayInfo.secondaryUrl || ''"
+          class="ti-single-button"
+        ></article-link-button>
+      }
+      @if (displayInfo.showBrowzineButton && displayInfo.browzineUrl) {
+        <custom-browzine-button
+          class="ti-single-button"
+          [entityType]="displayInfo.entityType"
+          [url]="displayInfo.browzineUrl"
+          class="ti-single-button"
+        ></custom-browzine-button>
+      }
+    </span>
+  }
 }
-}
-
-
-<!-- <span>
-  @if(displayInfo.mainUrl !== '') {
-  <main-button class="ti-single-button" [url]="displayInfo.mainUrl" [buttonType]="displayInfo.mainButtonType">
-  </main-button>
-  }
-  @if(displayInfo.showSecondaryButton && displayInfo.secondaryUrl) {
-  <article-link-button class="ti-single-button" [url]="displayInfo.secondaryUrl || ''"
-    class="ti-single-button"></article-link-button>
-  }
-  @if(displayInfo.showBrowzineButton && displayInfo.browzineUrl) {
-  <custom-browzine-button class="ti-single-button" [entityType]="displayInfo.entityType" [url]="displayInfo.browzineUrl"
-    class="ti-single-button"></custom-browzine-button>
-  }
-</span> -->

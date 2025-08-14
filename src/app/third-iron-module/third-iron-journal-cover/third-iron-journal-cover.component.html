@@ -1,5 +1,5 @@
-@if(journalCoverUrl$ | async; as journalCoverUrl){
-@if(journalCoverUrl !== '') {
-<img [src]="journalCoverUrl" class="journal-cover-img" alt="journal cover" />
-}
+@if (journalCoverUrl$ | async; as journalCoverUrl) {
+  @if (journalCoverUrl !== '') {
+    <img [src]="journalCoverUrl" class="journal-cover-img" alt="journal cover" />
+  }
 }

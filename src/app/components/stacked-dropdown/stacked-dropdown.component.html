@@ -6,10 +6,10 @@
       <mat-select-trigger class="mat-mdc-select-trigger">
         <span class="mat-mdc-select-min-line"></span>
       </mat-select-trigger>
-      @for(link of onlineLinks().slice(1); track link.source){
-      <mat-option [value]="link" class="ti-dropdown-option">
-        <stacked-button [link]="link" buttonType="dropdown"></stacked-button>
-      </mat-option>
+      @for (link of onlineLinks().slice(1); track link.source) {
+        <mat-option [value]="link" class="ti-dropdown-option">
+          <stacked-button [link]="link" buttonType="dropdown"></stacked-button>
+        </mat-option>
       }
     </mat-select>
   </span>

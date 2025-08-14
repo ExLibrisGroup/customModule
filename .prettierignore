@@ -1,0 +1,6 @@
+
+# Ignore files that shouldn't be formatted
+dist/
+node_modules/
+*.min.js
+*.min.css

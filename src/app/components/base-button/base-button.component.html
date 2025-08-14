@@ -1,9 +1,15 @@
-@if(buttonText() !== '' && url() !== '') {
-<button mat-flat-button type="button" id="ti-custom-button" (click)="onClick($event)" [attr.aria-label]="ariaLabel()"
-  role="button">
-  <span class="ti-custom-button-text">
-    <span data-testid="ti-button-text">{{buttonText()}}</span>
-    <custom-svg-icon data-testid="ti-svg-icon" [name]=" icon()" [color]="color()"></custom-svg-icon>
-  </span>
-</button>
+@if (buttonText() !== '' && url() !== '') {
+  <button
+    mat-flat-button
+    type="button"
+    id="ti-custom-button"
+    (click)="onClick($event)"
+    [attr.aria-label]="ariaLabel()"
+    role="button"
+  >
+    <span class="ti-custom-button-text">
+      <span data-testid="ti-button-text">{{ buttonText() }}</span>
+      <custom-svg-icon data-testid="ti-svg-icon" [name]="icon()" [color]="color()"></custom-svg-icon>
+    </span>
+  </button>
 }
