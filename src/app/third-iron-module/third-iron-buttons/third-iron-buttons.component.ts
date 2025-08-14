@@ -41,6 +41,9 @@ export class ThirdIronButtonsComponent {
   showDropdown = false;
   viewOption = this.configService.getViewOption();
 
+  // Expose enum to template
+  ViewOptionType = ViewOptionType;
+
   displayInfo$!: Observable<DisplayWaterfallResponse | null>;
 
   constructor(
@@ -64,106 +67,90 @@ export class ThirdIronButtonsComponent {
     }
 
     // Use combineLatestWith (modern approach) to handle both observables together
-    this.displayInfo$ = this.buttonInfoService
-      .getDisplayInfo(searchResult)
-      .pipe(
-        combineLatestWith(
-          this.hostComponent.viewModel$ as Observable<PrimoViewModel>
-        ),
-        map(([displayInfo, viewModel]) => {
-          console.log(
-            'Display info and viewModel combined. VIEW OPTION:',
-            this.viewOption
-          );
+    this.displayInfo$ = this.buttonInfoService.getDisplayInfo(searchResult).pipe(
+      combineLatestWith(this.hostComponent.viewModel$ as Observable<PrimoViewModel>),
+      map(([displayInfo, viewModel]) => {
+        console.log('Display info and viewModel combined. VIEW OPTION:', this.viewOption);
 
-          //TODO: (this.configService.getViewOption() !== ViewOptionType.NoStack) {
-          if (true) {
-            console.log('ViewModel:', JSON.stringify(viewModel));
-            this.onlineLinks = [];
+        if (this.viewOption !== ViewOptionType.NoStack) {
+          // build custom stack options array for StackPlusBrowzine and SingleStack view options
+          this.buildStackOptions(viewModel);
+        }
 
-            // Handle onlineLinks (array of Link objects)
-            if (viewModel?.onlineLinks && viewModel.onlineLinks.length > 0) {
-              const primoFullDisplayHTMLText =
-                this.translationService.getTranslatedText(
-                  'fulldisplay.HTML',
-                  'Read Online'
-                );
-              const primoFullDisplayPDFText =
-                this.translationService.getTranslatedText(
-                  'fulldisplay.PDF',
-                  'Get PDF'
-                );
+        if (this.shouldRemoveLinkResolverLink(displayInfo)) {
+          // remove Primo "Online Options" button or Primo generated stack dropdown
+          const hostElem = this.elementRef.nativeElement; // this component's template element
+          this.removeLinkResolverLink(hostElem);
+        }
 
-              viewModel.onlineLinks.forEach((link: OnlineLink) => {
-                this.onlineLinks.push({
-                  source: link.source,
-                  type: link.type,
-                  url: link.url,
-                  ariaLabel: link.ariaLabel || '',
-                  label:
-                    link.type === 'PDF'
-                      ? primoFullDisplayPDFText
-                      : primoFullDisplayHTMLText,
-                });
-              });
-            }
+        return displayInfo;
+      })
+    );
+  };
 
-            // Handle directLink (string) and ariaLabel
-            // This anchor tag may change! If the NDE UI site changes, we may need to update this
-            const anchor = '&state=#nui.getit.service_viewit';
-            if (viewModel.directLink) {
-              this.onlineLinks.push({
-                source: 'directLink',
-                type: 'directLink',
-                url: viewModel.directLink.includes('/nde')
-                  ? `${viewModel.directLink}${anchor}`
-                  : `/nde${viewModel.directLink}${anchor}`,
-                ariaLabel: viewModel.ariaLabel || '',
-                label: 'Other online options',
-              });
-            }
+  buildStackOptions = (viewModel: PrimoViewModel) => {
+    console.log('ViewModel:', JSON.stringify(viewModel));
+    this.onlineLinks = [];
 
-            console.log('Online links:', this.onlineLinks);
-          } else if (this.shouldRemoveLinkResolverLink(displayInfo)) {
-            // remove primo button
-            const hostElem = this.elementRef.nativeElement; // this component's template element
-            this.removeLinkResolverLink(hostElem);
-          }
-
-          return displayInfo;
-        })
+    // Handle onlineLinks (array of Link objects)
+    if (viewModel?.onlineLinks && viewModel.onlineLinks.length > 0) {
+      const primoFullDisplayHTMLText = this.translationService.getTranslatedText(
+        'fulldisplay.HTML',
+        'Read Online'
       );
+      const primoFullDisplayPDFText = this.translationService.getTranslatedText(
+        'fulldisplay.PDF',
+        'Get PDF'
+      );
+
+      viewModel.onlineLinks.forEach((link: OnlineLink) => {
+        this.onlineLinks.push({
+          source: link.source,
+          type: link.type,
+          url: link.url,
+          ariaLabel: link.ariaLabel || '',
+          label: link.type === 'PDF' ? primoFullDisplayPDFText : primoFullDisplayHTMLText,
+        });
+      });
+    }
+
+    // Handle directLink (string) and ariaLabel
+    // This anchor tag may change! If the NDE UI site changes, we may need to update this
+    const anchor = '&state=#nui.getit.service_viewit';
+    if (viewModel.directLink) {
+      this.onlineLinks.push({
+        source: 'directLink',
+        type: 'directLink',
+        url: viewModel.directLink.includes('/nde')
+          ? `${viewModel.directLink}${anchor}`
+          : `/nde${viewModel.directLink}${anchor}`,
+        ariaLabel: viewModel.ariaLabel || '',
+        label: 'Other online options',
+      });
+    }
+
+    console.log('Online links:', this.onlineLinks);
   };
 
   removeLinkResolverLink = (hostElement: HTMLElement) => {
     if (hostElement?.parentElement?.parentElement) {
-      const onlineAvailabilityBlockParent: HTMLElement =
-        hostElement.parentElement.parentElement; // jump up to parent of <nde-record-image />
+      const onlineAvailabilityBlockParent: HTMLElement = hostElement.parentElement.parentElement; // jump up to parent of <nde-record-image />
       if (onlineAvailabilityBlockParent) {
-        const onlineAvailabilityElementArray =
-          onlineAvailabilityBlockParent.getElementsByTagName(
-            'nde-online-availability'
-          ) as HTMLCollectionOf<HTMLElement>;
+        const onlineAvailabilityElementArray = onlineAvailabilityBlockParent.getElementsByTagName(
+          'nde-online-availability'
+        ) as HTMLCollectionOf<HTMLElement>;
 
-        Array.from(onlineAvailabilityElementArray).forEach((elem) => {
+        Array.from(onlineAvailabilityElementArray).forEach(elem => {
           elem.style.display = 'none';
         });
       }
     }
   };
 
-  // For NoStack option only
+  // Remove Primo "Online Options" button or Primo generated stack dropdown
   shouldRemoveLinkResolverLink = (displayInfo: DisplayWaterfallResponse) => {
-    // TODO: if configService.getViewOption() !== ViewOptionType.NoStack, then always return true
     return (
-      !this.configService.showLinkResolverLink() &&
-      displayInfo.mainButtonType !== ButtonType.None
+      !this.configService.showLinkResolverLink() && displayInfo.mainButtonType !== ButtonType.None
     );
   };
-
-  openService(service: OnlineLink) {
-    if (service && service.url) {
-      window.open(service.url, '_blank');
-    }
-  }
 }
