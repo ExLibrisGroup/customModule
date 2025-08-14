@@ -2,18 +2,28 @@ import { Component, effect, input } from '@angular/core';
 import { IconType } from 'src/app/shared/icon-type.enum';
 import { BaseButtonComponent } from '../base-button/base-button.component';
 import { ButtonType } from 'src/app/shared/button-type.enum';
+import { EntityType } from 'src/app/shared/entity-type.enum';
 import { TranslationService } from '../../services/translation.service';
+import { CombinedLink } from 'src/app/types/primoViewModel.types';
+import { StackedButtonComponent } from '../stacked-dropdown/components/stacked-button.component';
 
 @Component({
   selector: 'main-button',
   standalone: true,
-  imports: [BaseButtonComponent],
+  imports: [BaseButtonComponent, StackedButtonComponent],
   templateUrl: './main-button.component.html',
   styleUrl: './main-button.component.scss',
 })
 export class MainButtonComponent {
   url = input.required<string>();
   buttonType = input.required<ButtonType>();
+  stack = input<boolean>(false);
+  stackType = input<'main' | 'dropdown'>('main');
+  link = input<CombinedLink>({
+    entityType: EntityType.Unknown,
+    url: '',
+    label: '',
+  });
 
   buttonText: string = '';
   buttonIcon: string = '';
@@ -23,6 +33,9 @@ export class MainButtonComponent {
     effect(() => {
       this.buttonText = this.getButtonText(this.buttonType());
       this.buttonIcon = this.getButtonIcon(this.buttonType());
+
+      this.link()!.label = this.buttonText;
+      // TODO - set the icon
     });
   }
 
@@ -67,10 +80,7 @@ export class MainButtonComponent {
         );
         break;
       case ButtonType.ArticleLink:
-        text = this.translationService.getTranslatedText(
-          'LibKey.articleLinkText',
-          'Read Article'
-        );
+        text = this.translationService.getTranslatedText('LibKey.articleLinkText', 'Read Article');
         break;
       case ButtonType.DocumentDelivery:
         text = this.translationService.getTranslatedText(

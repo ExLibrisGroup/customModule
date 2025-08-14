@@ -3,17 +3,18 @@
   iconPositionEnd
   type="button"
   color="primary"
-  [class.ti-dropdown-button]="buttonType() === 'main'"
-  [class.ti-dropdown-option-button]="buttonType() === 'dropdown'"
+  [class.ti-dropdown-button]="stackType() === 'main'"
+  [class.ti-dropdown-option-button]="stackType() === 'dropdown'"
   [attr.aria-label]="link().ariaLabel || ''"
   (click)="openService()"
 >
   <span class="quicklink-button-text">
-    {{ link().label || link().source || link().type }}
+    {{ link().label }}
   </span>
-  @if (link().type === 'PDF') {
+  @if (link().entityType === 'PDF') {
     <primo-pdf-icon />
-  } @else if (link().type === 'HTML') {
+  } @else if (link().entityType === 'HTML') {
     <primo-html-icon />
   }
+  <!-- TODO: add additional icon options here -->
 </button>

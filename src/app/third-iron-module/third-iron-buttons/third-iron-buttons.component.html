@@ -1,10 +1,10 @@
 @if (displayInfo$ | async; as displayInfo) {
-  @if (onlineLinks.length > 1) {
+  @if (combinedLinks.length > 1) {
     <!-- dealing with stack options -->
     @if (viewOption === ViewOptionType.StackPlusBrowzine) {
       <!-- for Stack + Browzine view option -->
       <div class="ti-stack-options-container">
-        <stacked-dropdown [onlineLinks]="onlineLinks"></stacked-dropdown>
+        <stacked-dropdown [combinedLinks]="combinedLinks"></stacked-dropdown>
         @if (displayInfo.showBrowzineButton && displayInfo.browzineUrl) {
           <custom-browzine-button
             class="ti-browzine-button-with-stack"
@@ -15,7 +15,7 @@
       </div>
     } @else if (viewOption === ViewOptionType.SingleStack) {
       <!-- for Single Stack view option -->
-      <stacked-dropdown [onlineLinks]="onlineLinks"></stacked-dropdown>
+      <stacked-dropdown [combinedLinks]="combinedLinks"></stacked-dropdown>
     }
   } @else {
     <span>
@@ -27,18 +27,13 @@
         ></main-button>
       }
       @if (displayInfo.showSecondaryButton && displayInfo.secondaryUrl) {
-        <article-link-button
-          class="ti-single-button"
-          [url]="displayInfo.secondaryUrl || ''"
-          class="ti-single-button"
-        ></article-link-button>
+        <article-link-button class="ti-single-button" [url]="displayInfo.secondaryUrl || ''"></article-link-button>
       }
       @if (displayInfo.showBrowzineButton && displayInfo.browzineUrl) {
         <custom-browzine-button
           class="ti-single-button"
           [entityType]="displayInfo.entityType"
           [url]="displayInfo.browzineUrl"
-          class="ti-single-button"
         ></custom-browzine-button>
       }
     </span>

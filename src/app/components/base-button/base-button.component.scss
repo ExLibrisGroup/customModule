@@ -9,6 +9,7 @@
   margin-right: 8px;
   height: 32px;
   line-height: 32px;
+  white-space: nowrap;
 
   .ti-custom-button-text {
     display: flex;
@@ -17,14 +18,10 @@
 }
 
 #ti-custom-button:focus {
-  background-color: var(
-    --mat-standard-button-toggle-selected-state-background-color
-  );
+  background-color: var(--mat-standard-button-toggle-selected-state-background-color);
 }
 #ti-custom-button:hover {
-  background-color: var(
-    --mat-standard-button-toggle-selected-state-background-color
-  );
+  background-color: var(--mat-standard-button-toggle-selected-state-background-color);
 }
 // --sys-inverse-on-surface: f4eefb
 // --sys-background:fdf8ff

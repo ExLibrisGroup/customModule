@@ -11,11 +11,12 @@ import { AsyncPipe } from '@angular/common';
 import { ArticleLinkButtonComponent } from 'src/app/components/article-link-button/article-link-button.component';
 import { MainButtonComponent } from 'src/app/components/main-button/main-button.component';
 import { ButtonType } from 'src/app/shared/button-type.enum';
-import { OnlineLink, PrimoViewModel } from 'src/app/types/primoViewModel.types';
+import { CombinedLink, OnlineLink, PrimoViewModel } from 'src/app/types/primoViewModel.types';
 import { MatIconModule } from '@angular/material/icon';
 import { MatSelectModule } from '@angular/material/select';
 import { ViewOptionType } from 'src/app/shared/view-option.enum';
 import { StackedDropdownComponent } from 'src/app/components/stacked-dropdown/stacked-dropdown.component';
+import { EntityType } from 'src/app/shared/entity-type.enum';
 
 @Component({
   selector: 'custom-third-iron-buttons',
@@ -37,7 +38,7 @@ import { StackedDropdownComponent } from 'src/app/components/stacked-dropdown/st
 export class ThirdIronButtonsComponent {
   @Input() hostComponent!: any;
   elementRef: ElementRef;
-  onlineLinks: OnlineLink[] = []; // used to build custom merged array of online services for stack views
+  combinedLinks: CombinedLink[] = []; // used to build custom merged array of online services for stack views
   showDropdown = false;
   viewOption = this.configService.getViewOption();
 
@@ -74,7 +75,7 @@ export class ThirdIronButtonsComponent {
 
         if (this.viewOption !== ViewOptionType.NoStack) {
           // build custom stack options array for StackPlusBrowzine and SingleStack view options
-          this.buildStackOptions(viewModel);
+          this.buildStackOptions(displayInfo, viewModel);
         }
 
         if (this.shouldRemoveLinkResolverLink(displayInfo)) {
@@ -88,11 +89,38 @@ export class ThirdIronButtonsComponent {
     );
   };
 
-  buildStackOptions = (viewModel: PrimoViewModel) => {
+  buildStackOptions = (displayInfo: DisplayWaterfallResponse, viewModel: PrimoViewModel) => {
     console.log('ViewModel:', JSON.stringify(viewModel));
-    this.onlineLinks = [];
+    this.combinedLinks = [];
 
-    // Handle onlineLinks (array of Link objects)
+    // Handle Third Iron display options
+    if (
+      displayInfo.entityType !== EntityType.Unknown &&
+      displayInfo.mainButtonType !== ButtonType.None
+    ) {
+      this.combinedLinks.push({
+        source: 'thirdIron',
+        entityType: displayInfo.entityType,
+        mainButtonType: displayInfo.mainButtonType,
+        url: displayInfo.mainUrl,
+        ariaLabel: '',
+        label: '',
+      });
+    }
+
+    // If we have a secondary Third Iron button, add that to the combinedLinks array as well
+    if (displayInfo.showSecondaryButton && displayInfo.secondaryUrl) {
+      this.combinedLinks.push({
+        source: 'thirdIron',
+        entityType: displayInfo.entityType,
+        url: displayInfo.secondaryUrl,
+        showSecondaryButton: true,
+      });
+    }
+
+    // TODO - for SingleStack view option, we need to add the browzine button to the combinedLinks array as well
+
+    // Handle Primo onlineLinks (array of Link objects)
     if (viewModel?.onlineLinks && viewModel.onlineLinks.length > 0) {
       const primoFullDisplayHTMLText = this.translationService.getTranslatedText(
         'fulldisplay.HTML',
@@ -104,9 +132,9 @@ export class ThirdIronButtonsComponent {
       );
 
       viewModel.onlineLinks.forEach((link: OnlineLink) => {
-        this.onlineLinks.push({
+        this.combinedLinks.push({
           source: link.source,
-          type: link.type,
+          entityType: link.type,
           url: link.url,
           ariaLabel: link.ariaLabel || '',
           label: link.type === 'PDF' ? primoFullDisplayPDFText : primoFullDisplayHTMLText,
@@ -114,22 +142,27 @@ export class ThirdIronButtonsComponent {
       });
     }
 
-    // Handle directLink (string) and ariaLabel
+    // Handle Primo directLink (string) and ariaLabel
     // This anchor tag may change! If the NDE UI site changes, we may need to update this
     const anchor = '&state=#nui.getit.service_viewit';
     if (viewModel.directLink) {
-      this.onlineLinks.push({
+      const primoOnlineOptionsText = this.translationService.getTranslatedText(
+        'nde.delivery.code.otherOnlineOptions',
+        'Other online options'
+      );
+
+      this.combinedLinks.push({
         source: 'directLink',
-        type: 'directLink',
+        entityType: 'directLink',
         url: viewModel.directLink.includes('/nde')
           ? `${viewModel.directLink}${anchor}`
           : `/nde${viewModel.directLink}${anchor}`,
         ariaLabel: viewModel.ariaLabel || '',
-        label: 'Other online options',
+        label: primoOnlineOptionsText,
       });
     }
 
-    console.log('Online links:', this.onlineLinks);
+    console.log('Online links:', this.combinedLinks);
   };
 
   removeLinkResolverLink = (hostElement: HTMLElement) => {

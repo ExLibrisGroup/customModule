@@ -1,14 +1,31 @@
 <div class="dropdown-group flex-row flex-layout-center">
-  <stacked-button [link]="onlineLinks()[0]" buttonType="main"></stacked-button>
+  @if (combinedLinks()[0].source === 'thirdIron') {
+    <!-- for ThirdIron buttons, run through main-button component first to get the button text and icon -->
+    <main-button
+      [url]="combinedLinks()[0].url"
+      [buttonType]="combinedLinks()[0].mainButtonType || ButtonType.None"
+      [stack]="true"
+      [stackType]="'main'"
+      [link]="combinedLinks()[0]"
+    ></main-button>
+  } @else {
+    <stacked-button [link]="combinedLinks()[0]" [stackType]="'main'"></stacked-button>
+  }
 
   <span class="ti-dropdown">
     <mat-select hideSingleSelectionIndicator panelWidth="'auto'" class="ti-dropdown-toggle">
       <mat-select-trigger class="mat-mdc-select-trigger">
         <span class="mat-mdc-select-min-line"></span>
       </mat-select-trigger>
-      @for (link of onlineLinks().slice(1); track link.source) {
+      @for (link of combinedLinks().slice(1); track link.source) {
         <mat-option [value]="link" class="ti-dropdown-option">
-          <stacked-button [link]="link" buttonType="dropdown"></stacked-button>
+          @if (link.source === 'thirdIron') {
+            @if (link.showSecondaryButton && link.url) {
+              <article-link-button [url]="link.url || ''"></article-link-button>
+            }
+          } @else {
+            <stacked-button [link]="link" [stackType]="'dropdown'"></stacked-button>
+          }
         </mat-option>
       }
     </mat-select>
