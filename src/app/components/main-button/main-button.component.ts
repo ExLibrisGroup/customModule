@@ -1,4 +1,5 @@
 import { Component, effect, input } from '@angular/core';
+import { TranslateService } from '@ngx-translate/core';
 import { IconType } from 'src/app/shared/icon-type.enum';
 import { BaseButtonComponent } from '../base-button/base-button.component';
 import { ButtonType } from 'src/app/shared/button-type.enum';
@@ -18,7 +19,7 @@ export class MainButtonComponent {
   buttonIcon: string = '';
   IconType = IconType;
 
-  constructor() {
+  constructor(private translate: TranslateService) {
     effect(() => {
       this.buttonText = this.getButtonText(this.buttonType());
       this.buttonIcon = this.getButtonIcon(this.buttonType());
@@ -42,38 +43,75 @@ export class MainButtonComponent {
     let text = '';
     switch (buttonType) {
       case ButtonType.Retraction:
-        text = 'Retracted Article'; // TODO - add config: browzine.articleRetractionWatchText;
+        text = this.getTranslatedText(
+          'LibKey.articleRetractionWatchText',
+          'Retracted Article'
+        );
         break;
       case ButtonType.ExpressionOfConcern:
-        text = 'Expression of Concern'; // TODO - add config: browzine.articleExpressionOfConcernText
+        text = this.getTranslatedText(
+          'LibKey.articleExpressionOfConcernText',
+          'Expression of Concern'
+        );
         break;
       case ButtonType.ProblematicJournalArticle:
-        text = 'Problematic Journal'; // TODO - add config: browzine.problematicJournalText
+        text = this.getTranslatedText(
+          'LibKey.problematicJournalText',
+          'Problematic Journal'
+        );
         break;
       case ButtonType.DirectToPDF:
-        text = 'Download PDF'; // TODO - add config: browzine.articlePDFDownloadLinkText || browzine.primoArticlePDFDownloadLinkText
+        text = this.getTranslatedText(
+          'LibKey.articlePDFDownloadLinkText',
+          'Download PDF'
+        );
         break;
       case ButtonType.ArticleLink:
-        text = 'Read Article'; // TODO - add config: browzine.articleLinkText
+        text = this.getTranslatedText('LibKey.articleLinkText', 'Read Article');
         break;
       case ButtonType.DocumentDelivery:
-        text = 'Request PDF'; // TODO - add config: browzine.documentDeliveryFulfillmentText
+        text = this.getTranslatedText(
+          'LibKey.documentDeliveryFulfillmentText',
+          'Request PDF'
+        );
         break;
       case ButtonType.UnpaywallDirectToPDF:
-        text = 'Download PDF (via Unpaywall)'; // TODO load config: && browzine.articlePDFDownloadViaUnpaywallText
+        text = this.getTranslatedText(
+          'LibKey.articlePDFDownloadViaUnpaywallText',
+          'Download PDF (via Unpaywall)'
+        );
         break;
       case ButtonType.UnpaywallArticleLink:
-        text = 'Read Article (via Unpaywall)'; // TODO - add config: browzine.articleLinkViaUnpaywallText
+        text = this.getTranslatedText(
+          'LibKey.articleLinkViaUnpaywallText',
+          'Read Article (via Unpaywall)'
+        );
         break;
       case ButtonType.UnpaywallManuscriptPDF:
-        text = 'Download PDF (Accepted Manuscript via Unpaywall)'; // TODO - add config: browzine.articleAcceptedManuscriptPDFViaUnpaywallText
+        text = this.getTranslatedText(
+          'LibKey.articleAcceptedManuscriptPDFViaUnpaywallText',
+          'Download PDF (Accepted Manuscript via Unpaywall)'
+        );
         break;
       case ButtonType.UnpaywallManuscriptLink:
-        text = 'Read Article (Accepted Manuscript via Unpaywall)'; // TODO - add config: browzine.articleAcceptedManuscriptArticleLinkViaUnpaywallText
+        text = this.getTranslatedText(
+          'LibKey.articleAcceptedManuscriptArticleLinkViaUnpaywallText',
+          'Read Article (Accepted Manuscript via Unpaywall)'
+        );
         break;
     }
 
     return text;
+  }
+
+  private getTranslatedText(
+    translationKey: string,
+    fallbackText: string
+  ): string {
+    const translatedText = this.translate.instant(translationKey);
+    return translatedText && translatedText !== translationKey
+      ? translatedText
+      : fallbackText;
   }
 
   getButtonIcon(buttonType: ButtonType): string {
