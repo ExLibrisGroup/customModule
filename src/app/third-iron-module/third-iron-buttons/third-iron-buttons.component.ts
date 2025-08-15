@@ -79,7 +79,7 @@ export class ThirdIronButtonsComponent {
         }
 
         if (this.shouldRemoveLinkResolverLink(displayInfo)) {
-          // remove Primo "Online Options" button or Primo generated stack dropdown
+          // remove Primo "Online Options" button or Primo generated stack option "Other online options"
           const hostElem = this.elementRef.nativeElement; // this component's template element
           this.removeLinkResolverLink(hostElem);
         }
@@ -108,7 +108,9 @@ export class ThirdIronButtonsComponent {
       });
     }
 
-    // If we have a secondary Third Iron button, add that to the combinedLinks array as well
+    // If we have a secondary Third Iron button,
+    // add Article Link to the combinedLinks array as well
+    // Note: the showFormatChoice config check is made in button-info.service.ts
     if (displayInfo.showSecondaryButton && displayInfo.secondaryUrl) {
       this.combinedLinks.push({
         source: 'thirdIron',
@@ -121,7 +123,11 @@ export class ThirdIronButtonsComponent {
     // TODO - for SingleStack view option, we need to add the browzine button to the combinedLinks array as well
 
     // Handle Primo onlineLinks (array of Link objects)
-    if (viewModel?.onlineLinks && viewModel.onlineLinks.length > 0) {
+    if (
+      viewModel?.onlineLinks &&
+      viewModel.onlineLinks.length > 0 &&
+      !this.configService.enableLinkOptimizer()
+    ) {
       const primoFullDisplayHTMLText = this.translationService.getTranslatedText(
         'fulldisplay.HTML',
         'Read Online'
@@ -145,7 +151,7 @@ export class ThirdIronButtonsComponent {
     // Handle Primo directLink (string) and ariaLabel
     // This anchor tag may change! If the NDE UI site changes, we may need to update this
     const anchor = '&state=#nui.getit.service_viewit';
-    if (viewModel.directLink) {
+    if (viewModel.directLink && this.configService.showLinkResolverLink()) {
       const primoOnlineOptionsText = this.translationService.getTranslatedText(
         'nde.delivery.code.otherOnlineOptions',
         'Other online options'

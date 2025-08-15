@@ -1,4 +1,4 @@
-import { Component, effect, input } from '@angular/core';
+import { Component, effect, input, computed, signal } from '@angular/core';
 import { IconType } from 'src/app/shared/icon-type.enum';
 import { BaseButtonComponent } from '../base-button/base-button.component';
 import { ButtonType } from 'src/app/shared/button-type.enum';
@@ -15,6 +15,7 @@ import { StackedButtonComponent } from '../stacked-dropdown/components/stacked-b
   styleUrl: './main-button.component.scss',
 })
 export class MainButtonComponent {
+  IconType = IconType;
   url = input.required<string>();
   buttonType = input.required<ButtonType>();
   stack = input<boolean>(false);
@@ -25,19 +26,25 @@ export class MainButtonComponent {
     label: '',
   });
 
-  buttonText: string = '';
-  buttonIcon: string = '';
-  IconType = IconType;
+  // Derived values from inputs
+  buttonText = computed<string>(() => this.getButtonText(this.buttonType()));
+  buttonIcon = computed<IconType>(() => this.getButtonIcon(this.buttonType()));
 
-  constructor(private translationService: TranslationService) {
-    effect(() => {
-      this.buttonText = this.getButtonText(this.buttonType());
-      this.buttonIcon = this.getButtonIcon(this.buttonType());
+  updatedLink = computed(() => {
+    const originalLink = this.link();
+    const computedLabel = this.buttonText() || originalLink.label;
+    const defaultIcon = IconType.None;
+    const computedIcon = this.buttonIcon() || originalLink.icon || defaultIcon;
 
-      this.link()!.label = this.buttonText;
-      // TODO - set the icon
-    });
-  }
+    return {
+      ...originalLink,
+      label: computedLabel,
+      icon: computedIcon,
+      source: originalLink.source ?? 'thirdIron',
+    };
+  });
+
+  constructor(private translationService: TranslationService) {}
 
   onClick(event: MouseEvent) {
     // We’ve seen some discovery services intercept basic a href links, and have
@@ -117,8 +124,8 @@ export class MainButtonComponent {
     return text;
   }
 
-  getButtonIcon(buttonType: ButtonType): string {
-    let icon = '';
+  getButtonIcon(buttonType: ButtonType): IconType {
+    let icon = IconType.None;
     switch (buttonType) {
       case ButtonType.Retraction:
         icon = IconType.ArticleAlert;

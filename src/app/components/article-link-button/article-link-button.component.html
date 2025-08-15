@@ -1,7 +1,11 @@
-<base-button
-  [ariaLabel]="buttonText"
-  [color]="'sys-primary'"
-  [icon]="IconType.ArticleLink"
-  [url]="url() || ''"
-  [buttonText]="buttonText"
-></base-button>
+@if (stack()) {
+  <stacked-button [link]="updatedLink()" [stackType]="stackType()"></stacked-button>
+} @else {
+  <base-button
+    [ariaLabel]="buttonText()"
+    [color]="'sys-primary'"
+    [icon]="IconType.ArticleLink"
+    [url]="url() || ''"
+    [buttonText]="buttonText()"
+  ></base-button>
+}

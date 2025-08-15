@@ -1,11 +1,11 @@
 @if (stack()) {
-  <stacked-button [link]="link()" [stackType]="stackType()"></stacked-button>
+  <stacked-button [link]="updatedLink()" [stackType]="stackType()"></stacked-button>
 } @else {
   <base-button
-    [ariaLabel]="buttonText"
+    [ariaLabel]="buttonText()"
     [color]="'sys-primary'"
-    [icon]="buttonIcon"
+    [icon]="buttonIcon()"
     [url]="url()"
-    [buttonText]="buttonText"
+    [buttonText]="buttonText()"
   ></base-button>
 }

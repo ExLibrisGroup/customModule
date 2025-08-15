@@ -3,4 +3,5 @@ export enum IconType {
   ArticleAlert = 'article-alert-icon',
   ArticleLink = 'article-link-icon',
   BrowZine = 'open-book-icon',
+  None = '',
 }

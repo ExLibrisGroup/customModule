@@ -21,7 +21,12 @@
         <mat-option [value]="link" class="ti-dropdown-option">
           @if (link.source === 'thirdIron') {
             @if (link.showSecondaryButton && link.url) {
-              <article-link-button [url]="link.url || ''"></article-link-button>
+              <article-link-button
+                [url]="link.url || ''"
+                [link]="link"
+                [stack]="true"
+                [stackType]="'dropdown'"
+              ></article-link-button>
             }
           } @else {
             <stacked-button [link]="link" [stackType]="'dropdown'"></stacked-button>

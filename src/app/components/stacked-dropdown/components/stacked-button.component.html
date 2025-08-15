@@ -15,6 +15,7 @@
     <primo-pdf-icon />
   } @else if (link().entityType === 'HTML') {
     <primo-html-icon />
+  } @else if (link().source === 'thirdIron') {
+    <custom-svg-icon data-testid="ti-svg-icon" [name]="link().icon || ''" [color]="'sys-primary'"></custom-svg-icon>
   }
-  <!-- TODO: add additional icon options here -->
 </button>

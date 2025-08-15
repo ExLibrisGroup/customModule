@@ -1,5 +1,6 @@
 import { ButtonType } from '../shared/button-type.enum';
 import { EntityType } from '../shared/entity-type.enum';
+import { IconType } from '../shared/icon-type.enum';
 
 export interface PrimoViewModel {
   onlineLinks: OnlineLink[];
@@ -22,9 +23,10 @@ export type LinkEntityType = 'PDF' | 'HTML' | 'directLink' | EntityType;
 export interface CombinedLink {
   entityType: LinkEntityType; // PDF, HTML, directLink, plus TI EntityType (Article, Journal, Unknown)
   url: string;
-  mainButtonType?: ButtonType; // Third Iron button types
   ariaLabel?: string;
-  source?: string; // quicklink, directLink, thirdIron
+  icon?: IconType; // Third Iron icons
   label?: string;
+  mainButtonType?: ButtonType; // Third Iron button types
   showSecondaryButton?: boolean;
+  source?: string; // quicklink, directLink, thirdIron
 }
