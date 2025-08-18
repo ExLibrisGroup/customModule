@@ -110,7 +110,7 @@ describe('StackedDropdownComponent', () => {
     const links = [
       {
         source: 'thirdIron',
-        entityType: 'HTML',
+        entityType: 'Article',
         url: 'https://example.com/article',
         mainButtonType: 'ArticleLink',
         ariaLabel: 'Article',
@@ -138,7 +138,34 @@ describe('StackedDropdownComponent', () => {
     expect(stackedButtons.length).toBe(1);
   });
 
-  it('always renders a mat-select dropdown container', () => {
+  it('always renders a mat-select dropdown container for more than one link', () => {
+    const links = [
+      {
+        source: 'quicklink',
+        entityType: 'PDF',
+        url: 'https://example.com/pdf',
+        ariaLabel: 'Get PDF',
+        label: 'Get PDF',
+      },
+      {
+        source: 'quicklink',
+        entityType: 'HTML',
+        url: 'https://example.com/html',
+        ariaLabel: 'Read Online',
+        label: 'Read Online',
+      },
+    ];
+    componentRef.setInput('combinedLinks', links as any);
+    fixture.detectChanges();
+
+    const nativeEl = fixture.nativeElement as HTMLElement;
+    const dropdown = nativeEl.querySelector('.ti-dropdown');
+    const toggle = nativeEl.querySelector('.ti-dropdown-toggle');
+    expect(dropdown).toBeTruthy();
+    expect(toggle).toBeTruthy();
+  });
+
+  it('does not render dropdown when only one link is present', () => {
     const links = [
       {
         source: 'quicklink',
@@ -153,8 +180,6 @@ describe('StackedDropdownComponent', () => {
 
     const nativeEl = fixture.nativeElement as HTMLElement;
     const dropdown = nativeEl.querySelector('.ti-dropdown');
-    const toggle = nativeEl.querySelector('.ti-dropdown-toggle');
-    expect(dropdown).toBeTruthy();
-    expect(toggle).toBeTruthy();
+    expect(dropdown).toBeFalsy();
   });
 });

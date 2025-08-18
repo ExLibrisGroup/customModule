@@ -1366,7 +1366,42 @@ describe('ButtonInfoService', () => {
         entityType: 'directLink',
         url: '/nde/some/direct/link&state=#nui.getit.service_viewit',
         ariaLabel: 'Direct link aria label',
-        label: 'Other online options', // From mock translation service
+        label: 'Other online options', // From mock translation service, option when more than one item in the stack
+      });
+    });
+
+    it('should label direct link as Available Online when it is the only option', async () => {
+      const mockConfig = { ...MOCK_MODULE_PARAMETERS };
+      mockConfig.showLinkResolverLink = true;
+
+      const testBed = await createTestModule(mockConfig);
+      const testService = testBed.inject(ButtonInfoService);
+
+      const displayInfo: DisplayWaterfallResponse = {
+        entityType: EntityType.Unknown,
+        mainButtonType: ButtonType.None,
+        mainUrl: '',
+        secondaryUrl: '',
+        showSecondaryButton: false,
+        showBrowzineButton: false,
+        browzineUrl: '',
+      };
+
+      const viewModel: any = {
+        onlineLinks: [],
+        directLink: '/some/direct/link',
+        ariaLabel: 'Direct link aria label',
+      };
+
+      const result = testService.buildStackOptions(displayInfo, viewModel);
+
+      expect(result).toHaveSize(1);
+      expect(result[0]).toEqual({
+        source: 'directLink',
+        entityType: 'directLink',
+        url: '/nde/some/direct/link&state=#nui.getit.service_viewit',
+        ariaLabel: 'Direct link aria label',
+        label: 'Available Online', // From mock translation service when only one option
       });
     });
 

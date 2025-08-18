@@ -299,6 +299,10 @@ export class ButtonInfoService {
         'nde.delivery.code.otherOnlineOptions',
         'Other online options'
       );
+      const primoAvailableOnlineText = this.translationService.getTranslatedText(
+        'delivery.code.fulltext',
+        'Available Online'
+      );
 
       combinedLinks.push({
         source: 'directLink',
@@ -307,7 +311,7 @@ export class ButtonInfoService {
           ? `${viewModel.directLink}${anchor}`
           : `/nde${viewModel.directLink}${anchor}`,
         ariaLabel: viewModel.ariaLabel || '',
-        label: primoOnlineOptionsText,
+        label: combinedLinks.length > 0 ? primoOnlineOptionsText : primoAvailableOnlineText,
       });
     }
 
