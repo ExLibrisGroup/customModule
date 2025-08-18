@@ -42,7 +42,7 @@ jobs:
       - persist_to_workspace:
           root: ~/
           paths:
-            - "project"
+            - 'project'
 
   deploy-to-staging:
     <<: *settings
@@ -147,23 +147,24 @@ workflows:
       #     filters:
       #       branches:
       #         only: /feature\/.*/
-      # TODO add this line back in! - build-and-test
+
+      # build
+      - build-and-test
       - deploy-to-staging:
-          # requires:
-          #   - build-and-test
+          requires:
+            - build-and-test
           filters:
             branches:
-              # TODO: change back! only: develop
-              only: /feature\/.*/
+              only: develop
       - deploy-to-production:
-          # requires:
-          #   - build-and-test
+          requires:
+            - build-and-test
           filters:
             branches:
               only: main
       - renogen:
-          # requires:
-          #   - build-and-test
+          requires:
+            - build-and-test
           filters:
             branches:
               only:
