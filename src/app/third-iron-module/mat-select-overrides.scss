@@ -11,10 +11,10 @@
 
   .ti-dropdown-button {
     white-space: nowrap;
-    border-radius: 0.3125rem 0 0 0.3125rem;
+    border-radius: 0.3125rem;
     background-color: #fff;
     border: 1px solid var(--sys-primary);
-    border-right: none;
+    // border-right: none;
     color: var(--sys-primary);
     padding-left: 1rem;
     padding-right: 1rem;
@@ -42,6 +42,13 @@
         font-size: 14px;
       }
     }
+  }
+
+  /* When the first button is adjacent to a dropdown, we hide its right border to visually join them */
+  stacked-button.with-dropdown .ti-dropdown-button,
+  main-button.with-dropdown .ti-dropdown-button {
+    border-right: none;
+    border-radius: 0.3125rem 0 0 0.3125rem;
   }
 
   .ti-dropdown-button:focus-visible {

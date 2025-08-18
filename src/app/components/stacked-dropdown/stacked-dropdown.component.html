@@ -7,9 +7,14 @@
       [stack]="true"
       [stackType]="'main'"
       [link]="combinedLinks()[0]"
+      [class.with-dropdown]="combinedLinks().length > 1"
     ></main-button>
   } @else {
-    <stacked-button [link]="combinedLinks()[0]" [stackType]="'main'"></stacked-button>
+    <stacked-button
+      [link]="combinedLinks()[0]"
+      [stackType]="'main'"
+      [class.with-dropdown]="combinedLinks().length > 1"
+    ></stacked-button>
   }
 
   @if (combinedLinks().length > 1) {
