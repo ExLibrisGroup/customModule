@@ -29,7 +29,10 @@ import { StackedDropdownComponent } from 'src/app/components/stacked-dropdown/st
     MatSelectModule,
   ],
   templateUrl: './third-iron-buttons.component.html',
-  styleUrls: ['./third-iron-buttons.component.scss'],
+  styleUrls: [
+    './third-iron-buttons.component.scss',
+    '../../components/stacked-dropdown/stacked-dropdown.component.scss',
+  ],
   providers: [SearchEntityService],
   encapsulation: ViewEncapsulation.None,
 })
@@ -73,12 +76,16 @@ export class ThirdIronButtonsComponent {
         if (this.viewOption !== ViewOptionType.NoStack) {
           // build custom stack options array for StackPlusBrowzine and SingleStack view options
           this.combinedLinks = this.buttonInfoService.buildStackOptions(displayInfo, viewModel);
-        }
 
-        if (this.shouldRemoveLinkResolverLink(displayInfo)) {
-          // remove Primo "Online Options" button or Primo generated stack option "Other online options"
+          // remove Primo generated buttons/stack if we have a custom stack
+          if (this.combinedLinks.length > 0) {
+            const hostElem = this.elementRef.nativeElement; // this component's template element
+            this.removePrimoOnlineAvailability(hostElem);
+          }
+        } else if (this.shouldRemovePrimoOnlineAvailability(displayInfo)) {
+          // remove Primo "Online Options" button or Primo's stack
           const hostElem = this.elementRef.nativeElement; // this component's template element
-          this.removeLinkResolverLink(hostElem);
+          this.removePrimoOnlineAvailability(hostElem);
         }
 
         return displayInfo;
@@ -86,7 +93,7 @@ export class ThirdIronButtonsComponent {
     );
   };
 
-  removeLinkResolverLink = (hostElement: HTMLElement) => {
+  removePrimoOnlineAvailability = (hostElement: HTMLElement) => {
     if (hostElement?.parentElement?.parentElement) {
       const onlineAvailabilityBlockParent: HTMLElement = hostElement.parentElement.parentElement; // jump up to parent of <nde-record-image />
       if (onlineAvailabilityBlockParent) {
@@ -102,7 +109,7 @@ export class ThirdIronButtonsComponent {
   };
 
   // Remove Primo "Online Options" button or Primo generated stack dropdown
-  shouldRemoveLinkResolverLink = (displayInfo: DisplayWaterfallResponse) => {
+  shouldRemovePrimoOnlineAvailability = (displayInfo: DisplayWaterfallResponse) => {
     return (
       !this.configService.showLinkResolverLink() && displayInfo.mainButtonType !== ButtonType.None
     );
