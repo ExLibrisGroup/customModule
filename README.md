@@ -50,7 +50,7 @@ Default configuration JSON:
   {
     "apiKey": "your-libkey-api-key",
     "libraryId":"your-libkey-library-id",
-    "viewOption:"no-stack",
+    "viewOption:"stack-plus-browzine",
     "unpaywallEmailAddressKey": "your-unpaywall-email-address",
     "journalCoverImagesEnabled": "true",
     "journalBrowZineWebLinkTextEnabled": "true",
@@ -82,7 +82,6 @@ Default configuration JSON:
    ![Alma configuration](./readme-files/alma-add-on-configuration.png)
 
    Configure the following:
-
    - **Add-on Name** – The identifier used in Alma’s configuration (View ID set in step 1).
    - **Add-on URL** – The location where the add-on is hosted (static folder to load the add-on at runtime). The current URL for the LibKey adaptor is `https://browzine-adapters.s3.amazonaws.com/primo-nde/production/` (keep the trailing '/')
    - **Add-on Configuration File** – JSON-based config parameters to be referenced at runtime by the add-on. Upload your modified JSON configuration file from Step 2.
@@ -108,7 +107,6 @@ Button label text can be customized and translated by setting up label codes in 
    ![Alma Add Row](./readme-files/alma-add-row.png)
 
 3. The available label codes are as follows:
-
    - LibKey.articleExpressionOfConcernText
    - LibKey.problematicJournalText
    - LibKey.articlePDFDownloadLinkText

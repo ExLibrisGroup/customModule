@@ -23,7 +23,7 @@ export class StackedButtonComponent {
   link = input.required<CombinedLink>();
   stackType = input.required<'dropdown' | 'main'>();
 
-  openService() {
+  openLink() {
     if (this.link() && this.link().url) {
       const target = this.link().source === 'directLink' ? '_self' : '_blank';
       window.open(this.link().url, target);

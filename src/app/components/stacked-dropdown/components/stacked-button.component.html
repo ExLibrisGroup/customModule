@@ -6,7 +6,7 @@
   [class.ti-dropdown-button]="stackType() === 'main'"
   [class.ti-dropdown-option-button]="stackType() === 'dropdown'"
   [attr.aria-label]="link().ariaLabel || ''"
-  (click)="openService()"
+  (click)="openLink()"
 >
   <span class="quicklink-button-text">
     {{ link().label }}
