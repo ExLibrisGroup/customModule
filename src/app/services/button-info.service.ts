@@ -9,6 +9,9 @@ import { DisplayWaterfallResponse } from '../types/displayWaterfallResponse.type
 import { ApiResult, ArticleData, JournalData } from '../types/tiData.types';
 import { EntityType } from '../shared/entity-type.enum';
 import { ButtonType } from '../shared/button-type.enum';
+import { CombinedLink, OnlineLink } from '../types/primoViewModel.types';
+import { PrimoViewModel } from '../types/primoViewModel.types';
+import { TranslationService } from './translation.service';
 
 export const DEFAULT_DISPLAY_WATERFALL_RESPONSE = {
   entityType: EntityType.Unknown,
@@ -32,7 +35,8 @@ export class ButtonInfoService {
     private httpService: HttpService,
     private searchEntityService: SearchEntityService,
     private unpaywallService: UnpaywallService,
-    private configService: ConfigService
+    private configService: ConfigService,
+    private translationService: TranslationService
   ) {}
 
   getDisplayInfo(entity: SearchEntity): Observable<DisplayWaterfallResponse> {
@@ -44,23 +48,14 @@ export class ButtonInfoService {
         const doi = this.searchEntityService.getDoi(entity);
         return this.httpService.getArticle(doi).pipe(
           // first, pass article response into display waterfall to get display object
-          map(
-            (
-              articleResponse
-            ): { response: ApiResult; displayInfo: DisplayWaterfallResponse } =>
-              this.displayWaterfall(articleResponse, entityType)
+          map((articleResponse): { response: ApiResult; displayInfo: DisplayWaterfallResponse } =>
+            this.displayWaterfall(articleResponse, entityType)
           ),
           // second, the result of map above is passed into mergeMap, and based on displayInfo object, determine if we need to fallback to Unpaywall
           mergeMap(
-            ({
-              response: articleRes,
-              displayInfo,
-            }): Observable<DisplayWaterfallResponse> =>
-              this.shouldMakeUnpaywallCall(
-                articleRes,
-                entityType,
-                displayInfo.mainButtonType
-              ) && doi
+            ({ response: articleRes, displayInfo }): Observable<DisplayWaterfallResponse> =>
+              this.shouldMakeUnpaywallCall(articleRes, entityType, displayInfo.mainButtonType) &&
+              doi
                 ? // fallback to Unpaywall
                   this.makeUnpaywallCall(articleRes, displayInfo, doi)
                 : // no fallback, just return displayInfo from display waterfall
@@ -71,11 +66,8 @@ export class ButtonInfoService {
       if (entityType === EntityType.Journal) {
         const issn = this.searchEntityService.getIssn(entity);
         return this.httpService.getJournal(issn).pipe(
-          map((journalResponse) => {
-            const waterfallResponse = this.displayWaterfall(
-              journalResponse,
-              entityType
-            );
+          map(journalResponse => {
+            const waterfallResponse = this.displayWaterfall(journalResponse, entityType);
             return waterfallResponse.displayInfo;
           })
         );
@@ -114,10 +106,7 @@ export class ButtonInfoService {
 
     // If our response object data isn't an Article and isn't a Journal,
     // we can't proceed, so return the default empty button info
-    if (
-      !this.httpService.isArticle(data) &&
-      !this.httpService.isJournal(data)
-    ) {
+    if (!this.httpService.isArticle(data) && !this.httpService.isJournal(data)) {
       return defaultReturn;
     }
 
@@ -127,12 +116,11 @@ export class ButtonInfoService {
     const articleLinkUrl = this.getArticleLinkUrl(type, data);
     const articleRetractionUrl = this.getArticleRetractionUrl(type, data);
     const articleEocNoticeUrl = this.getArticleEOCNoticeUrl(type, data);
-    const problematicJournalArticleNoticeUrl =
-      this.getProblematicJournalArticleNoticeUrl(type, data);
-    const documentDeliveryUrl = this.getDocumentDeliveryFulfillmentUrl(
+    const problematicJournalArticleNoticeUrl = this.getProblematicJournalArticleNoticeUrl(
       type,
       data
     );
+    const documentDeliveryUrl = this.getDocumentDeliveryFulfillmentUrl(type, data);
 
     let buttonType = ButtonType.None;
     let showBrowzineButton = false;
@@ -155,10 +143,7 @@ export class ButtonInfoService {
     ) {
       buttonType = ButtonType.ExpressionOfConcern;
       linkUrl = articleEocNoticeUrl;
-    } else if (
-      problematicJournalArticleNoticeUrl &&
-      type === EntityType.Article
-    ) {
+    } else if (problematicJournalArticleNoticeUrl && type === EntityType.Article) {
       buttonType = ButtonType.ProblematicJournalArticle;
       linkUrl = problematicJournalArticleNoticeUrl;
     }
@@ -247,6 +232,89 @@ export class ButtonInfoService {
     };
   }
 
+  buildStackOptions = (displayInfo: DisplayWaterfallResponse, viewModel: PrimoViewModel) => {
+    console.log('ViewModel:', JSON.stringify(viewModel));
+    const combinedLinks: CombinedLink[] = [];
+
+    // Handle Third Iron display options
+    if (
+      displayInfo.entityType !== EntityType.Unknown &&
+      displayInfo.mainButtonType !== ButtonType.None
+    ) {
+      combinedLinks.push({
+        source: 'thirdIron',
+        entityType: displayInfo.entityType,
+        mainButtonType: displayInfo.mainButtonType,
+        url: displayInfo.mainUrl,
+        ariaLabel: '',
+        label: '',
+      });
+    }
+
+    // If we have a secondary Third Iron button,
+    // add Article Link to the combinedLinks array as well
+    // Note: the showFormatChoice config check is made in button-info.service.ts
+    if (displayInfo.showSecondaryButton && displayInfo.secondaryUrl) {
+      combinedLinks.push({
+        source: 'thirdIron',
+        entityType: displayInfo.entityType,
+        url: displayInfo.secondaryUrl,
+        showSecondaryButton: true,
+      });
+    }
+
+    // TODO - for SingleStack view option, we need to add the browzine button to the combinedLinks array as well
+
+    // Handle Primo onlineLinks (array of Link objects)
+    if (
+      viewModel?.onlineLinks &&
+      viewModel.onlineLinks.length > 0 &&
+      !this.configService.enableLinkOptimizer()
+    ) {
+      const primoFullDisplayHTMLText = this.translationService.getTranslatedText(
+        'fulldisplay.HTML',
+        'Read Online'
+      );
+      const primoFullDisplayPDFText = this.translationService.getTranslatedText(
+        'fulldisplay.PDF',
+        'Get PDF'
+      );
+
+      viewModel.onlineLinks.forEach((link: OnlineLink) => {
+        combinedLinks.push({
+          source: link.source,
+          entityType: link.type,
+          url: link.url,
+          ariaLabel: link.ariaLabel || '',
+          label: link.type === 'PDF' ? primoFullDisplayPDFText : primoFullDisplayHTMLText,
+        });
+      });
+    }
+
+    // Handle Primo directLink (string) and ariaLabel
+    // This anchor tag may change! If the NDE UI site changes, we may need to update this
+    const anchor = '&state=#nui.getit.service_viewit';
+    if (viewModel.directLink && this.configService.showLinkResolverLink()) {
+      const primoOnlineOptionsText = this.translationService.getTranslatedText(
+        'nde.delivery.code.otherOnlineOptions',
+        'Other online options'
+      );
+
+      combinedLinks.push({
+        source: 'directLink',
+        entityType: 'directLink',
+        url: viewModel.directLink.includes('/nde')
+          ? `${viewModel.directLink}${anchor}`
+          : `/nde${viewModel.directLink}${anchor}`,
+        ariaLabel: viewModel.ariaLabel || '',
+        label: primoOnlineOptionsText,
+      });
+    }
+
+    console.log('Online links:', combinedLinks);
+    return combinedLinks;
+  };
+
   private getBrowZineWebLink(data: ArticleData | JournalData): string {
     return data?.browzineWebLink ? data.browzineWebLink : '';
   }
@@ -273,10 +341,7 @@ export class ButtonInfoService {
     return browzineEnabled;
   }
 
-  private getDirectToPDFUrl(
-    type: EntityType,
-    data: ArticleData | JournalData
-  ): string {
+  private getDirectToPDFUrl(type: EntityType, data: ArticleData | JournalData): string {
     let directToPDFUrl = '';
 
     if (type === EntityType.Article && this.httpService.isArticle(data)) {
@@ -288,10 +353,7 @@ export class ButtonInfoService {
     return directToPDFUrl;
   }
 
-  private getArticleLinkUrl(
-    type: EntityType,
-    data: ArticleData | JournalData
-  ): string {
+  private getArticleLinkUrl(type: EntityType, data: ArticleData | JournalData): string {
     let articleLinkUrl = '';
 
     if (type === EntityType.Article && this.httpService.isArticle(data)) {
@@ -303,10 +365,7 @@ export class ButtonInfoService {
     return articleLinkUrl;
   }
 
-  private getArticleRetractionUrl(
-    type: EntityType,
-    data: ArticleData | JournalData
-  ): string {
+  private getArticleRetractionUrl(type: EntityType, data: ArticleData | JournalData): string {
     let articleRetractionUrl = '';
 
     if (type === EntityType.Article && this.httpService.isArticle(data)) {
@@ -318,10 +377,7 @@ export class ButtonInfoService {
     return articleRetractionUrl;
   }
 
-  private getArticleEOCNoticeUrl(
-    type: EntityType,
-    data: ArticleData | JournalData
-  ): string {
+  private getArticleEOCNoticeUrl(type: EntityType, data: ArticleData | JournalData): string {
     let articleEocNoticeUrl = '';
 
     if (type === EntityType.Article && this.httpService.isArticle(data)) {
@@ -340,8 +396,7 @@ export class ButtonInfoService {
 
     if (type === EntityType.Article && this.httpService.isArticle(data)) {
       if (data && data.problematicJournalArticleNoticeUrl) {
-        problematicJournalArticleNoticeUrl =
-          data.problematicJournalArticleNoticeUrl;
+        problematicJournalArticleNoticeUrl = data.problematicJournalArticleNoticeUrl;
       }
     }
     return problematicJournalArticleNoticeUrl;
@@ -391,10 +446,7 @@ export class ButtonInfoService {
 
     if (
       response.status === 404 ||
-      (!directToPDFUrl &&
-        !articleLinkUrl &&
-        !shouldAvoidUnpaywall &&
-        isUnpaywallUsable)
+      (!directToPDFUrl && !articleLinkUrl && !shouldAvoidUnpaywall && isUnpaywallUsable)
     ) {
       return true;
     }
@@ -402,28 +454,18 @@ export class ButtonInfoService {
   }
 
   private shouldAvoidUnpaywall(response: ApiResult) {
-    if (
-      response.hasOwnProperty('meta') &&
-      response?.meta?.hasOwnProperty('avoidUnpaywall')
-    ) {
+    if (response.hasOwnProperty('meta') && response?.meta?.hasOwnProperty('avoidUnpaywall')) {
       return response.meta.avoidUnpaywall;
     } else {
       return false;
     }
   }
 
-  private getUnpaywallUsable(
-    type: EntityType,
-    data: ArticleData | JournalData
-  ) {
+  private getUnpaywallUsable(type: EntityType, data: ArticleData | JournalData) {
     if (type !== EntityType.Article || this.httpService.isJournal(data)) {
       return false;
     }
-    if (
-      !data ||
-      (this.httpService.isArticle(data) &&
-        !data.hasOwnProperty('unpaywallUsable'))
-    ) {
+    if (!data || (this.httpService.isArticle(data) && !data.hasOwnProperty('unpaywallUsable'))) {
       return true;
     }
     return data.unpaywallUsable;
@@ -439,7 +481,7 @@ export class ButtonInfoService {
     doi: string
   ): Observable<DisplayWaterfallResponse> {
     return this.httpService.getUnpaywall(doi).pipe(
-      map((unpaywallRes) => {
+      map(unpaywallRes => {
         const data = this.httpService.getData(articleResponse);
         const avoidUnpaywallPublisherLinks = !!(
           this.httpService.isArticle(data) && data?.avoidUnpaywallPublisherLinks

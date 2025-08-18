@@ -1,12 +1,10 @@
 import { TestBed } from '@angular/core/testing';
 import { provideHttpClient } from '@angular/common/http';
-import {
-  HttpTestingController,
-  provideHttpClientTesting,
-} from '@angular/common/http/testing';
+import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
 
 import { ButtonInfoService } from './button-info.service';
 import { HttpService } from './http.service';
+import { TranslationService } from './translation.service';
 import { EntityType } from '../shared/entity-type.enum';
 import { ApiResult, ArticleData, JournalData } from '../types/tiData.types';
 import { DisplayWaterfallResponse } from '../types/displayWaterfallResponse.types';
@@ -14,6 +12,18 @@ import { SearchEntity } from '../types/searchEntity.types';
 import { firstValueFrom } from 'rxjs';
 import { ButtonType } from '../shared/button-type.enum';
 import { MOCK_MODULE_PARAMETERS } from './config.service.spec';
+
+// Mock for TranslationService
+const mockTranslationService = {
+  getTranslatedText: (key: string, fallback: string) => {
+    const translations: { [key: string]: string } = {
+      'fulldisplay.HTML': 'Read Online',
+      'fulldisplay.PDF': 'Get PDF',
+      'nde.delivery.code.otherOnlineOptions': 'Other online options',
+    };
+    return translations[key] || fallback;
+  },
+};
 
 const authToken = 'a9c7fb8f-9758-4ff9-9dc9-fcb4cbf32724';
 const baseUrl = 'https://public-api.thirdiron.com/public/v1/libraries/222';
@@ -72,8 +82,7 @@ const journalData: JournalData[] = [
 const articleData: ArticleData = {
   id: 55134408,
   type: 'articles',
-  title:
-    'New England Journal of Medicine reconsiders relationship with industry',
+  title: 'New England Journal of Medicine reconsiders relationship with industry',
   date: '2015-05-12',
   doi: '10.1002/ijc.25451',
   authors: 'McCarthy, M.',
@@ -84,14 +93,10 @@ const articleData: ArticleData = {
   unpaywallUsable: true,
   browzineWebLink:
     'https://browzine.com/libraries/XXX/journals/18126/issues/7764583?showArticleInContext=doi:10.1136/bmj.h2575',
-  fullTextFile:
-    'https://develop.browzine.com/libraries/XXX/articles/55134408/full-text-file',
-  contentLocation:
-    'https://develop.browzine.com/libraries/XXX/articles/55134408',
-  retractionNoticeUrl:
-    'https://develop.libkey.io/libraries/1252/10.1155/2019/5730746',
-  expressionOfConcernNoticeUrl:
-    'https://develop.libkey.io/libraries/XXXX/10.1002/ijc.25451',
+  fullTextFile: 'https://develop.browzine.com/libraries/XXX/articles/55134408/full-text-file',
+  contentLocation: 'https://develop.browzine.com/libraries/XXX/articles/55134408',
+  retractionNoticeUrl: 'https://develop.libkey.io/libraries/1252/10.1155/2019/5730746',
+  expressionOfConcernNoticeUrl: 'https://develop.libkey.io/libraries/XXXX/10.1002/ijc.25451',
   problematicJournalArticleNoticeUrl:
     'https://develop.libkey.io/libraries/1414/10.5897/JMA2014.0308',
   documentDeliveryFulfillmentUrl: 'test.document.delivery-url.com',
@@ -129,6 +134,10 @@ const createTestModule = async (config: any) => {
         provide: 'MODULE_PARAMETERS',
         useValue: config,
       },
+      {
+        provide: TranslationService,
+        useValue: mockTranslationService,
+      },
     ],
   });
   await TestBed.compileComponents();
@@ -150,6 +159,10 @@ describe('ButtonInfoService', () => {
         {
           provide: 'MODULE_PARAMETERS',
           useValue: MOCK_MODULE_PARAMETERS,
+        },
+        {
+          provide: TranslationService,
+          useValue: mockTranslationService,
         },
       ],
     });
@@ -177,10 +190,7 @@ describe('ButtonInfoService', () => {
 
       // At this point, the request is pending, and we can assert it was made
       // via the `HttpTestingController`:
-      const req = httpTesting.expectOne(
-        `${articlePath}`,
-        'Request to load the article'
-      );
+      const req = httpTesting.expectOne(`${articlePath}`, 'Request to load the article');
 
       const mockedArticleData = {
         data: {
@@ -194,8 +204,7 @@ describe('ButtonInfoService', () => {
       expect(await articlePromise).toEqual({
         entityType: EntityType.Article,
         mainButtonType: ButtonType.Retraction,
-        mainUrl:
-          'https://develop.libkey.io/libraries/1252/10.1155/2019/5730746',
+        mainUrl: 'https://develop.libkey.io/libraries/1252/10.1155/2019/5730746',
         browzineUrl:
           'https://browzine.com/libraries/XXX/journals/18126/issues/7764583?showArticleInContext=doi:10.1136/bmj.h2575',
         showBrowzineButton: false,
@@ -216,10 +225,7 @@ describe('ButtonInfoService', () => {
 
       // At this point, the request is pending, and we can assert it was made
       // via the `HttpTestingController`:
-      const req = httpTesting.expectOne(
-        `${journalPath}`,
-        'Request to load the article'
-      );
+      const req = httpTesting.expectOne(`${journalPath}`, 'Request to load the article');
 
       const mockedJournalData = {
         data: {
@@ -305,8 +311,7 @@ describe('ButtonInfoService', () => {
         mockConfig.articlePDFDownloadViaUnpaywallEnabled = false;
         mockConfig.articleLinkViaUnpaywallEnabled = false;
         mockConfig.articleAcceptedManuscriptPDFViaUnpaywallEnabled = false;
-        mockConfig.articleAcceptedManuscriptArticleLinkViaUnpaywallEnabled =
-          false;
+        mockConfig.articleAcceptedManuscriptArticleLinkViaUnpaywallEnabled = false;
 
         const testBed = await createTestModule(mockConfig);
         const testService = testBed.inject(ButtonInfoService);
@@ -608,7 +613,7 @@ describe('ButtonInfoService', () => {
         expect(buttonInfo.showBrowzineButton).toBeFalse();
       });
 
-      it('should not show Browzine button for Article when neither directoToPdf nor articleLink urls are present', () => {
+      it('should not show Browzine button for Article when neither directToPdf nor articleLink urls are present', () => {
         const mockedArticleData: ArticleData = {
           ...articleData,
           fullTextFile: '',
@@ -792,8 +797,7 @@ describe('ButtonInfoService', () => {
           mainButtonType: ButtonType.Retraction,
           entityType: EntityType.Article,
           showBrowzineButton: false, // false because null journal passed into waterfall
-          mainUrl:
-            'https://develop.libkey.io/libraries/1252/10.1155/2019/5730746',
+          mainUrl: 'https://develop.libkey.io/libraries/1252/10.1155/2019/5730746',
         };
 
         validateButton(buttonInfo, expectedValues);
@@ -846,8 +850,7 @@ describe('ButtonInfoService', () => {
           mainButtonType: ButtonType.ProblematicJournalArticle,
           entityType: EntityType.Article,
           showBrowzineButton: false, // false because null journal passed into waterfall
-          mainUrl:
-            'https://develop.libkey.io/libraries/1414/10.5897/JMA2014.0308',
+          mainUrl: 'https://develop.libkey.io/libraries/1414/10.5897/JMA2014.0308',
         };
 
         validateButton(buttonInfo, expectedValues);
@@ -875,8 +878,7 @@ describe('ButtonInfoService', () => {
           mainButtonType: ButtonType.DirectToPDF,
           entityType: EntityType.Article,
           showBrowzineButton: false, // false because null journal passed into waterfall
-          mainUrl:
-            'https://develop.browzine.com/libraries/XXX/articles/55134408/full-text-file',
+          mainUrl: 'https://develop.browzine.com/libraries/XXX/articles/55134408/full-text-file',
         };
 
         validateButton(buttonInfo, expectedValues);
@@ -905,8 +907,7 @@ describe('ButtonInfoService', () => {
           mainButtonType: ButtonType.ArticleLink,
           entityType: EntityType.Article,
           showBrowzineButton: false, // false because null journal passed into waterfall
-          mainUrl:
-            'https://develop.browzine.com/libraries/XXX/articles/55134408',
+          mainUrl: 'https://develop.browzine.com/libraries/XXX/articles/55134408',
         };
 
         validateButton(buttonInfo, expectedValues);
@@ -971,8 +972,7 @@ describe('ButtonInfoService', () => {
           color: 'sys-primary',
           entityType: EntityType.Article,
           showBrowzineButton: true, // true because journal into passed along to waterfall
-          mainUrl:
-            'https://develop.browzine.com/libraries/XXX/articles/55134408/full-text-file',
+          mainUrl: 'https://develop.browzine.com/libraries/XXX/articles/55134408/full-text-file',
         };
 
         validateButton(buttonInfo, expectedValues);
@@ -1142,5 +1142,332 @@ describe('ButtonInfoService', () => {
       expect(buttonInfo.mainUrl).toBe('');
       expect(buttonInfo.entityType).toBe(EntityType.Unknown);
     });
+  });
+
+  describe('#buildStackOptions', () => {
+    it('should build Third Iron main button when displayInfo has valid entity and button type', () => {
+      const displayInfo: DisplayWaterfallResponse = {
+        entityType: EntityType.Article,
+        mainButtonType: ButtonType.DirectToPDF,
+        mainUrl: 'https://example.com/pdf',
+        secondaryUrl: '',
+        showSecondaryButton: false,
+        showBrowzineButton: false,
+        browzineUrl: '',
+      };
+
+      const viewModel: any = {
+        onlineLinks: [],
+        directLink: '',
+      };
+
+      const result = service.buildStackOptions(displayInfo, viewModel);
+
+      expect(result).toHaveSize(1);
+      expect(result[0]).toEqual({
+        source: 'thirdIron',
+        entityType: EntityType.Article,
+        mainButtonType: ButtonType.DirectToPDF,
+        url: 'https://example.com/pdf',
+        ariaLabel: '',
+        label: '',
+      });
+    });
+
+    it('should build Third Iron secondary button when showSecondaryButton is true', () => {
+      const displayInfo: DisplayWaterfallResponse = {
+        entityType: EntityType.Article,
+        mainButtonType: ButtonType.DirectToPDF,
+        mainUrl: 'https://example.com/pdf',
+        secondaryUrl: 'https://example.com/article',
+        showSecondaryButton: true,
+        showBrowzineButton: false,
+        browzineUrl: '',
+      };
+
+      const viewModel: any = {
+        onlineLinks: [],
+        directLink: '',
+      };
+
+      const result = service.buildStackOptions(displayInfo, viewModel);
+
+      expect(result).toHaveSize(2);
+      expect(result[0]).toEqual({
+        source: 'thirdIron',
+        entityType: EntityType.Article,
+        mainButtonType: ButtonType.DirectToPDF,
+        url: 'https://example.com/pdf',
+        ariaLabel: '',
+        label: '',
+      });
+      expect(result[1]).toEqual({
+        source: 'thirdIron',
+        entityType: EntityType.Article,
+        url: 'https://example.com/article',
+        showSecondaryButton: true,
+      });
+    });
+
+    it('should not build Third Iron button when entity type is Unknown', () => {
+      const displayInfo: DisplayWaterfallResponse = {
+        entityType: EntityType.Unknown,
+        mainButtonType: ButtonType.None,
+        mainUrl: '',
+        secondaryUrl: '',
+        showSecondaryButton: false,
+        showBrowzineButton: false,
+        browzineUrl: '',
+      };
+
+      const viewModel: any = {
+        onlineLinks: [],
+        directLink: '',
+      };
+
+      const result = service.buildStackOptions(displayInfo, viewModel);
+
+      expect(result).toHaveSize(0);
+    });
+
+    it('should not build Third Iron button when button type is None', () => {
+      const displayInfo: DisplayWaterfallResponse = {
+        entityType: EntityType.Article,
+        mainButtonType: ButtonType.None,
+        mainUrl: '',
+        secondaryUrl: '',
+        showSecondaryButton: false,
+        showBrowzineButton: false,
+        browzineUrl: '',
+      };
+
+      const viewModel: any = {
+        onlineLinks: [],
+        directLink: '',
+      };
+
+      const result = service.buildStackOptions(displayInfo, viewModel);
+
+      expect(result).toHaveSize(0);
+    });
+
+    it('should build Primo online links when viewModel has onlineLinks and link optimizer is disabled', () => {
+      const displayInfo: DisplayWaterfallResponse = {
+        entityType: EntityType.Article,
+        mainButtonType: ButtonType.DirectToPDF,
+        mainUrl: 'https://example.com/pdf',
+        secondaryUrl: '',
+        showSecondaryButton: false,
+        showBrowzineButton: false,
+        browzineUrl: '',
+      };
+
+      const viewModel: any = {
+        onlineLinks: [
+          {
+            type: 'PDF',
+            url: 'https://example.com/primo-pdf',
+            source: 'quicklink',
+            ariaLabel: 'Download PDF',
+          },
+          {
+            type: 'HTML',
+            url: 'https://example.com/primo-html',
+            source: 'quicklink',
+            ariaLabel: 'Read Online',
+          },
+        ],
+        directLink: '',
+      };
+
+      const result = service.buildStackOptions(displayInfo, viewModel);
+
+      expect(result).toHaveSize(3); // 1 Third Iron + 2 Primo links
+      expect(result[1]).toEqual({
+        source: 'quicklink',
+        entityType: 'PDF',
+        url: 'https://example.com/primo-pdf',
+        ariaLabel: 'Download PDF',
+        label: 'Get PDF', // From mock translation service
+      });
+      expect(result[2]).toEqual({
+        source: 'quicklink',
+        entityType: 'HTML',
+        url: 'https://example.com/primo-html',
+        ariaLabel: 'Read Online',
+        label: 'Read Online', // From mock translation service
+      });
+    });
+
+    it('should not build Primo online links when link optimizer is enabled', async () => {
+      // Create a new test module with link optimizer enabled
+      const mockConfig = { ...MOCK_MODULE_PARAMETERS };
+      mockConfig.enableLinkOptimizer = true;
+
+      const testBed = await createTestModule(mockConfig);
+      const testService = testBed.inject(ButtonInfoService);
+
+      const displayInfo: DisplayWaterfallResponse = {
+        entityType: EntityType.Article,
+        mainButtonType: ButtonType.DirectToPDF,
+        mainUrl: 'https://example.com/pdf',
+        secondaryUrl: '',
+        showSecondaryButton: false,
+        showBrowzineButton: false,
+        browzineUrl: '',
+      };
+
+      const viewModel: any = {
+        onlineLinks: [
+          {
+            type: 'PDF',
+            url: 'https://example.com/primo-pdf',
+            source: 'quicklink',
+          },
+        ],
+        directLink: '',
+      };
+
+      const result = testService.buildStackOptions(displayInfo, viewModel);
+
+      expect(result).toHaveSize(1); // Only Third Iron button, no Primo links
+      expect(result[0].source).toBe('thirdIron');
+    });
+
+    it('should build direct link when viewModel has directLink and showLinkResolverLink is true', async () => {
+      // Create a new test module with showLinkResolverLink enabled
+      const mockConfig = { ...MOCK_MODULE_PARAMETERS };
+      mockConfig.showLinkResolverLink = true;
+
+      const testBed = await createTestModule(mockConfig);
+      const testService = testBed.inject(ButtonInfoService);
+
+      const displayInfo: DisplayWaterfallResponse = {
+        entityType: EntityType.Article,
+        mainButtonType: ButtonType.DirectToPDF,
+        mainUrl: 'https://example.com/pdf',
+        secondaryUrl: '',
+        showSecondaryButton: false,
+        showBrowzineButton: false,
+        browzineUrl: '',
+      };
+
+      const viewModel: any = {
+        onlineLinks: [],
+        directLink: '/some/direct/link',
+        ariaLabel: 'Direct link aria label',
+      };
+
+      const result = testService.buildStackOptions(displayInfo, viewModel);
+
+      expect(result).toHaveSize(2); // 1 Third Iron + 1 direct link
+      expect(result[1]).toEqual({
+        source: 'directLink',
+        entityType: 'directLink',
+        url: '/nde/some/direct/link&state=#nui.getit.service_viewit',
+        ariaLabel: 'Direct link aria label',
+        label: 'Other online options', // From mock translation service
+      });
+    });
+
+    it('should build direct link with correct URL when directLink includes /nde', async () => {
+      const mockConfig = { ...MOCK_MODULE_PARAMETERS };
+      mockConfig.showLinkResolverLink = true;
+
+      const testBed = await createTestModule(mockConfig);
+      const testService = testBed.inject(ButtonInfoService);
+
+      const displayInfo: DisplayWaterfallResponse = {
+        entityType: EntityType.Article,
+        mainButtonType: ButtonType.DirectToPDF,
+        mainUrl: 'https://example.com/pdf',
+        secondaryUrl: '',
+        showSecondaryButton: false,
+        showBrowzineButton: false,
+        browzineUrl: '',
+      };
+
+      const viewModel: any = {
+        onlineLinks: [],
+        directLink: '/nde/some/direct/link',
+        ariaLabel: 'Direct link aria label',
+      };
+
+      const result = testService.buildStackOptions(displayInfo, viewModel);
+
+      expect(result[1].url).toBe('/nde/some/direct/link&state=#nui.getit.service_viewit');
+    });
+
+    it('should not build direct link when showLinkResolverLink is false', async () => {
+      const mockConfig = { ...MOCK_MODULE_PARAMETERS };
+      mockConfig.showLinkResolverLink = false;
+
+      const testBed = await createTestModule(mockConfig);
+      const testService = testBed.inject(ButtonInfoService);
+
+      const displayInfo: DisplayWaterfallResponse = {
+        entityType: EntityType.Article,
+        mainButtonType: ButtonType.DirectToPDF,
+        mainUrl: 'https://example.com/pdf',
+        secondaryUrl: '',
+        showSecondaryButton: false,
+        showBrowzineButton: false,
+        browzineUrl: '',
+      };
+
+      const viewModel: any = {
+        onlineLinks: [],
+        directLink: '/some/direct/link',
+        ariaLabel: 'Direct link aria label',
+      };
+
+      const result = testService.buildStackOptions(displayInfo, viewModel);
+
+      expect(result).toHaveSize(1); // Only Third Iron button, no direct link
+      expect(result[0].source).toBe('thirdIron');
+    });
+
+    it('should handle complete stack with Third Iron, Primo links, and direct link', async () => {
+      const mockConfig = { ...MOCK_MODULE_PARAMETERS };
+      mockConfig.enableLinkOptimizer = false;
+      mockConfig.showLinkResolverLink = true;
+
+      const testBed = await createTestModule(mockConfig);
+      const testService = testBed.inject(ButtonInfoService);
+
+      const displayInfo: DisplayWaterfallResponse = {
+        entityType: EntityType.Article,
+        mainButtonType: ButtonType.DirectToPDF,
+        mainUrl: 'https://example.com/pdf',
+        secondaryUrl: 'https://example.com/article',
+        showSecondaryButton: true,
+        showBrowzineButton: false,
+        browzineUrl: '',
+      };
+
+      const viewModel: any = {
+        onlineLinks: [
+          {
+            type: 'PDF',
+            url: 'https://example.com/primo-pdf',
+            source: 'quicklink',
+            ariaLabel: 'Download PDF',
+          },
+        ],
+        directLink: '/some/direct/link',
+        ariaLabel: 'Direct link aria label',
+      };
+
+      const result = testService.buildStackOptions(displayInfo, viewModel);
+
+      expect(result).toHaveSize(4); // 1 Third Iron main + 1 Third Iron secondary + 1 Primo + 1 direct
+      expect(result[0].source).toBe('thirdIron');
+      expect(result[1].source).toBe('thirdIron');
+      expect(result[1].showSecondaryButton).toBe(true);
+      expect(result[2].source).toBe('quicklink');
+      expect(result[3].source).toBe('directLink');
+    });
+
+    // TODO: add tests for browzine button once we add logic for this
   });
 });
