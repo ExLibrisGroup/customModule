@@ -82,11 +82,11 @@ export class ConfigService {
   }
 
   showLinkResolverLink() {
-    return this.getBooleanParam('showLinkResolverLink');
+    return false; //this.getBooleanParam('showLinkResolverLink');
   }
 
   enableLinkOptimizer() {
-    return this.getBooleanParam('enableLinkOptimizer');
+    return true; //this.getBooleanParam('enableLinkOptimizer');
   }
 
   getApiUrl(): string {
