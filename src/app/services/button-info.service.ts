@@ -233,6 +233,7 @@ export class ButtonInfoService {
   }
 
   buildStackOptions = (displayInfo: DisplayWaterfallResponse, viewModel: PrimoViewModel) => {
+    console.log('ViewModel:', JSON.stringify(viewModel));
     const combinedLinks: CombinedLink[] = [];
 
     // Handle Third Iron display options
@@ -310,6 +311,7 @@ export class ButtonInfoService {
       });
     }
 
+    console.log('Online links:', combinedLinks);
     return combinedLinks;
   };
 
