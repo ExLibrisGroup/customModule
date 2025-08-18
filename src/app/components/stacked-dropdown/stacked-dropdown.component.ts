@@ -18,6 +18,7 @@ import { ArticleLinkButtonComponent } from '../article-link-button/article-link-
     ArticleLinkButtonComponent,
   ],
   templateUrl: './stacked-dropdown.component.html',
+  styleUrls: ['../../third-iron-module/mat-select-overrides.scss'],
   encapsulation: ViewEncapsulation.None, // override styles are loaded globally from third-iron-module/mat-select-overrides.scss
 })
 export class StackedDropdownComponent {
