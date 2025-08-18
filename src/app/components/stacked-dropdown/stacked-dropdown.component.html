@@ -12,27 +12,29 @@
     <stacked-button [link]="combinedLinks()[0]" [stackType]="'main'"></stacked-button>
   }
 
-  <span class="ti-dropdown">
-    <mat-select hideSingleSelectionIndicator panelWidth="'auto'" class="ti-dropdown-toggle">
-      <mat-select-trigger class="mat-mdc-select-trigger">
-        <span class="mat-mdc-select-min-line"></span>
-      </mat-select-trigger>
-      @for (link of combinedLinks().slice(1); track link.source) {
-        <mat-option [value]="link" class="ti-dropdown-option">
-          @if (link.source === 'thirdIron') {
-            @if (link.showSecondaryButton && link.url) {
-              <article-link-button
-                [url]="link.url || ''"
-                [link]="link"
-                [stack]="true"
-                [stackType]="'dropdown'"
-              ></article-link-button>
+  @if (combinedLinks().length > 1) {
+    <span class="ti-dropdown">
+      <mat-select hideSingleSelectionIndicator panelWidth="'auto'" class="ti-dropdown-toggle">
+        <mat-select-trigger class="mat-mdc-select-trigger">
+          <span class="mat-mdc-select-min-line"></span>
+        </mat-select-trigger>
+        @for (link of combinedLinks().slice(1); track link.source) {
+          <mat-option [value]="link" class="ti-dropdown-option">
+            @if (link.source === 'thirdIron') {
+              @if (link.showSecondaryButton && link.url) {
+                <article-link-button
+                  [url]="link.url || ''"
+                  [link]="link"
+                  [stack]="true"
+                  [stackType]="'dropdown'"
+                ></article-link-button>
+              }
+            } @else {
+              <stacked-button [link]="link" [stackType]="'dropdown'"></stacked-button>
             }
-          } @else {
-            <stacked-button [link]="link" [stackType]="'dropdown'"></stacked-button>
-          }
-        </mat-option>
-      }
-    </mat-select>
-  </span>
+          </mat-option>
+        }
+      </mat-select>
+    </span>
+  }
 </div>
