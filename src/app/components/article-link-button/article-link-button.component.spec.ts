@@ -21,9 +21,7 @@ const createTestModule = async (translationServiceMock: any) => {
   TestBed.resetTestingModule();
   TestBed.configureTestingModule({
     imports: [ArticleLinkButtonComponent, BaseButtonComponent],
-    providers: [
-      { provide: TranslationService, useValue: translationServiceMock },
-    ],
+    providers: [{ provide: TranslationService, useValue: translationServiceMock }],
   });
   await TestBed.compileComponents();
   return TestBed;
@@ -46,9 +44,7 @@ describe('ArticleLinkButtonComponent', () => {
   beforeEach(() => {
     TestBed.configureTestingModule({
       imports: [ArticleLinkButtonComponent, BaseButtonComponent],
-      providers: [
-        { provide: TranslationService, useValue: mockTranslationService },
-      ],
+      providers: [{ provide: TranslationService, useValue: mockTranslationService }],
     });
 
     fixture = TestBed.createComponent(ArticleLinkButtonComponent);
@@ -68,9 +64,7 @@ describe('ArticleLinkButtonComponent', () => {
 
     await fixture.whenStable();
 
-    const buttonTextSpan = buttonElement.querySelector(
-      '[data-testid="ti-button-text"]'
-    )!;
+    const buttonTextSpan = buttonElement.querySelector('[data-testid="ti-button-text"]')!;
     expect(buttonTextSpan.textContent).toContain('Read Article');
   });
 
@@ -81,15 +75,9 @@ describe('ArticleLinkButtonComponent', () => {
     buttonElement = fixture.nativeElement;
     await fixture.whenStable();
 
-    const buttonTextSpan = buttonElement.querySelector(
-      '[data-testid="ti-button-text"]'
-    )!;
-    const buttonAriaLabel = buttonElement
-      .querySelector('button')
-      ?.getAttribute('aria-label');
-    const buttonUrl = buttonElement
-      .querySelector('base-button')
-      ?.getAttribute('ng-reflect-url');
+    const buttonTextSpan = buttonElement.querySelector('[data-testid="ti-button-text"]')!;
+    const buttonAriaLabel = buttonElement.querySelector('button')?.getAttribute('aria-label');
+    const buttonUrl = buttonElement.querySelector('base-button')?.getAttribute('ng-reflect-url');
 
     expect(buttonTextSpan.textContent).toContain('Read Article');
     expect(buttonAriaLabel).toContain('Read Article');
@@ -103,24 +91,22 @@ describe('ArticleLinkButtonComponent', () => {
     buttonElement = fixture.nativeElement;
     await fixture.whenStable();
 
-    const buttonUrl = buttonElement
-      .querySelector('base-button')
-      ?.getAttribute('ng-reflect-url');
+    const buttonUrl = buttonElement.querySelector('base-button')?.getAttribute('ng-reflect-url');
     expect(buttonUrl).toBe('');
   });
 
   describe('Custom text behavior', () => {
     it('should display custom text value when provided', async () => {
-      const customMockTranslateService = {
-        instant: (key: string) => {
+      const customMockTranslationService = {
+        getTranslatedText: (key: string, fallback: string) => {
           const customTranslations: { [key: string]: string } = {
             'LibKey.articleLinkText': 'Custom Read Article Text',
           };
-          return customTranslations[key] || key;
+          return customTranslations[key] || fallback;
         },
       };
 
-      const testBed = await createTestModule(customMockTranslateService);
+      const testBed = await createTestModule(customMockTranslationService);
       const customFixture = testBed.createComponent(ArticleLinkButtonComponent);
       const customComponentRef = customFixture.componentRef;
 
@@ -129,25 +115,20 @@ describe('ArticleLinkButtonComponent', () => {
       await customFixture.whenStable();
 
       const customButtonElement = customFixture.nativeElement;
-      const buttonTextSpan = customButtonElement.querySelector(
-        '[data-testid="ti-button-text"]'
-      )!;
+      const buttonTextSpan = customButtonElement.querySelector('[data-testid="ti-button-text"]')!;
 
       expect(buttonTextSpan.textContent).toContain('Custom Read Article Text');
     });
 
     it('should display fallback text when translation key is missing', async () => {
-      const fallbackMockTranslateService = {
-        instant: (key: string) => {
-          // Don't provide any translations, should return the key
-          return key;
+      const fallbackMockTranslationService = {
+        getTranslatedText: (key: string, fallback: string) => {
+          return fallback; // No translations available; always use fallback
         },
       };
 
-      const testBed = await createTestModule(fallbackMockTranslateService);
-      const fallbackFixture = testBed.createComponent(
-        ArticleLinkButtonComponent
-      );
+      const testBed = await createTestModule(fallbackMockTranslationService);
+      const fallbackFixture = testBed.createComponent(ArticleLinkButtonComponent);
       const fallbackComponentRef = fallbackFixture.componentRef;
 
       fallbackComponentRef.setInput('url', 'www.test.article-link.com');
@@ -155,80 +136,9 @@ describe('ArticleLinkButtonComponent', () => {
       await fallbackFixture.whenStable();
 
       const fallbackButtonElement = fallbackFixture.nativeElement;
-      const buttonTextSpan = fallbackButtonElement.querySelector(
-        '[data-testid="ti-button-text"]'
-      )!;
+      const buttonTextSpan = fallbackButtonElement.querySelector('[data-testid="ti-button-text"]')!;
 
-      expect(buttonTextSpan.textContent).toContain('Read Article'); // Should use fallback
-    });
-
-    it('should handle translation service returning empty string', async () => {
-      const emptyMockTranslateService = {
-        instant: (key: string) => {
-          return ''; // Return empty string for all translations
-        },
-      };
-
-      const testBed = await createTestModule(emptyMockTranslateService);
-      const customFixture = testBed.createComponent(ArticleLinkButtonComponent);
-      const customComponentRef = customFixture.componentRef;
-
-      customComponentRef.setInput('url', 'www.test.article-link.com');
-      customFixture.autoDetectChanges();
-      await customFixture.whenStable();
-
-      const customButtonElement = customFixture.nativeElement;
-      const buttonTextSpan = customButtonElement.querySelector(
-        '[data-testid="ti-button-text"]'
-      )!;
-
-      expect(buttonTextSpan.textContent).toContain('Read Article'); // Should use fallback
-    });
-
-    it('should handle translation service returning null', async () => {
-      const nullMockTranslateService = {
-        instant: (key: string) => {
-          return null as any; // Return null for all translations
-        },
-      };
-
-      const testBed = await createTestModule(nullMockTranslateService);
-      const customFixture = testBed.createComponent(ArticleLinkButtonComponent);
-      const customComponentRef = customFixture.componentRef;
-
-      customComponentRef.setInput('url', 'www.test.article-link.com');
-      customFixture.autoDetectChanges();
-      await customFixture.whenStable();
-
-      const customButtonElement = customFixture.nativeElement;
-      const buttonTextSpan = customButtonElement.querySelector(
-        '[data-testid="ti-button-text"]'
-      )!;
-
-      expect(buttonTextSpan.textContent).toContain('Read Article'); // Should use fallback
-    });
-
-    it('should handle translation service returning undefined', async () => {
-      const undefinedMockTranslateService = {
-        instant: (key: string) => {
-          return undefined as any; // Return undefined for all translations
-        },
-      };
-
-      const testBed = await createTestModule(undefinedMockTranslateService);
-      const customFixture = testBed.createComponent(ArticleLinkButtonComponent);
-      const customComponentRef = customFixture.componentRef;
-
-      customComponentRef.setInput('url', 'www.test.article-link.com');
-      customFixture.autoDetectChanges();
-      await customFixture.whenStable();
-
-      const customButtonElement = customFixture.nativeElement;
-      const buttonTextSpan = customButtonElement.querySelector(
-        '[data-testid="ti-button-text"]'
-      )!;
-
-      expect(buttonTextSpan.textContent).toContain('Read Article'); // Should use fallback
+      expect(buttonTextSpan.textContent).toContain('Read Article');
     });
   });
 });

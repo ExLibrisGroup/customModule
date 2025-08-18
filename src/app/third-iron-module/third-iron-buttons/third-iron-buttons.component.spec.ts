@@ -1,12 +1,22 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { provideHttpClient } from '@angular/common/http';
-import {
-  HttpTestingController,
-  provideHttpClientTesting,
-} from '@angular/common/http/testing';
+import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
 import { ThirdIronButtonsComponent } from './third-iron-buttons.component';
 import { SearchEntityService } from '../../services/search-entity.service';
+import { TranslationService } from '../../services/translation.service';
 import { MOCK_MODULE_PARAMETERS } from '../../services/config.service.spec';
+
+// Mock for TranslationService
+const mockTranslationService = {
+  getTranslatedText: (key: string, fallback: string) => {
+    const translations: { [key: string]: string } = {
+      'fulldisplay.HTML': 'Read Online',
+      'fulldisplay.PDF': 'Get PDF',
+      'nde.delivery.code.otherOnlineOptions': 'Other online options',
+    };
+    return translations[key] || fallback;
+  },
+};
 
 describe('ThirdIronButtonsComponent', () => {
   let httpTesting: HttpTestingController;
@@ -24,6 +34,10 @@ describe('ThirdIronButtonsComponent', () => {
         {
           provide: 'MODULE_PARAMETERS',
           useValue: MOCK_MODULE_PARAMETERS,
+        },
+        {
+          provide: TranslationService,
+          useValue: mockTranslationService,
         },
       ],
     }).compileComponents();

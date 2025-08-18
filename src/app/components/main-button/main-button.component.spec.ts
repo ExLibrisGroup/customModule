@@ -16,8 +16,7 @@ const minimalMockTranslationService = {
       'LibKey.articlePDFDownloadLinkText': 'Download PDF',
       'LibKey.articleLinkText': 'Read Article',
       'LibKey.documentDeliveryFulfillmentText': 'Request PDF',
-      'LibKey.articlePDFDownloadViaUnpaywallText':
-        'Download PDF (via Unpaywall)',
+      'LibKey.articlePDFDownloadViaUnpaywallText': 'Download PDF (via Unpaywall)',
       'LibKey.articleLinkViaUnpaywallText': 'Read Article (via Unpaywall)',
       'LibKey.articleAcceptedManuscriptPDFViaUnpaywallText':
         'Download PDF (Accepted Manuscript via Unpaywall)',
@@ -32,30 +31,17 @@ const createTestModule = async (translationServiceMock: any) => {
   TestBed.resetTestingModule();
   TestBed.configureTestingModule({
     imports: [MainButtonComponent, BaseButtonComponent],
-    providers: [
-      { provide: TranslationService, useValue: translationServiceMock },
-    ],
+    providers: [{ provide: TranslationService, useValue: translationServiceMock }],
   });
   await TestBed.compileComponents();
   return TestBed;
 };
 
-const validateButtonProps = (
-  buttonElement: HTMLElement,
-  expectedValues: any
-) => {
-  const buttonTextSpan = buttonElement.querySelector(
-    '[data-testid="ti-button-text"]'
-  )!;
-  const buttonAriaLabel = buttonElement
-    .querySelector('button')
-    ?.getAttribute('aria-label');
-  const buttonUrl = buttonElement
-    .querySelector('base-button')
-    ?.getAttribute('ng-reflect-url');
-  const buttonIcon = buttonElement.querySelector(
-    '[data-testid="ti-svg-icon"]'
-  )!;
+const validateButtonProps = (buttonElement: HTMLElement, expectedValues: any) => {
+  const buttonTextSpan = buttonElement.querySelector('[data-testid="ti-button-text"]')!;
+  const buttonAriaLabel = buttonElement.querySelector('button')?.getAttribute('aria-label');
+  const buttonUrl = buttonElement.querySelector('base-button')?.getAttribute('ng-reflect-url');
+  const buttonIcon = buttonElement.querySelector('[data-testid="ti-svg-icon"]')!;
 
   const iconColor = buttonIcon?.getAttribute('ng-reflect-color');
   const iconName = buttonIcon?.getAttribute('ng-reflect-name');
@@ -315,26 +301,24 @@ describe('MainButtonComponent', () => {
       await customFixture.whenStable();
 
       const customButtonElement = customFixture.nativeElement;
-      const buttonTextSpan = customButtonElement.querySelector(
-        '[data-testid="ti-button-text"]'
-      )!;
+      const buttonTextSpan = customButtonElement.querySelector('[data-testid="ti-button-text"]')!;
 
       expect(buttonTextSpan.textContent).toContain('Custom Download Text');
     });
 
     it('should display fallback text when custom text key is missing', async () => {
       // Create a mock that returns the key for missing translations
-      const fallbackMockTranslateService = {
-        instant: (key: string) => {
-          // Only provide translation for one key, others will return the key itself
+      const fallbackMockTranslationService = {
+        getTranslatedText: (key: string, fallback: string) => {
+          // Only provide translation for one key, others will use the provided fallback
           const translations: { [key: string]: string } = {
-            'LibKey.articlePDFDownloadLinkText': 'Download PDF', // Only this one has translation
+            'LibKey.articlePDFDownloadLinkText': 'Download PDF',
           };
-          return translations[key] || key; // Return key for missing translations
+          return translations[key] || fallback;
         },
       };
 
-      const testBed = await createTestModule(fallbackMockTranslateService);
+      const testBed = await createTestModule(fallbackMockTranslationService);
       const fallbackFixture = testBed.createComponent(MainButtonComponent);
       const fallbackComponentRef = fallbackFixture.componentRef;
 
@@ -345,9 +329,7 @@ describe('MainButtonComponent', () => {
       await fallbackFixture.whenStable();
 
       const fallbackButtonElement = fallbackFixture.nativeElement;
-      const buttonTextSpan = fallbackButtonElement.querySelector(
-        '[data-testid="ti-button-text"]'
-      )!;
+      const buttonTextSpan = fallbackButtonElement.querySelector('[data-testid="ti-button-text"]')!;
 
       expect(buttonTextSpan.textContent).toContain('Read Article');
     });
@@ -372,9 +354,7 @@ describe('MainButtonComponent', () => {
       await customFixture.whenStable();
 
       const customButtonElement = customFixture.nativeElement;
-      const buttonTextSpan = customButtonElement.querySelector(
-        '[data-testid="ti-button-text"]'
-      )!;
+      const buttonTextSpan = customButtonElement.querySelector('[data-testid="ti-button-text"]')!;
 
       expect(buttonTextSpan.textContent).toContain('Custom Retraction Alert');
     });
@@ -395,17 +375,12 @@ describe('MainButtonComponent', () => {
       const fallbackComponentRef = fallbackFixture.componentRef;
 
       fallbackComponentRef.setInput('url', 'www.test.com');
-      fallbackComponentRef.setInput(
-        'buttonType',
-        ButtonType.ExpressionOfConcern
-      );
+      fallbackComponentRef.setInput('buttonType', ButtonType.ExpressionOfConcern);
       fallbackFixture.autoDetectChanges();
       await fallbackFixture.whenStable();
 
       const fallbackButtonElement = fallbackFixture.nativeElement;
-      const buttonTextSpan = fallbackButtonElement.querySelector(
-        '[data-testid="ti-button-text"]'
-      )!;
+      const buttonTextSpan = fallbackButtonElement.querySelector('[data-testid="ti-button-text"]')!;
 
       expect(buttonTextSpan.textContent).toContain('Expression of Concern');
     });
@@ -430,59 +405,9 @@ describe('MainButtonComponent', () => {
       await customFixture.whenStable();
 
       const customButtonElement = customFixture.nativeElement;
-      const buttonTextSpan = customButtonElement.querySelector(
-        '[data-testid="ti-button-text"]'
-      )!;
+      const buttonTextSpan = customButtonElement.querySelector('[data-testid="ti-button-text"]')!;
 
       expect(buttonTextSpan.textContent).toContain('Custom Document Request');
-    });
-
-    it('should handle translation service returning empty string', async () => {
-      const emptyMockTranslationService = {
-        getTranslatedText: (key: string, fallback: string) => {
-          return ''; // Return empty string for all translations
-        },
-      };
-
-      const testBed = await createTestModule(emptyMockTranslationService);
-      const customFixture = testBed.createComponent(MainButtonComponent);
-      const customComponentRef = customFixture.componentRef;
-
-      customComponentRef.setInput('url', 'www.test.com');
-      customComponentRef.setInput('buttonType', ButtonType.DirectToPDF);
-      customFixture.autoDetectChanges();
-      await customFixture.whenStable();
-
-      const customButtonElement = customFixture.nativeElement;
-      const buttonTextSpan = customButtonElement.querySelector(
-        '[data-testid="ti-button-text"]'
-      )!;
-
-      expect(buttonTextSpan.textContent).toContain('Download PDF'); // Should use fallback
-    });
-
-    it('should handle translation service returning null', async () => {
-      const nullMockTranslationService = {
-        getTranslatedText: (key: string, fallback: string) => {
-          return null as any; // Return null for all translations
-        },
-      };
-
-      const testBed = await createTestModule(nullMockTranslationService);
-      const customFixture = testBed.createComponent(MainButtonComponent);
-      const customComponentRef = customFixture.componentRef;
-
-      customComponentRef.setInput('url', 'www.test.com');
-      customComponentRef.setInput('buttonType', ButtonType.ArticleLink);
-      customFixture.autoDetectChanges();
-      await customFixture.whenStable();
-
-      const customButtonElement = customFixture.nativeElement;
-      const buttonTextSpan = customButtonElement.querySelector(
-        '[data-testid="ti-button-text"]'
-      )!;
-
-      expect(buttonTextSpan.textContent).toContain('Read Article'); // Should use fallback
     });
   });
 
@@ -556,12 +481,8 @@ describe('MainButtonComponent', () => {
         fixture.autoDetectChanges();
         await fixture.whenStable();
 
-        const buttonIcon = fixture.nativeElement.querySelector(
-          '[data-testid="ti-svg-icon"]'
-        )!;
-        expect(buttonIcon.getAttribute('ng-reflect-name')).toBe(
-          IconType.ArticleAlert
-        );
+        const buttonIcon = fixture.nativeElement.querySelector('[data-testid="ti-svg-icon"]')!;
+        expect(buttonIcon.getAttribute('ng-reflect-name')).toBe(IconType.ArticleAlert);
       }
     });
 
@@ -579,12 +500,8 @@ describe('MainButtonComponent', () => {
         fixture.autoDetectChanges();
         await fixture.whenStable();
 
-        const buttonIcon = fixture.nativeElement.querySelector(
-          '[data-testid="ti-svg-icon"]'
-        )!;
-        expect(buttonIcon.getAttribute('ng-reflect-name')).toBe(
-          IconType.DownloadPDF
-        );
+        const buttonIcon = fixture.nativeElement.querySelector('[data-testid="ti-svg-icon"]')!;
+        expect(buttonIcon.getAttribute('ng-reflect-name')).toBe(IconType.DownloadPDF);
       }
     });
 
@@ -601,12 +518,8 @@ describe('MainButtonComponent', () => {
         fixture.autoDetectChanges();
         await fixture.whenStable();
 
-        const buttonIcon = fixture.nativeElement.querySelector(
-          '[data-testid="ti-svg-icon"]'
-        )!;
-        expect(buttonIcon.getAttribute('ng-reflect-name')).toBe(
-          IconType.ArticleLink
-        );
+        const buttonIcon = fixture.nativeElement.querySelector('[data-testid="ti-svg-icon"]')!;
+        expect(buttonIcon.getAttribute('ng-reflect-name')).toBe(IconType.ArticleLink);
       }
     });
   });

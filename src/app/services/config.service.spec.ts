@@ -17,6 +17,7 @@ export const MOCK_MODULE_PARAMETERS = {
   articleBrowZineWebLinkTextEnabled: true,
   documentDeliveryFulfillmentEnabled: true,
   showLinkResolverLink: true,
+  enableLinkOptimizer: false,
   viewOption: 'no-stack',
   // Unpaywall-specific parameters
   unpaywallEmailAddressKey: 'info@thirdiron.com',
@@ -352,9 +353,7 @@ describe('ConfigService', () => {
 
   describe('getApiUrl', () => {
     it('should return the correct API URL', () => {
-      expect(service.getApiUrl()).toBe(
-        'https://public-api.thirdiron.com/public/v1/libraries/222'
-      );
+      expect(service.getApiUrl()).toBe('https://public-api.thirdiron.com/public/v1/libraries/222');
     });
   });
 
@@ -407,7 +406,7 @@ describe('ConfigService', () => {
       expect(testService.getViewOption()).toBe('no-stack');
     });
 
-    it('should return NoStack as default when viewOption is missing', async () => {
+    it('should return StackPlusBrowzine as default when viewOption is missing', async () => {
       const configWithoutViewOption = {
         ...MOCK_MODULE_PARAMETERS,
       };
@@ -417,10 +416,10 @@ describe('ConfigService', () => {
       const testBed = await createTestModule(configWithoutViewOption);
       const testService = testBed.inject(ConfigService);
 
-      expect(testService.getViewOption()).toBe('no-stack');
+      expect(testService.getViewOption()).toBe('stack-plus-browzine');
     });
 
-    it('should return NoStack when viewOption is null', async () => {
+    it('should return StackPlusBrowzine when viewOption is null', async () => {
       const configWithNullViewOption = {
         ...MOCK_MODULE_PARAMETERS,
         viewOption: null,
@@ -429,10 +428,10 @@ describe('ConfigService', () => {
       const testBed = await createTestModule(configWithNullViewOption);
       const testService = testBed.inject(ConfigService);
 
-      expect(testService.getViewOption()).toBe('no-stack');
+      expect(testService.getViewOption()).toBe('stack-plus-browzine');
     });
 
-    it('should return NoStack when viewOption is undefined', async () => {
+    it('should return StackPlusBrowzine when viewOption is undefined', async () => {
       const configWithUndefinedViewOption = {
         ...MOCK_MODULE_PARAMETERS,
         viewOption: undefined,
@@ -441,10 +440,10 @@ describe('ConfigService', () => {
       const testBed = await createTestModule(configWithUndefinedViewOption);
       const testService = testBed.inject(ConfigService);
 
-      expect(testService.getViewOption()).toBe('no-stack');
+      expect(testService.getViewOption()).toBe('stack-plus-browzine');
     });
 
-    it('should return NoStack when viewOption is an invalid value', async () => {
+    it('should return StackPlusBrowzine when viewOption is an invalid value', async () => {
       const configWithInvalidViewOption = {
         ...MOCK_MODULE_PARAMETERS,
         viewOption: 'invalid-view-option',
@@ -453,10 +452,10 @@ describe('ConfigService', () => {
       const testBed = await createTestModule(configWithInvalidViewOption);
       const testService = testBed.inject(ConfigService);
 
-      expect(testService.getViewOption()).toBe('no-stack');
+      expect(testService.getViewOption()).toBe('stack-plus-browzine');
     });
 
-    it('should return NoStack when viewOption is empty string', async () => {
+    it('should return StackPlusBrowzine when viewOption is empty string', async () => {
       const configWithEmptyViewOption = {
         ...MOCK_MODULE_PARAMETERS,
         viewOption: '',
@@ -465,10 +464,10 @@ describe('ConfigService', () => {
       const testBed = await createTestModule(configWithEmptyViewOption);
       const testService = testBed.inject(ConfigService);
 
-      expect(testService.getViewOption()).toBe('no-stack');
+      expect(testService.getViewOption()).toBe('stack-plus-browzine');
     });
 
-    it('should return NoStack when viewOption is a number', async () => {
+    it('should return StackPlusBrowzine when viewOption is a number', async () => {
       const configWithNumberViewOption = {
         ...MOCK_MODULE_PARAMETERS,
         viewOption: 123,
@@ -477,10 +476,10 @@ describe('ConfigService', () => {
       const testBed = await createTestModule(configWithNumberViewOption);
       const testService = testBed.inject(ConfigService);
 
-      expect(testService.getViewOption()).toBe('no-stack');
+      expect(testService.getViewOption()).toBe('stack-plus-browzine');
     });
 
-    it('should return NoStack when viewOption is an object', async () => {
+    it('should return StackPlusBrowzine when viewOption is an object', async () => {
       const configWithObjectViewOption = {
         ...MOCK_MODULE_PARAMETERS,
         viewOption: { someProperty: 'value' },
@@ -489,7 +488,7 @@ describe('ConfigService', () => {
       const testBed = await createTestModule(configWithObjectViewOption);
       const testService = testBed.inject(ConfigService);
 
-      expect(testService.getViewOption()).toBe('no-stack');
+      expect(testService.getViewOption()).toBe('stack-plus-browzine');
     });
   });
 
