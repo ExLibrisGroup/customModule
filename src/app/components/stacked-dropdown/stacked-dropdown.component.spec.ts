@@ -12,7 +12,6 @@ describe('StackedDropdownComponent', () => {
   let component: StackedDropdownComponent;
   let componentRef: ComponentRef<StackedDropdownComponent>;
   let fixture: ComponentFixture<StackedDropdownComponent>;
-  let buttonElement: HTMLElement;
 
   beforeEach(() => {
     const translateServiceMock = {
@@ -52,6 +51,27 @@ describe('StackedDropdownComponent', () => {
     expect(mainButton).toBeTruthy();
     // When stack=true, main-button renders a stacked-button internally
     expect(stackedButton).toBeTruthy();
+  });
+
+  it('renders custom-browzine-button as the main button when first link is ThirdIron BrowZine', () => {
+    const links = [
+      {
+        source: 'thirdIron',
+        entityType: 'Article',
+        url: 'https://example.com/browzine',
+        mainButtonType: 'Browzine',
+        ariaLabel: 'Browse Journal',
+        label: 'Browse Journal',
+      },
+    ];
+    componentRef.setInput('combinedLinks', links as any);
+    fixture.detectChanges();
+
+    const nativeEl = fixture.nativeElement as HTMLElement;
+    const customBrowzine = nativeEl.querySelector('custom-browzine-button');
+    const mainButton = nativeEl.querySelector('main-button');
+    expect(customBrowzine).toBeTruthy();
+    expect(mainButton).toBeFalsy();
   });
 
   it('renders stacked-button when first link is not from ThirdIron', () => {
@@ -136,6 +156,38 @@ describe('StackedDropdownComponent', () => {
     const overlayEl = overlayContainer.getContainerElement();
     const stackedButtons = overlayEl.querySelectorAll('stacked-button');
     expect(stackedButtons.length).toBe(1);
+  });
+
+  it('renders custom-browzine-button in dropdown when the second link is ThirdIron BrowZine', () => {
+    const links = [
+      {
+        source: 'quicklink',
+        entityType: 'PDF',
+        url: 'https://example.com/pdf',
+        ariaLabel: 'Get PDF',
+        label: 'Get PDF',
+      },
+      {
+        source: 'thirdIron',
+        entityType: 'Journal',
+        url: 'https://example.com/browzine',
+        mainButtonType: 'Browzine',
+        ariaLabel: 'Browse Journal',
+        label: 'Browse Journal',
+      },
+    ];
+    componentRef.setInput('combinedLinks', links as any);
+    fixture.detectChanges();
+
+    const selectDe = fixture.debugElement.query(By.css('mat-select'));
+    const select = selectDe.componentInstance as MatSelect;
+    select.open();
+    fixture.detectChanges();
+
+    const overlayContainer = TestBed.inject(OverlayContainer);
+    const overlayEl = overlayContainer.getContainerElement();
+    const customBrowzineButtons = overlayEl.querySelectorAll('custom-browzine-button');
+    expect(customBrowzineButtons.length).toBe(1);
   });
 
   it('always renders a mat-select dropdown container for more than one link', () => {

@@ -1,15 +1,27 @@
 <div class="dropdown-group flex-row flex-layout-center">
   @if (combinedLinks()[0].source === 'thirdIron') {
-    <!-- for ThirdIron buttons, run through main-button component first to get the button text and icon -->
-    <main-button
-      [url]="combinedLinks()[0].url"
-      [buttonType]="combinedLinks()[0].mainButtonType || ButtonType.None"
-      [stack]="true"
-      [stackType]="'main'"
-      [link]="combinedLinks()[0]"
-      [class.with-dropdown]="combinedLinks().length > 1"
-    ></main-button>
+    @if (combinedLinks()[0].mainButtonType === ButtonType.Browzine) {
+      <custom-browzine-button
+        [entityType]="toEntityType(combinedLinks()[0].entityType)"
+        [url]="combinedLinks()[0].url || ''"
+        [link]="combinedLinks()[0]"
+        [stack]="true"
+        [stackType]="'main'"
+        [class.with-dropdown]="combinedLinks().length > 1"
+      ></custom-browzine-button>
+    } @else {
+      <!-- for ThirdIron main buttons, run through main-button component first to get the button text and icon -->
+      <main-button
+        [url]="combinedLinks()[0].url"
+        [buttonType]="combinedLinks()[0].mainButtonType || ButtonType.None"
+        [stack]="true"
+        [stackType]="'main'"
+        [link]="combinedLinks()[0]"
+        [class.with-dropdown]="combinedLinks().length > 1"
+      ></main-button>
+    }
   } @else {
+    <!-- For Primo buttons, just render the stacked button -->
     <stacked-button
       [link]="combinedLinks()[0]"
       [stackType]="'main'"

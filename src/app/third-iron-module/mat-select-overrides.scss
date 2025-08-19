@@ -45,7 +45,8 @@
 
   /* When the first button is adjacent to a dropdown, we hide its right border to visually join them */
   stacked-button.with-dropdown .ti-dropdown-button,
-  main-button.with-dropdown .ti-dropdown-button {
+  main-button.with-dropdown .ti-dropdown-button,
+  custom-browzine-button.with-dropdown .ti-dropdown-button {
     border-right: none;
     border-radius: 0.3125rem 0 0 0.3125rem;
   }
