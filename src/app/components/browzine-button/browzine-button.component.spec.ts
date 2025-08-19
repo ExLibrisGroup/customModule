@@ -172,4 +172,76 @@ describe('BrowzineButtonComponent', () => {
       expect(buttonTextSpan.textContent).toContain('View Journal Contents'); // Should use fallback
     });
   });
+
+  describe('Stack mode', () => {
+    it('renders stacked-button with translated label and BrowZine icon when stack=true (default dropdown type)', async () => {
+      componentRef.setInput('stack', true);
+      componentRef.setInput('entityType', EntityType.Article);
+      componentRef.setInput('link', {
+        entityType: EntityType.Article,
+        url: 'https://example.com/browzine',
+        label: '',
+        source: 'thirdIron',
+      } as any);
+
+      fixture.autoDetectChanges();
+      await fixture.whenStable();
+
+      const host = fixture.nativeElement as HTMLElement;
+      const stacked = host.querySelector('stacked-button') as HTMLElement;
+      expect(stacked).toBeTruthy();
+
+      const textEl = stacked.querySelector('.quicklink-button-text');
+      expect(textEl?.textContent || '').toContain('View Issue Contents');
+
+      const svgIcon = stacked.querySelector('custom-svg-icon[data-testid="ti-svg-icon"]');
+      expect(svgIcon).toBeTruthy();
+
+      // default stackType is 'dropdown'
+      const reflectType = stacked.getAttribute('ng-reflect-stack-type');
+      if (reflectType !== null) {
+        expect(reflectType).toBe('dropdown');
+      }
+    });
+
+    it('passes stackType="main" to stacked-button when provided', async () => {
+      componentRef.setInput('stack', true);
+      componentRef.setInput('stackType', 'main');
+      componentRef.setInput('entityType', EntityType.Journal);
+      componentRef.setInput('link', {
+        entityType: EntityType.Journal,
+        url: 'https://example.com/journal',
+        label: '',
+        source: 'thirdIron',
+      } as any);
+
+      fixture.autoDetectChanges();
+      await fixture.whenStable();
+
+      const host = fixture.nativeElement as HTMLElement;
+      const stacked = host.querySelector('stacked-button') as HTMLElement;
+      expect(stacked).toBeTruthy();
+
+      const textEl = stacked.querySelector('.quicklink-button-text');
+      expect(textEl?.textContent || '').toContain('View Journal Contents');
+
+      const reflectType = stacked.getAttribute('ng-reflect-stack-type');
+      if (reflectType !== null) {
+        expect(reflectType).toBe('main');
+      }
+    });
+
+    it('does not render stacked-button when stack=false (base-button shown)', async () => {
+      componentRef.setInput('stack', false);
+      componentRef.setInput('entityType', EntityType.Article);
+      componentRef.setInput('url', 'https://example.com/browzine');
+
+      fixture.autoDetectChanges();
+      await fixture.whenStable();
+
+      const host = fixture.nativeElement as HTMLElement;
+      expect(host.querySelector('stacked-button')).toBeFalsy();
+      expect(host.querySelector('base-button')).toBeTruthy();
+    });
+  });
 });
