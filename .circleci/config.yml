@@ -1,7 +1,7 @@
 version: 2.1
 
 orbs:
-  browser-tools: circleci/browser-tools@2.1.2
+  browser-tools: circleci/browser-tools@2.3.0
   aws-cli: circleci/aws-cli@5.4.1
 
 settings: &settings
@@ -147,29 +147,27 @@ workflows:
       #     filters:
       #       branches:
       #         only: /feature\/.*/
-
       # build
-      # - build-and-test
+      - build-and-test
       - deploy-to-staging:
-          # requires:
-          #   - build-and-test
+          requires:
+            - build-and-test
           filters:
             branches:
-              # only: develop
-              only: /feature\/.*/
-      # - deploy-to-production:
-      #     requires:
-      #       - build-and-test
-      #     filters:
-      #       branches:
-      #         only: main
-      # - renogen:
-      #     requires:
-      #       - build-and-test
-      #     filters:
-      #       branches:
-      #         only:
-      #           - develop
+              only: develop
+      - deploy-to-production:
+          requires:
+            - build-and-test
+          filters:
+            branches:
+              only: main
+      - renogen:
+          requires:
+            - build-and-test
+          filters:
+            branches:
+              only:
+                - develop
 # experimental:
 #   notify:
 #     branches:
