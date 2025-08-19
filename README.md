@@ -59,7 +59,7 @@ Default configuration JSON:
     "articleLinkEnabled": "true",
     "printRecordsIntegrationEnabled": "true",
     "showFormatChoice": "false",
-    "showLinkResolverLink": "false",
+    "showLinkResolverLink": "true",
     "enableLinkOptimizer": "true",
     "articleRetractionWatchEnabled": "true",
     "articleExpressionOfConcernEnabled": "true",

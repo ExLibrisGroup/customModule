@@ -5,7 +5,9 @@
       <!-- for Stack + Browzine view option -->
       <div class="ti-stack-options-container">
         <stacked-dropdown [combinedLinks]="combinedLinks"></stacked-dropdown>
-        @if (displayInfo.showBrowzineButton && displayInfo.browzineUrl) {
+        @if (
+          viewOption === ViewOptionType.StackPlusBrowzine && displayInfo.showBrowzineButton && displayInfo.browzineUrl
+        ) {
           <custom-browzine-button
             class="ti-browzine-button-with-stack"
             [entityType]="displayInfo.entityType"

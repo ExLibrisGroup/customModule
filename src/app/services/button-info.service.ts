@@ -12,6 +12,7 @@ import { ButtonType } from '../shared/button-type.enum';
 import { CombinedLink, OnlineLink } from '../types/primoViewModel.types';
 import { PrimoViewModel } from '../types/primoViewModel.types';
 import { TranslationService } from './translation.service';
+import { ViewOptionType } from '../shared/view-option.enum';
 
 export const DEFAULT_DISPLAY_WATERFALL_RESPONSE = {
   entityType: EntityType.Unknown,
@@ -263,7 +264,18 @@ export class ButtonInfoService {
       });
     }
 
-    // TODO - for SingleStack view option, we need to add the browzine button to the combinedLinks array as well
+    // For SingleStack view option, we need to add the browzine button to the combinedLinks array as well
+    if (
+      displayInfo.showBrowzineButton &&
+      displayInfo.browzineUrl &&
+      this.configService.getViewOption() === ViewOptionType.SingleStack
+    ) {
+      combinedLinks.push({
+        source: 'thirdIron',
+        entityType: displayInfo.entityType,
+        url: displayInfo.browzineUrl,
+      });
+    }
 
     // Handle Primo onlineLinks (array of Link objects)
     if (

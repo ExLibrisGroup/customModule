@@ -108,10 +108,11 @@ export class ThirdIronButtonsComponent {
     }
   };
 
-  // Remove Primo "Online Options" button or Primo generated stack dropdown
+  // Check if we should remove Primo "Online Options" button or Primo generated stack dropdown
   shouldRemovePrimoOnlineAvailability = (displayInfo: DisplayWaterfallResponse) => {
     return (
-      !this.configService.showLinkResolverLink() && displayInfo.mainButtonType !== ButtonType.None
+      (!this.configService.showLinkResolverLink() || this.configService.enableLinkOptimizer()) &&
+      displayInfo.mainButtonType !== ButtonType.None
     );
   };
 }
