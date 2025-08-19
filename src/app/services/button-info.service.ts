@@ -232,7 +232,10 @@ export class ButtonInfoService {
     };
   }
 
-  buildStackOptions = (displayInfo: DisplayWaterfallResponse, viewModel: PrimoViewModel) => {
+  buildStackOptions = (
+    displayInfo: DisplayWaterfallResponse,
+    viewModel: PrimoViewModel
+  ): CombinedLink[] => {
     console.log('ViewModel:', JSON.stringify(viewModel));
     const combinedLinks: CombinedLink[] = [];
 
