@@ -33,6 +33,11 @@
                   [stack]="true"
                   [stackType]="'dropdown'"
                 ></article-link-button>
+              } @else if (link.mainButtonType === ButtonType.Browzine) {
+                <custom-browzine-button
+                  [entityType]="toEntityType(link.entityType)"
+                  [url]="link.url || ''"
+                ></custom-browzine-button>
               }
             } @else {
               <stacked-button [link]="link" [stackType]="'dropdown'"></stacked-button>

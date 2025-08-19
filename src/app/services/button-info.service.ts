@@ -273,6 +273,7 @@ export class ButtonInfoService {
       combinedLinks.push({
         source: 'thirdIron',
         entityType: displayInfo.entityType,
+        mainButtonType: ButtonType.Browzine,
         url: displayInfo.browzineUrl,
       });
     }

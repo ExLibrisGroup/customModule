@@ -1,13 +1,13 @@
 @if (displayInfo$ | async; as displayInfo) {
   @if (combinedLinks.length > 0) {
     <!-- dealing with stack options -->
-    @if (viewOption === ViewOptionType.StackPlusBrowzine) {
-      <!-- for Stack + Browzine view option -->
+    @if (viewOption !== ViewOptionType.NoStack) {
       <div class="ti-stack-options-container">
         <stacked-dropdown [combinedLinks]="combinedLinks"></stacked-dropdown>
         @if (
           viewOption === ViewOptionType.StackPlusBrowzine && displayInfo.showBrowzineButton && displayInfo.browzineUrl
         ) {
+          <!-- for Stack + Browzine view option -->
           <custom-browzine-button
             class="ti-browzine-button-with-stack"
             [entityType]="displayInfo.entityType"
@@ -15,9 +15,6 @@
           ></custom-browzine-button>
         }
       </div>
-    } @else if (viewOption === ViewOptionType.SingleStack) {
-      <!-- for Single Stack view option -->
-      <stacked-dropdown [combinedLinks]="combinedLinks"></stacked-dropdown>
     }
   } @else {
     <span>
