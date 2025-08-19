@@ -37,6 +37,9 @@
                 <custom-browzine-button
                   [entityType]="toEntityType(link.entityType)"
                   [url]="link.url || ''"
+                  [link]="link"
+                  [stack]="true"
+                  [stackType]="'dropdown'"
                 ></custom-browzine-button>
               }
             } @else {

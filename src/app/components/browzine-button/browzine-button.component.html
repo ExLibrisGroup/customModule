@@ -1,9 +1,13 @@
-<div class="ti-browzine-button-container">
-  <base-button
-    [ariaLabel]="buttonText()"
-    [color]="'sys-primary'"
-    [icon]="IconType.BrowZine"
-    [url]="url() || ''"
-    [buttonText]="buttonText()"
-  ></base-button>
-</div>
+@if (stack()) {
+  <stacked-button [link]="updatedLink()" [stackType]="stackType()"></stacked-button>
+} @else {
+  <div class="ti-browzine-button-container">
+    <base-button
+      [ariaLabel]="buttonText()"
+      [color]="'sys-primary'"
+      [icon]="IconType.BrowZine"
+      [url]="url() || ''"
+      [buttonText]="buttonText()"
+    ></base-button>
+  </div>
+}
