@@ -71,8 +71,6 @@ export class ThirdIronButtonsComponent {
     this.displayInfo$ = this.buttonInfoService.getDisplayInfo(searchResult).pipe(
       combineLatestWith(this.hostComponent.viewModel$ as Observable<PrimoViewModel>),
       map(([displayInfo, viewModel]) => {
-        console.log('Display info and viewModel combined. VIEW OPTION:', this.viewOption);
-
         if (this.viewOption !== ViewOptionType.NoStack) {
           // build custom stack options array for StackPlusBrowzine and SingleStack view options
           this.combinedLinks = this.buttonInfoService.buildStackOptions(displayInfo, viewModel);
