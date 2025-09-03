@@ -47,7 +47,6 @@ export class ButtonInfoService {
     if (entityType) {
       if (entityType === EntityType.Article) {
         const doi = this.searchEntityService.getDoi(entity);
-        console.log('doi', doi);
         return this.httpService.getArticle(doi).pipe(
           // first, pass article response into display waterfall to get display object
           map((articleResponse): { response: ApiResult; displayInfo: DisplayWaterfallResponse } =>
@@ -123,13 +122,6 @@ export class ButtonInfoService {
       data
     );
     const documentDeliveryUrl = this.getDocumentDeliveryFulfillmentUrl(type, data);
-
-    console.log('articleRetractionUrl', articleRetractionUrl);
-    console.log('articleEocNoticeUrl', articleEocNoticeUrl);
-    console.log('problematicJournalArticleNoticeUrl', problematicJournalArticleNoticeUrl);
-    console.log('directToPDFUrl', directToPDFUrl);
-    console.log('articleLinkUrl', articleLinkUrl);
-    console.log('documentDeliveryUrl', documentDeliveryUrl);
 
     let buttonType = ButtonType.None;
     let showBrowzineButton = false;
@@ -236,9 +228,6 @@ export class ButtonInfoService {
       showBrowzineButton,
     };
 
-    console.log('displayInfo', displayInfo);
-    console.log('response', response);
-
     return {
       displayInfo,
       response,
@@ -249,7 +238,6 @@ export class ButtonInfoService {
     displayInfo: DisplayWaterfallResponse,
     viewModel: PrimoViewModel
   ): CombinedLink[] => {
-    console.log('ViewModel:', JSON.stringify(viewModel));
     const combinedLinks: CombinedLink[] = [];
 
     // Handle Third Iron display options
@@ -343,7 +331,6 @@ export class ButtonInfoService {
       });
     }
 
-    console.log('Online links:', combinedLinks);
     return combinedLinks;
   };
 
@@ -455,10 +442,6 @@ export class ButtonInfoService {
   ): boolean {
     const data = this.httpService.getData(response);
 
-    console.log('shouldMakeUnpaywallCall');
-    console.log('entityType', entityType);
-    console.log('buttonType', buttonType);
-
     // If we aren't dealing with an Article, don't continue with Unpaywall call
     if (!this.httpService.isArticle(data)) {
       return false;
@@ -479,11 +462,6 @@ export class ButtonInfoService {
     const isUnpaywallUsable = this.getUnpaywallUsable(entityType, data);
     const directToPDFUrl = this.getDirectToPDFUrl(entityType, data);
     const articleLinkUrl = this.getArticleLinkUrl(entityType, data);
-
-    console.log('shouldAvoidUnpaywall', shouldAvoidUnpaywall);
-    console.log('isUnpaywallUsable', isUnpaywallUsable);
-    console.log('directToPDFUrl', directToPDFUrl);
-    console.log('articleLinkUrl', articleLinkUrl);
 
     if (
       response.status === 404 ||
@@ -523,22 +501,15 @@ export class ButtonInfoService {
   ): Observable<DisplayWaterfallResponse> {
     return this.httpService.getUnpaywall(doi).pipe(
       map(unpaywallRes => {
-        console.log('makeUnpaywallCall');
-
         const data = this.httpService.getData(articleResponse);
         const avoidUnpaywallPublisherLinks = !!(
           this.httpService.isArticle(data) && data?.avoidUnpaywallPublisherLinks
         );
 
-        console.log('data', data);
-        console.log('avoidUnpaywallPublisherLinks', avoidUnpaywallPublisherLinks);
-
         const unpaywallButtonInfo = this.unpaywallService.unpaywallWaterfall(
           unpaywallRes,
           avoidUnpaywallPublisherLinks
         );
-
-        console.log('unpaywallButtonInfo', unpaywallButtonInfo);
 
         if (unpaywallButtonInfo.mainUrl && unpaywallButtonInfo.mainUrl !== '') {
           return unpaywallButtonInfo;
