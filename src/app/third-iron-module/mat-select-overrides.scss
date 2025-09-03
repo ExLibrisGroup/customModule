@@ -72,10 +72,11 @@
       border: 1px solid var(--sys-primary);
       background: #fff;
       color: var(--sys-primary);
-      padding: 0.2px 12px 0.2px 12px;
+      padding: 0 13em;
       border-radius: 0 6px 6px 0;
       cursor: pointer;
       font-size: 1px;
+      height: 32px;
 
       .mat-mdc-select-arrow {
         color: var(--sys-primary);
