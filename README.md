@@ -257,14 +257,27 @@ The add-on infrastructure provides a way to access institution-specific configur
 
 ### 🔧 Accessing Add-On Configuration Parameters
 
-To access the module parameters from your configuration file, inject the `LookupService` in your component and use `getModuleParam()`:
+Use Angular DI to inject the parameters directly into your component via the `MODULE_PARAMETERS` token:
 
 ```ts
-constructor(private lookupService: LookupService) {}
+import { Component, Inject } from '@angular/core';
 
-ngOnInit() {
-  const paramValue = this.lookupService.getModuleParam('yourParamKey');
+@Component({
+  selector: 'custom-test-bottom',
+  host: { 'data-component-id': 'custom-test-bottom-unique' },
+  templateUrl: './test-bottom.component.html',
+  styleUrls: ['./test-bottom.component.scss']
+})
+export class TestBottomComponent {
+  constructor(@Inject('MODULE_PARAMETERS') public moduleParameters: any) {
+    console.log('Module parameters TestBottomComponent:', this.moduleParameters);
+  }
+
+  getKeys(obj: any): string[] {
+    return Object.keys(obj || {});
+  }
 }
+
 ```
 
 > 📘 `yourParamKey` should match the keys defined in your Alma Add-on JSON configuration.
@@ -408,7 +421,7 @@ To ensure smooth development, debugging, and code management, we recommend setti
 
 ### Live Demo Tutorial
 - **Customize Primo NDE UI**: Watch our live demo on YouTube for a visual guide on how to customize the Primo NDE UI:
-  [Customize Primo NDE UI: Live Demo](https://www.youtube.com/watch?v=z06l2hJYuLc)
+  [Customize Primo NDE UI: Live Demo](https://www.youtube.com/watch?v=j6jAYkawDSM)
 
 
 
