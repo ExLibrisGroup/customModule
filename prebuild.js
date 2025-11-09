@@ -43,7 +43,7 @@ if (match) {
     // Update webpack.config.js
     let webpackConfig = fs.readFileSync(webpackConfigPath, 'utf8');
     webpackConfig = webpackConfig.replace(/name:\s*["'][^"']+["']/, `name: "${addonName}"`);
-    webpackConfig = webpackConfig.replace(/uniqueName:\s*["'][^"']+["']/, `uniqueName: "${addonName}"`);  
+    webpackConfig = webpackConfig.replace(/uniqueName:\s*["'][^"']+["']/, `uniqueName: "${addonName}"`);
     webpackConfig = webpackConfig.replace(/'\.\/[^']+':\s*'\.\/src\/bootstrap[^']*'/, `'./${addonName}': './src/bootstrap${addonName}.ts'`);
     fs.writeFileSync(webpackConfigPath, webpackConfig);
     console.log(`Updated webpack.config.js for addon: ${addonName}`);
@@ -63,7 +63,7 @@ fs.writeFileSync(assetBaseOutPath, `export const assetBaseUrl = '${assetBaseUrl}
 console.log(`✔ Written to ${assetBaseOutPath}:\nexport const assetBaseUrl = '${assetBaseUrl}';`);
 console.log('Prebuild complemeted successfully!');
 /*
- 
- The script reads the  build-settings.env  file and extracts the  ADDON_NAME  and  ASSET_BASE_URL  values. It then renames the  bootstrap.ts  file to  bootstrap{ADDON_NAME}.ts  and updates the  main.ts  file to import the renamed bootstrap file. It also updates the  webpack.config.js  file with the addon name and the new bootstrap file. Finally, it writes the  assetBaseUrl  value to a new file  asset-base.generated.ts . 
- Now, we need to modify the  package.json  file to run this script before building the project. Add the following script to the  package.json  file:    
+
+ The script reads the  build-settings.env  file and extracts the  ADDON_NAME  and  ASSET_BASE_URL  values. It then renames the  bootstrap.ts  file to  bootstrap{ADDON_NAME}.ts  and updates the  main.ts  file to import the renamed bootstrap file. It also updates the  webpack.config.js  file with the addon name and the new bootstrap file. Finally, it writes the  assetBaseUrl  value to a new file  asset-base.generated.ts .
+ Now, we need to modify the  package.json  file to run this script before building the project. Add the following script to the  package.json  file:
 */
