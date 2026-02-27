@@ -9,6 +9,16 @@ import {deepMerge} from "./proxy-utils.mjs";
 
 const proxyRules = [
   {
+    // redirect external login requests
+    context: ["/primaws/suprimaExtLogin"],
+    target: PROXY_TARGET,
+    changeOrigin: true,
+    followRedirects: true,
+    onProxyReq(_proxyReq, req, res) {
+      res.writeHead(302, { location: PROXY_TARGET + req.url });
+    },
+  },
+  {
     context: [
       '/custom/*/assets',
       '/custom/*/assets/**',
@@ -78,3 +88,4 @@ const proxyRules = [
 
 
 export default proxyRules;
+
