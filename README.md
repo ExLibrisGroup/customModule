@@ -506,6 +506,24 @@ To ensure smooth development, debugging, and code management, we recommend setti
   - The ZIP file, e.g., `DEMO_INST-Auto1.zip`, is automatically created in the `dist/` directory after a successful build.
 
 
+### Creating Packages for Central Institutions (NZ)
+
+To create a customization package that supports both individual institutions (IZ) and central institutions (NZ), follow these steps:
+
+1. For **Central Institution (NZ)** packages, add the following property to the `build-settings.env` file:
+   ```
+   ADDON_NAME=CustomModuleCentral
+   ```
+
+2. Ensure the `INST_ID` and `VIEW_ID` are set appropriately for the central institution.
+
+3. Run the build command as usual:
+   ```bash
+   npm run build
+   ```
+
+This configuration allows the package to be deployed for central institutions while maintaining compatibility with individual institution customizations.
+
 ### Step 6: Upload Customization Package to Alma
 1. In Alma, navigate to **Discovery > View List > Edit**.
 2. Go to the **Manage Customization Package** tab.
