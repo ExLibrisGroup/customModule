@@ -522,6 +522,8 @@ To create a customization package that supports both individual institutions (IZ
    npm run build
    ```
 
+**Note:** The development that makes a difference for NZ (central institutions) is only available in the July version and later.
+
 This configuration allows the package to be deployed for central institutions while maintaining compatibility with individual institution customizations.
 
 ### Step 6: Upload Customization Package to Alma
