@@ -7,14 +7,16 @@ This project supports two types of releases:
 ### 1. Latest Release (Rolling)
 - **Trigger**: Push to `main` branch
 - **Tag**: `latest`
-- **URL**: `https://github.com/ExLibrisGroup/customModule/releases/download/latest/TalisAspireIntegration.zip`
+- **GitHub URL**: `https://github.com/talis/Talis-Aspire-Primo-NDE-Integration/releases/download/latest/TalisAspireIntegration.zip`
+- **S3 URL**: `https://{bucket}.s3.{region}.amazonaws.com/{prefix}latest/TalisAspireIntegration.zip`
 - **Purpose**: Always contains the most recent build from main
 - **Use case**: Users who want automatic updates
 
 ### 2. Versioned Releases (Stable)
 - **Trigger**: Push a tag matching `v*` (e.g., `v1.0.0`, `v1.2.3`, `v2.0.0-beta.1`)
 - **Tag**: The version tag you create
-- **URL**: `https://github.com/ExLibrisGroup/customModule/releases/download/v1.0.0/TalisAspireIntegration.zip`
+- **GitHub URL**: `https://github.com/talis/Talis-Aspire-Primo-NDE-Integration/releases/download/v1.0.0/TalisAspireIntegration.zip`
+- **S3 URL**: `https://{bucket}.s3.{region}.amazonaws.com/{prefix}v1.0.0/TalisAspireIntegration.zip`
 - **Purpose**: Permanent snapshot for production deployments
 - **Use case**: Rollback capability
 
@@ -44,10 +46,12 @@ git push origin v1.0.0
 
 ### Step 3: GitHub Actions automatically builds and publishes
 The workflow will:
-1. Build the project
-2. Create a GitHub Release for the tag
-3. Upload the zip file
-4. Make it available at the versioned URL
+1. Run tests
+2. Build the project
+3. Create a GitHub Release for the tag with the zip attached
+4. Upload the zip to S3 at the versioned path (`{prefix}v1.0.0/`)
+5. Copy the zip to S3 at the `{prefix}latest/` path
+6. Include both the GitHub and S3 download URLs in the release notes
 
 ## Version Numbering (Semantic Versioning)
 
@@ -66,26 +70,39 @@ Use semantic versioning: `vMAJOR.MINOR.PATCH`
 
 ## Customer Deployment URLs
 
-### For users who want latest updates:
+Each release publishes the zip to both GitHub Releases and S3. Either URL can be used.
+
+### Latest (rolling) — GitHub:
 ```
-https://github.com/ExLibrisGroup/customModule/releases/download/latest/TalisAspireIntegration.zip
+https://github.com/talis/Talis-Aspire-Primo-NDE-Integration/releases/download/latest/TalisAspireIntegration.zip
 ```
 
-### For users who want stability:
+### Latest (rolling) — S3:
 ```
-https://github.com/ExLibrisGroup/customModule/releases/download/v1.0.0/TalisAspireIntegration.zip
+https://{bucket}.s3.{region}.amazonaws.com/{prefix}latest/TalisAspireIntegration.zip
 ```
+
+### Specific version — GitHub:
+```
+https://github.com/talis/Talis-Aspire-Primo-NDE-Integration/releases/download/v1.0.0/TalisAspireIntegration.zip
+```
+
+### Specific version — S3:
+```
+https://{bucket}.s3.{region}.amazonaws.com/{prefix}v1.0.0/TalisAspireIntegration.zip
+```
+
+> The exact S3 URLs for each release are listed in the release notes on GitHub.
 
 ## Rollback Strategy
 
 If a release has issues:
 
 1. **Quick fix**: Push a new tag (e.g., `v1.0.1`) with the fix
-2. **Rollback**: Direct customers to use a previous version URL
+2. **Rollback**: Direct customers to use a previous version URL — both the GitHub and S3 versioned URLs remain permanently available
 
-Customers can always download any previous version using its tag:
 ```
-https://github.com/ExLibrisGroup/customModule/releases/download/v1.0.0/TalisAspireIntegration.zip
+https://github.com/talis/Talis-Aspire-Primo-NDE-Integration/releases/download/v1.0.0/TalisAspireIntegration.zip
 ```
 
 ## Deleting a Tag (if needed)
@@ -98,4 +115,4 @@ git tag -d v1.0.0
 git push origin :refs/tags/v1.0.0
 ```
 
-**Note**: Deleting a tag will also delete the associated release on GitHub.
+**Note**: Deleting a tag will also delete the associated GitHub Release. The zip will remain in S3 at the versioned path unless manually removed.

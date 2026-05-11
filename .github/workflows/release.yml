@@ -16,7 +16,8 @@ jobs:
       FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
 
     permissions:
-      contents: write
+      contents: write        # create GitHub Releases and upload assets
+      id-token: write        # request OIDC token for AWS credential exchange
 
     steps:
       - name: Checkout code
@@ -34,32 +35,50 @@ jobs:
       - name: Run tests
         run: npm run test:ci
 
+      # ── Inject build settings ─────────────────────────────────────────────────
+      # Writes build-settings.env from GitHub Actions Variables so CI never
+      # relies on the committed copy.
+      - name: Write build-settings.env
+        run: echo "ADDON_NAME=${{ vars.ADDON_NAME }}" > build-settings.env
+
       - name: Build project
         run: npm run build
 
-      - name: Get addon name from env
-        id: addon-name
+      # ── Locate zip artefact ───────────────────────────────────────────────────
+      # postbuild.js names the zip after ADDON_NAME.
+      # We discover the path dynamically rather than hardcoding it.
+      - name: Locate zip artefact
+        id: artefacts
         run: |
-          ADDON_NAME=$(grep '^ADDON_NAME=' build-settings.env | cut -d '=' -f2)
-          echo "addon_name=${ADDON_NAME}" >> $GITHUB_OUTPUT
-          echo "Building addon: ${ADDON_NAME}"
+          ZIP=$(find dist -maxdepth 1 -name "*.zip" | head -1)
 
+          if [ -z "$ZIP" ]; then
+            echo "::error::No zip file found in dist/ — postbuild.js may have failed."
+            exit 1
+          fi
+
+          echo "zip_path=${ZIP}"            >> "$GITHUB_OUTPUT"
+          echo "zip_name=$(basename $ZIP)"  >> "$GITHUB_OUTPUT"
+          echo "Found zip: ${ZIP}"
+
+      # ── Determine release type ────────────────────────────────────────────────
       - name: Determine release type
         id: release-type
         run: |
           if [[ "${{ github.ref }}" == refs/tags/* ]]; then
             TAG_NAME="${GITHUB_REF#refs/tags/}"
             echo "tag_name=${TAG_NAME}" >> $GITHUB_OUTPUT
-            echo "is_tag=true" >> $GITHUB_OUTPUT
+            echo "is_tag=true"          >> $GITHUB_OUTPUT
             echo "release_name=Release ${TAG_NAME}" >> $GITHUB_OUTPUT
-            echo "prerelease=false" >> $GITHUB_OUTPUT
+            echo "prerelease=false"     >> $GITHUB_OUTPUT
           else
-            echo "tag_name=latest" >> $GITHUB_OUTPUT
-            echo "is_tag=false" >> $GITHUB_OUTPUT
+            echo "tag_name=latest"      >> $GITHUB_OUTPUT
+            echo "is_tag=false"         >> $GITHUB_OUTPUT
             echo "release_name=Latest Build" >> $GITHUB_OUTPUT
-            echo "prerelease=false" >> $GITHUB_OUTPUT
+            echo "prerelease=false"     >> $GITHUB_OUTPUT
           fi
 
+      # ── GitHub Release ────────────────────────────────────────────────────────
       - name: Delete existing latest release
         if: steps.release-type.outputs.is_tag == 'false'
         continue-on-error: true
@@ -81,9 +100,37 @@ jobs:
             Build date: ${{ github.event.head_commit.timestamp }}
 
             **Download:**
-            [TalisAspireIntegration.zip](https://github.com/${{ github.repository }}/releases/download/${{ steps.release-type.outputs.tag_name }}/${{ steps.addon-name.outputs.addon_name }}.zip)
-          files: dist/${{ steps.addon-name.outputs.addon_name }}.zip
+            [${{ steps.artefacts.outputs.zip_name }}](https://github.com/${{ github.repository }}/releases/download/${{ steps.release-type.outputs.tag_name }}/${{ steps.artefacts.outputs.zip_name }})
+
+            **S3:**
+            https://${{ vars.S3_BUCKET_NAME }}.s3.${{ vars.AWS_REGION }}.amazonaws.com/${{ vars.S3_KEY_PREFIX }}${{ steps.release-type.outputs.is_tag == 'true' && steps.release-type.outputs.tag_name || 'latest' }}/${{ steps.artefacts.outputs.zip_name }}
+          files: ${{ steps.artefacts.outputs.zip_path }}
           prerelease: ${{ steps.release-type.outputs.prerelease }}
           make_latest: ${{ steps.release-type.outputs.is_tag == 'true' }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      # ── AWS authentication (OIDC) ─────────────────────────────────────────────
+      - name: Configure AWS credentials (OIDC)
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ vars.AWS_ROLE_ARN }}
+          aws-region: ${{ vars.AWS_REGION }}
+          audience: sts.amazonaws.com
+
+      # ── S3 — versioned upload (tag releases only) ─────────────────────────────
+      # Uploads the zip to a version-stamped prefix, e.g. prefix/v1.2.3/,
+      # so every tagged release is independently accessible.
+      - name: Upload versioned zip to S3
+        if: steps.release-type.outputs.is_tag == 'true'
+        run: |
+          aws s3 cp "${{ steps.artefacts.outputs.zip_path }}" \
+            "s3://${{ vars.S3_BUCKET_NAME }}/${{ vars.S3_KEY_PREFIX }}${{ steps.release-type.outputs.tag_name }}/${{ steps.artefacts.outputs.zip_name }}"
+
+      # ── S3 — upload to latest/ ────────────────────────────────────────────────
+      # Always runs — keeps latest/ pointing at the current build whether this
+      # is a tagged release or a rolling main-branch build.
+      - name: Upload zip to S3 latest/
+        run: |
+          aws s3 cp "${{ steps.artefacts.outputs.zip_path }}" \
+            "s3://${{ vars.S3_BUCKET_NAME }}/${{ vars.S3_KEY_PREFIX }}latest/${{ steps.artefacts.outputs.zip_name }}"
