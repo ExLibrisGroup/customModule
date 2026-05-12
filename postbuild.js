@@ -16,9 +16,6 @@ function createArchive(sourcePath, zipPath) {
   output.on("close", () => {
     console.log(`Archive completed: ${archive.pointer()} total bytes`);
     console.log(`Zip file created at: ${zipPath}`);
-    console.log(
-      "Please upload the zip file to Alma BO custom package section to deploy your custom module.",
-    );
   });
 
   archive.on("warning", (err) => {
@@ -34,7 +31,7 @@ function createArchive(sourcePath, zipPath) {
   });
 
   archive.pipe(output);
-  archive.directory(sourcePath, path.basename(sourcePath)); // This ensures the directory itself is included
+  archive.directory(sourcePath, path.basename(sourcePath));
   archive.finalize();
 }
 
@@ -73,12 +70,10 @@ if (process.env.INST_ID && process.env.VIEW_ID) {
     "INST_ID and/or VIEW_ID not found in build-settings.env. Using ADDON_NAME.",
   );
   const zipPath = path.join(__dirname, "dist", `${process.env.ADDON_NAME}.zip`);
-  
-  // Check if target directory exists and remove it if it does
-  const existingZipPath = zipPath;
-  if (fs.existsSync(existingZipPath)) {
-    fs.rmSync(existingZipPath, { force: true });
+
+  if (fs.existsSync(zipPath)) {
+    fs.rmSync(zipPath, { force: true });
   }
-  
+
   createArchive(distPath, zipPath);
 }

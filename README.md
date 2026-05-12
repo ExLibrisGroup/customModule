@@ -30,8 +30,38 @@ This add-on integrates Talis Aspire Reading Lists with Ex Libris Primo NDE (New 
 Library system managers can easily add, configure, and manage these add-ons through Alma. You will need to know:
 
 - **Add-on Name** – `TalisAspireIntegration`
-- **Add-on URL** – `https://github.com/talis/Talis-Aspire-Primo-NDE-Integration/releases/download/latest/TalisAspireIntegration.zip` This URL will always point to the latest released version of this plugin.
-- **Configuration Parameters** – JSON-based config parameters to be referenced at runtime by the add-on. The available paramters are discussed below.
+- **Add-on URL** – see the hosting options below.
+- **Configuration Parameters** – JSON-based config parameters to be referenced at runtime by the add-on. The available parameters are discussed below.
+
+### Hosting Options
+
+There are two ways to host this add-on. Choose the option that best suits your institution's requirements.
+
+#### Option 1: Talis-hosted (recommended)
+
+Point Alma directly at the Talis-managed S3 distribution. The add-on files are served as a static directory from AWS S3:
+
+```
+https://talis-cs-production-primo-nde-eu-west-1.s3.eu-west-1.amazonaws.com/latest/TalisAspireIntegration/
+```
+
+**Pros:** Always serves the latest released version automatically — no action required from you when a new version is published.
+
+**Risk:** Updates are deployed by Talis and take effect immediately. In rare cases a release could introduce a change that requires a corresponding configuration update on your side. Monitor the [release notes](https://github.com/talis/Talis-Aspire-Primo-NDE-Integration/releases) and test in a non-production view if this is a concern.
+
+---
+
+#### Option 2: Self-hosted
+
+Download the ZIP, extract it, and host the resulting `TalisAspireIntegration/` directory on your own web server or CDN. Point Alma at the URL where you serve that directory.
+
+Latest release ZIP is available from either:
+- **S3:** [`TalisAspireIntegration.zip`](https://talis-cs-production-primo-nde-eu-west-1.s3.eu-west-1.amazonaws.com/latest/TalisAspireIntegration.zip)
+- **GitHub Releases:** [`TalisAspireIntegration.zip`](https://github.com/talis/Talis-Aspire-Primo-NDE-Integration/releases/download/latest/TalisAspireIntegration.zip)
+
+**Pros:** You control exactly which version is live and when updates are applied. Useful if your institution has change-freeze periods or requires internal testing before adopting a new release.
+
+**Risk:** You are responsible for monitoring new releases and manually re-downloading, extracting, and re-deploying the files. Running an outdated version means you will not receive bug fixes or improvements until you update.
 
 In Primo you will configure an addon: the screen looks like this
 

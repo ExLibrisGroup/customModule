@@ -44,21 +44,30 @@ jobs:
       - name: Build project
         run: npm run build
 
-      # ── Locate zip artefact ───────────────────────────────────────────────────
-      # postbuild.js names the zip after ADDON_NAME.
-      # We discover the path dynamically rather than hardcoding it.
-      - name: Locate zip artefact
+      # ── Locate artefacts ──────────────────────────────────────────────────────
+      # postbuild.js produces both a directory and a zip, named after ADDON_NAME
+      # (or INST_ID-VIEW_ID). We discover both paths dynamically.
+      - name: Locate artefacts
         id: artefacts
         run: |
+          DIR=$(find dist -maxdepth 1 -mindepth 1 -type d | head -1)
           ZIP=$(find dist -maxdepth 1 -name "*.zip" | head -1)
+
+          if [ -z "$DIR" ]; then
+            echo "::error::No directory found in dist/ — postbuild.js may have failed."
+            exit 1
+          fi
 
           if [ -z "$ZIP" ]; then
             echo "::error::No zip file found in dist/ — postbuild.js may have failed."
             exit 1
           fi
 
-          echo "zip_path=${ZIP}"            >> "$GITHUB_OUTPUT"
-          echo "zip_name=$(basename $ZIP)"  >> "$GITHUB_OUTPUT"
+          echo "dist_path=${DIR}"            >> "$GITHUB_OUTPUT"
+          echo "dist_name=$(basename $DIR)"  >> "$GITHUB_OUTPUT"
+          echo "zip_path=${ZIP}"             >> "$GITHUB_OUTPUT"
+          echo "zip_name=$(basename $ZIP)"   >> "$GITHUB_OUTPUT"
+          echo "Found dist dir: ${DIR}"
           echo "Found zip: ${ZIP}"
 
       # ── Determine release type ────────────────────────────────────────────────
@@ -99,10 +108,13 @@ jobs:
             Built from commit: ${{ github.sha }}
             Build date: ${{ github.event.head_commit.timestamp }}
 
-            **Download:**
+            **Download (zip):**
             [${{ steps.artefacts.outputs.zip_name }}](https://github.com/${{ github.repository }}/releases/download/${{ steps.release-type.outputs.tag_name }}/${{ steps.artefacts.outputs.zip_name }})
 
-            **S3:**
+            **S3 (directory):**
+            https://${{ vars.S3_BUCKET_NAME }}.s3.${{ vars.AWS_REGION }}.amazonaws.com/${{ vars.S3_KEY_PREFIX }}${{ steps.release-type.outputs.is_tag == 'true' && steps.release-type.outputs.tag_name || 'latest' }}/${{ steps.artefacts.outputs.dist_name }}/
+
+            **S3 (zip):**
             https://${{ vars.S3_BUCKET_NAME }}.s3.${{ vars.AWS_REGION }}.amazonaws.com/${{ vars.S3_KEY_PREFIX }}${{ steps.release-type.outputs.is_tag == 'true' && steps.release-type.outputs.tag_name || 'latest' }}/${{ steps.artefacts.outputs.zip_name }}
           files: ${{ steps.artefacts.outputs.zip_path }}
           prerelease: ${{ steps.release-type.outputs.prerelease }}
@@ -119,18 +131,24 @@ jobs:
           audience: sts.amazonaws.com
 
       # ── S3 — versioned upload (tag releases only) ─────────────────────────────
-      # Uploads the zip to a version-stamped prefix, e.g. prefix/v1.2.3/,
-      # so every tagged release is independently accessible.
-      - name: Upload versioned zip to S3
+      # Syncs the dist directory and uploads the zip to a version-stamped prefix,
+      # e.g. prefix/v1.2.3/, so every tagged release is independently accessible.
+      - name: Upload versioned artefacts to S3
         if: steps.release-type.outputs.is_tag == 'true'
         run: |
+          aws s3 sync "${{ steps.artefacts.outputs.dist_path }}" \
+            "s3://${{ vars.S3_BUCKET_NAME }}/${{ vars.S3_KEY_PREFIX }}${{ steps.release-type.outputs.tag_name }}/${{ steps.artefacts.outputs.dist_name }}/" \
+            --delete
           aws s3 cp "${{ steps.artefacts.outputs.zip_path }}" \
             "s3://${{ vars.S3_BUCKET_NAME }}/${{ vars.S3_KEY_PREFIX }}${{ steps.release-type.outputs.tag_name }}/${{ steps.artefacts.outputs.zip_name }}"
 
       # ── S3 — upload to latest/ ────────────────────────────────────────────────
       # Always runs — keeps latest/ pointing at the current build whether this
       # is a tagged release or a rolling main-branch build.
-      - name: Upload zip to S3 latest/
+      - name: Upload artefacts to S3 latest/
         run: |
+          aws s3 sync "${{ steps.artefacts.outputs.dist_path }}" \
+            "s3://${{ vars.S3_BUCKET_NAME }}/${{ vars.S3_KEY_PREFIX }}latest/${{ steps.artefacts.outputs.dist_name }}/" \
+            --delete
           aws s3 cp "${{ steps.artefacts.outputs.zip_path }}" \
             "s3://${{ vars.S3_BUCKET_NAME }}/${{ vars.S3_KEY_PREFIX }}latest/${{ steps.artefacts.outputs.zip_name }}"
