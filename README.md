@@ -86,6 +86,13 @@ See [talis-aspire-config-example.json](talis-aspire-config-example.json) in this
 
 ### Configuration Fields
 
+#### Config Builder Tool
+
+Not sure what to put in your configuration file? Use the
+[Config Builder](https://talis-cs-production-primo-nde-eu-west-1.s3.eu-west-1.amazonaws.com/config-builder/)
+— a self-contained page that looks up your institution, works out `baseUrl` (and `httpBaseUrl` if you need it),
+explains each of the optional settings, and lets you copy or download the finished JSON.
+
 #### Required Fields
 
 - **`baseUrl`** (string, **REQUIRED**): Your Talis Aspire tenancy base URL with trailing slash (HTTPS)

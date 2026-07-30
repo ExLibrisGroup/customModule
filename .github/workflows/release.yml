@@ -148,6 +148,15 @@ jobs:
             "s3://${{ vars.S3_BUCKET_NAME }}/${{ vars.S3_KEY_PREFIX }}${{ steps.release-type.outputs.tag_name }}/${{ steps.artefacts.outputs.dir_name }}/" \
             --delete
 
+      # ── S3 — config builder tool ──────────────────────────────────────────────
+      # Always runs — keeps the standalone config-builder page at a stable URL
+      # (bucket-root config-builder/), independent of add-on versioning.
+      - name: Sync config builder to S3
+        run: |
+          aws s3 sync tools/config-builder/ \
+            "s3://${{ vars.S3_BUCKET_NAME }}/${{ vars.S3_KEY_PREFIX }}config-builder/" \
+            --delete
+
       # ── S3 — upload to latest/ ────────────────────────────────────────────────
       # Always runs — keeps latest/ pointing at the current build whether this
       # is a tagged release or a rolling main-branch build.

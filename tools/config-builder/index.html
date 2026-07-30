@@ -1,0 +1,837 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Talis Aspire × Primo NDE — Config Builder</title>
+<style>
+  :root {
+    --bg: #f5f6fa;
+    --panel-bg: #ffffff;
+    --text: #1b1b23;
+    --muted: #5b5b6b;
+    --border: #dcdce4;
+    --accent: #0b5fff;
+    --accent-contrast: #ffffff;
+    --warning-bg: #fff4e5;
+    --warning-border: #d98c00;
+    --warning-text: #6b4a00;
+    --code-bg: #0f1117;
+    --code-text: #e6e6ef;
+    --listbox-hover: #eef3ff;
+    --status-ok-bg: rgba(34, 197, 94, 0.12);
+    --status-ok-text: #15803d;
+    --status-warn-bg: rgba(245, 158, 11, 0.16);
+    --status-warn-text: #b45309;
+    --status-error-bg: rgba(239, 68, 68, 0.14);
+    --status-error-text: #b91c1c;
+    --status-off-bg: rgba(107, 114, 128, 0.14);
+    --status-off-text: #4b5563;
+    --status-info-bg: rgba(59, 130, 246, 0.12);
+    --status-info-text: #1d4ed8;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #14141a;
+      --panel-bg: #1c1c24;
+      --text: #eaeaf2;
+      --muted: #a7a7ba;
+      --border: #33333f;
+      --accent: #6ea8ff;
+      --status-ok-bg: rgba(34, 197, 94, 0.18);
+      --status-ok-text: #4ade80;
+      --status-warn-bg: rgba(245, 158, 11, 0.2);
+      --status-warn-text: #fbbf24;
+      --status-error-bg: rgba(239, 68, 68, 0.2);
+      --status-error-text: #f87171;
+      --status-off-bg: rgba(107, 114, 128, 0.22);
+      --status-off-text: #b0b6c4;
+      --status-info-bg: rgba(59, 130, 246, 0.2);
+      --status-info-text: #93c5fd;
+      --accent-contrast: #0b1020;
+      --warning-bg: #2a2210;
+      --warning-border: #caa53d;
+      --warning-text: #f0d9a0;
+      --code-bg: #0a0b0f;
+      --code-text: #d8dae4;
+      --listbox-hover: #262b3a;
+    }
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    margin: 0;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.5;
+  }
+
+  header, footer {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 1.5rem;
+  }
+
+  header h1 { margin: 0 0 0.5rem; font-size: 1.5rem; }
+  header p { margin: 0; color: var(--muted); max-width: 70ch; }
+
+  footer { color: var(--muted); font-size: 0.85rem; }
+  footer a { color: var(--accent); }
+
+  .layout {
+    display: grid;
+    grid-template-columns: 1.15fr 0.85fr;
+    gap: 1.5rem;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 1.5rem 1.5rem;
+    align-items: start;
+  }
+
+  @media (max-width: 860px) {
+    .layout { grid-template-columns: 1fr; }
+  }
+
+  .panel {
+    background: var(--panel-bg);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 1.5rem;
+  }
+
+  .preview-panel { position: sticky; top: 1.5rem; }
+
+  .field { margin-bottom: 1.25rem; }
+  .field:last-child { margin-bottom: 0; }
+
+  label { display: block; font-weight: 600; margin-bottom: 0.35rem; }
+
+  .section-heading {
+    font-size: 1.25rem;
+    font-weight: 700;
+    margin: 2rem 0 1.1rem;
+    padding-bottom: 0.6rem;
+    border-bottom: 2px solid var(--border);
+    color: var(--text);
+  }
+
+  #directory-search > .section-heading { margin-top: 0; }
+
+  .required-badge {
+    font-weight: 500;
+    font-size: 0.75rem;
+    color: var(--accent);
+    border: 1px solid var(--accent);
+    border-radius: 999px;
+    padding: 0.05rem 0.5rem;
+    margin-left: 0.4rem;
+    vertical-align: middle;
+  }
+
+  input[type="text"], input[type="number"] {
+    width: 100%;
+    padding: 0.5rem 0.65rem;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    background: var(--panel-bg);
+    color: var(--text);
+    font-size: 0.95rem;
+  }
+
+  input[type="text"]:disabled { opacity: 0.6; }
+
+  .hint {
+    margin: 0.35rem 0 0;
+    font-size: 0.85rem;
+    color: var(--muted);
+  }
+
+  .hint code, .info-box code { font-size: 0.85em; }
+
+  code {
+    background: rgba(127, 127, 127, 0.15);
+    padding: 0.1rem 0.35rem;
+    border-radius: 4px;
+    font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  }
+
+  .warning {
+    background: var(--warning-bg);
+    border: 1px solid var(--warning-border);
+    color: var(--warning-text);
+    border-radius: 8px;
+    padding: 0.6rem 0.8rem;
+    font-size: 0.85rem;
+  }
+
+  .hidden { display: none !important; }
+
+  .combobox { position: relative; }
+
+  .listbox {
+    position: absolute;
+    z-index: 10;
+    top: calc(100% + 4px);
+    left: 0;
+    right: 0;
+    max-height: 260px;
+    overflow-y: auto;
+    margin: 0;
+    padding: 0.25rem;
+    list-style: none;
+    background: var(--panel-bg);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+  }
+
+  .listbox li {
+    padding: 0.45rem 0.6rem;
+    border-radius: 6px;
+    cursor: pointer;
+  }
+
+  .listbox li:hover,
+  .listbox li.active {
+    background: var(--listbox-hover);
+  }
+
+  .info-box {
+    margin-top: 0.75rem;
+    padding: 0.75rem 0.9rem;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    background: rgba(127, 127, 127, 0.06);
+    font-size: 0.9rem;
+  }
+
+  .info-box p { margin: 0.25rem 0; }
+  .info-box .label { color: var(--muted); }
+
+  details.advanced summary {
+    cursor: pointer;
+  }
+
+  details.advanced[open] summary.section-heading { margin-bottom: 1.1rem; }
+
+  .checkbox-field label {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-weight: 500;
+  }
+
+  .radio-row {
+    display: flex;
+    gap: 1.25rem;
+    flex-wrap: wrap;
+  }
+
+  .radio-row label {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    font-weight: 500;
+  }
+
+  .summary-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+    margin-bottom: 1.25rem;
+  }
+
+  .status-row {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.55rem;
+    padding: 0.5rem 0.65rem;
+    border-radius: 8px;
+    font-size: 0.88rem;
+  }
+
+  .status-row .status-icon {
+    flex: 0 0 auto;
+  }
+
+  .status-row.status-ok { background: var(--status-ok-bg); color: var(--status-ok-text); }
+  .status-row.status-warn { background: var(--status-warn-bg); color: var(--status-warn-text); }
+  .status-row.status-error { background: var(--status-error-bg); color: var(--status-error-text); }
+  .status-row.status-off { background: var(--status-off-bg); color: var(--status-off-text); }
+  .status-row.status-info { background: var(--status-info-bg); color: var(--status-info-text); }
+
+  pre {
+    margin: 0;
+    background: var(--code-bg);
+    color: var(--code-text);
+    padding: 1rem;
+    border-radius: 8px;
+    overflow-x: auto;
+    font-size: 0.85rem;
+    min-height: 4rem;
+    white-space: pre-wrap;
+    word-break: break-word;
+  }
+
+  .actions {
+    display: flex;
+    gap: 0.75rem;
+    margin-top: 1rem;
+  }
+
+  button {
+    padding: 0.55rem 1.1rem;
+    border-radius: 8px;
+    border: none;
+    background: var(--accent);
+    color: var(--accent-contrast);
+    font-weight: 600;
+    cursor: pointer;
+    font-size: 0.9rem;
+  }
+
+  button:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+
+  #action-hint {
+    min-height: 1.2em;
+  }
+</style>
+</head>
+<body>
+<header>
+  <h1>Talis Aspire × Primo NDE — Config Builder</h1>
+  <p>
+    Build the JSON configuration file used to install the Talis Aspire add-on in Primo NDE / Alma.
+    Search for your institution below, answer a couple of questions, then copy or download the
+    finished config.
+  </p>
+</header>
+
+<main class="layout">
+  <section class="panel form-panel">
+    <div class="field" id="directory-search">
+      <label for="institution-input" class="section-heading">1. Find your institution</label>
+      <div class="combobox">
+        <input
+          id="institution-input"
+          type="text"
+          role="combobox"
+          aria-expanded="false"
+          aria-autocomplete="list"
+          aria-controls="institution-listbox"
+          autocomplete="off"
+          disabled
+          placeholder="Loading institution directory…"
+        />
+        <ul id="institution-listbox" class="listbox hidden" role="listbox"></ul>
+      </div>
+      <p class="hint" id="directory-status">Loading institution directory…</p>
+      <div id="selected-info" class="info-box hidden"></div>
+    </div>
+
+    <div class="field hidden" id="manual-fallback">
+      <p class="hint warning">
+        Couldn't load the institution directory, so <code>baseUrl</code> can't be looked up automatically.
+        Enter it manually below — it's normally <code>https://&lt;tenant&gt;.rl.talis.com/</code>.
+      </p>
+      <div class="field">
+        <label for="manual-baseurl">Base URL</label>
+        <input id="manual-baseurl" type="text" placeholder="https://yourtenant.rl.talis.com/" />
+      </div>
+      <div class="field">
+        <label for="manual-httpbaseurl">HTTP base URL (optional)</label>
+        <input id="manual-httpbaseurl" type="text" placeholder="Only needed if your http and https URLs use different domains" />
+      </div>
+    </div>
+
+    <div class="field">
+      <label for="mms-id" class="section-heading">2. MMS ID institution code <span class="required-badge">Required</span></label>
+      <input id="mms-id" type="number" min="0" step="1" placeholder="e.g. 1234" />
+      <p class="hint">
+        The last four digits of your institution's MMS IDs — e.g. <code>1234</code> for MMS IDs like
+        <code>9912345678901234</code>.
+      </p>
+    </div>
+
+    <details class="field advanced">
+      <summary class="section-heading">3. Advanced options (optional)</summary>
+
+      <p class="hint">
+        These fields are pre-filled with the add-on's built-in defaults. A field is only written into
+        the generated config below if you change it from that default — leave a field as-is and it's
+        simply left out, so the add-on falls back to the same default value at runtime.
+      </p>
+
+      <div class="field">
+        <label for="related-lists-label">Related lists display label</label>
+        <input id="related-lists-label" type="text" />
+        <p class="hint">
+          Text shown above the list of reading lists that cite the current item.
+        </p>
+      </div>
+
+      <div class="field checkbox-field">
+        <label><input id="display-bookmark-button" type="checkbox" /> Show the "Send To Reading Lists" bookmark button</label>
+        <p class="hint">Turns the bookmark-this button on or off entirely.</p>
+      </div>
+
+      <div class="field">
+        <label for="bookmark-title-attribute">Bookmark button tooltip</label>
+        <input id="bookmark-title-attribute" type="text" />
+        <p class="hint">Tooltip text shown when hovering over the bookmark button.</p>
+      </div>
+
+      <div class="field">
+        <label for="bookmark-button-text">Bookmark button label</label>
+        <input id="bookmark-button-text" type="text" />
+        <p class="hint">Visible text on the bookmark button itself.</p>
+      </div>
+    </details>
+
+    <div class="field">
+      <label class="section-heading">4. Output format</label>
+      <div class="radio-row">
+        <label><input type="radio" name="format" value="production" checked /> Production (upload to Alma)</label>
+        <label><input type="radio" name="format" value="local" /> Local development</label>
+      </div>
+      <p id="local-warning" class="hint warning hidden">
+        This nested format is for local development testing only — it will not work if uploaded to Alma.
+      </p>
+    </div>
+  </section>
+
+  <section class="panel preview-panel">
+    <h2 style="margin-top:0;">What this will do</h2>
+    <p class="hint">
+      The add-on has defaults, so not all config lines need to be present for the features to be active.
+    </p>
+    <div id="summary-list" class="summary-list"></div>
+
+    <h2>Your config</h2>
+    <pre><code id="preview-code"></code></pre>
+    <div class="actions">
+      <button id="copy-btn" type="button" disabled>Copy to clipboard</button>
+      <button id="download-btn" type="button" disabled>Download .json</button>
+    </div>
+    <p id="action-hint" class="hint"></p>
+  </section>
+</main>
+
+
+<script>
+(function () {
+  "use strict";
+
+  var CUSTOMERS_URL = "https://talis-public.talis.com/talis.com/customers.json";
+
+  var DEFAULTS = {
+    relatedListsDisplayLabel: "Cited on reading lists:",
+    displayBookmarkThisButton: true,
+    bookmarkThisTitleAttribute: "bookmark this item to reading lists",
+    bookmarkThisButtonText: "Send To Reading Lists"
+  };
+
+  var institutionInput = document.getElementById("institution-input");
+  var listbox = document.getElementById("institution-listbox");
+  var directoryStatus = document.getElementById("directory-status");
+  var selectedInfo = document.getElementById("selected-info");
+  var manualFallback = document.getElementById("manual-fallback");
+  var manualBaseUrlInput = document.getElementById("manual-baseurl");
+  var manualHttpBaseUrlInput = document.getElementById("manual-httpbaseurl");
+
+  var mmsIdInput = document.getElementById("mms-id");
+  var relatedListsLabelInput = document.getElementById("related-lists-label");
+  var displayBookmarkCheckbox = document.getElementById("display-bookmark-button");
+  var bookmarkTitleInput = document.getElementById("bookmark-title-attribute");
+  var bookmarkButtonTextInput = document.getElementById("bookmark-button-text");
+  var formatRadios = document.querySelectorAll('input[name="format"]');
+  var localWarning = document.getElementById("local-warning");
+
+  var summaryList = document.getElementById("summary-list");
+  var previewCode = document.getElementById("preview-code");
+  var copyBtn = document.getElementById("copy-btn");
+  var downloadBtn = document.getElementById("download-btn");
+  var actionHint = document.getElementById("action-hint");
+
+  var customers = [];
+  var selected = null; // { baseUrl, httpBaseUrl }
+  var currentMatches = [];
+  var activeIndex = -1;
+  var actionHintTimer = null;
+
+  relatedListsLabelInput.value = DEFAULTS.relatedListsDisplayLabel;
+  displayBookmarkCheckbox.checked = DEFAULTS.displayBookmarkThisButton;
+  bookmarkTitleInput.value = DEFAULTS.bookmarkThisTitleAttribute;
+  bookmarkButtonTextInput.value = DEFAULTS.bookmarkThisButtonText;
+
+  function formatValue() {
+    for (var i = 0; i < formatRadios.length; i++) {
+      if (formatRadios[i].checked) return formatRadios[i].value;
+    }
+    return "production";
+  }
+
+  function getMmsId() {
+    var raw = mmsIdInput.value.trim();
+    if (!raw) return null;
+    var n = Number(raw);
+    if (!Number.isInteger(n) || n < 0) return null;
+    return n;
+  }
+
+  function closeList() {
+    listbox.classList.add("hidden");
+    listbox.innerHTML = "";
+    institutionInput.setAttribute("aria-expanded", "false");
+    institutionInput.removeAttribute("aria-activedescendant");
+    activeIndex = -1;
+  }
+
+  function updateActive() {
+    var items = listbox.querySelectorAll("li");
+    items.forEach(function (li, i) {
+      if (i === activeIndex) {
+        li.classList.add("active");
+        institutionInput.setAttribute("aria-activedescendant", li.id);
+        li.scrollIntoView({ block: "nearest" });
+      } else {
+        li.classList.remove("active");
+      }
+    });
+  }
+
+  function renderList() {
+    listbox.innerHTML = "";
+    activeIndex = -1;
+    if (currentMatches.length === 0) {
+      closeList();
+      return;
+    }
+    currentMatches.forEach(function (c, i) {
+      var li = document.createElement("li");
+      li.setAttribute("role", "option");
+      li.id = "institution-option-" + i;
+      li.textContent = c.name;
+      li.addEventListener("mousedown", function (e) {
+        e.preventDefault();
+        selectCustomer(c);
+      });
+      listbox.appendChild(li);
+    });
+    listbox.classList.remove("hidden");
+    institutionInput.setAttribute("aria-expanded", "true");
+  }
+
+  function renderSelectedInfo() {
+    selectedInfo.innerHTML = "";
+    if (!selected || !selected.name) {
+      selectedInfo.classList.add("hidden");
+      return;
+    }
+    selectedInfo.classList.remove("hidden");
+
+    var nameP = document.createElement("p");
+    var strong = document.createElement("strong");
+    strong.textContent = selected.name;
+    nameP.appendChild(strong);
+
+    var baseP = document.createElement("p");
+    var baseLabel = document.createElement("span");
+    baseLabel.className = "label";
+    baseLabel.textContent = "baseUrl: ";
+    var baseCode = document.createElement("code");
+    baseCode.textContent = selected.baseUrl;
+    baseP.appendChild(baseLabel);
+    baseP.appendChild(baseCode);
+
+    var httpP = document.createElement("p");
+    var httpLabel = document.createElement("span");
+    httpLabel.className = "label";
+    httpLabel.textContent = "httpBaseUrl: ";
+    httpP.appendChild(httpLabel);
+    if (selected.httpBaseUrl) {
+      var httpCode = document.createElement("code");
+      httpCode.textContent = selected.httpBaseUrl;
+      httpP.appendChild(httpCode);
+      httpP.appendChild(document.createTextNode(" (included — differs from baseUrl's domain)"));
+    } else {
+      httpP.appendChild(document.createTextNode("not needed — matches baseUrl's domain"));
+    }
+
+    selectedInfo.appendChild(nameP);
+    selectedInfo.appendChild(baseP);
+    selectedInfo.appendChild(httpP);
+  }
+
+  function selectCustomer(c) {
+    var hostBase = (c.key + ".rl.talis.com").toLowerCase();
+    var baseUrl = "https://" + c.key + ".rl.talis.com/";
+    var httpBaseUrl = null;
+    try {
+      var parsedRlUrl = new URL(c.rlUrl);
+      var rlHost = parsedRlUrl.hostname.toLowerCase();
+      if (rlHost && rlHost !== hostBase) {
+        // Drop any path (e.g. "login.html") — only the origin is needed.
+        httpBaseUrl = parsedRlUrl.origin + "/";
+      }
+    } catch (e) {
+      // malformed URL in the directory entry — ignore, httpBaseUrl stays unset
+    }
+    selected = { name: c.name, baseUrl: baseUrl, httpBaseUrl: httpBaseUrl };
+    institutionInput.value = c.name;
+    closeList();
+    renderSelectedInfo();
+    updatePreview();
+  }
+
+  institutionInput.addEventListener("input", function () {
+    selected = null;
+    renderSelectedInfo();
+    updatePreview();
+    var q = institutionInput.value.trim().toLowerCase();
+    if (!q) {
+      currentMatches = [];
+      closeList();
+      return;
+    }
+    currentMatches = customers
+      .filter(function (c) { return c.name.toLowerCase().indexOf(q) !== -1; })
+      .slice(0, 20);
+    renderList();
+  });
+
+  institutionInput.addEventListener("keydown", function (e) {
+    if (listbox.classList.contains("hidden") || currentMatches.length === 0) return;
+    if (e.key === "ArrowDown") {
+      e.preventDefault();
+      activeIndex = Math.min(activeIndex + 1, currentMatches.length - 1);
+      updateActive();
+    } else if (e.key === "ArrowUp") {
+      e.preventDefault();
+      activeIndex = Math.max(activeIndex - 1, 0);
+      updateActive();
+    } else if (e.key === "Enter") {
+      if (activeIndex >= 0) {
+        e.preventDefault();
+        selectCustomer(currentMatches[activeIndex]);
+      }
+    } else if (e.key === "Escape") {
+      closeList();
+    }
+  });
+
+  document.addEventListener("click", function (e) {
+    if (!institutionInput.contains(e.target) && !listbox.contains(e.target)) {
+      closeList();
+    }
+  });
+
+  function syncManualSelection() {
+    var baseUrl = manualBaseUrlInput.value.trim();
+    var httpBaseUrl = manualHttpBaseUrlInput.value.trim();
+    if (!baseUrl) {
+      selected = null;
+    } else {
+      selected = { name: null, baseUrl: baseUrl, httpBaseUrl: httpBaseUrl || null };
+    }
+    updatePreview();
+  }
+  manualBaseUrlInput.addEventListener("input", syncManualSelection);
+  manualHttpBaseUrlInput.addEventListener("input", syncManualSelection);
+
+  mmsIdInput.addEventListener("input", updatePreview);
+  relatedListsLabelInput.addEventListener("input", updatePreview);
+  displayBookmarkCheckbox.addEventListener("change", updatePreview);
+  bookmarkTitleInput.addEventListener("input", updatePreview);
+  bookmarkButtonTextInput.addEventListener("input", updatePreview);
+  formatRadios.forEach(function (r) {
+    r.addEventListener("change", function () {
+      localWarning.classList.toggle("hidden", formatValue() !== "local");
+      updatePreview();
+    });
+  });
+
+  function buildConfig() {
+    if (!selected || !selected.baseUrl) return null;
+    var mmsId = getMmsId();
+    if (mmsId === null) return null;
+
+    var cfg = { baseUrl: selected.baseUrl, mmsIdInstitutionCode: mmsId };
+    if (selected.httpBaseUrl) cfg.httpBaseUrl = selected.httpBaseUrl;
+
+    var relatedLabel = relatedListsLabelInput.value;
+    if (relatedLabel !== DEFAULTS.relatedListsDisplayLabel) cfg.relatedListsDisplayLabel = relatedLabel;
+
+    var displayBookmark = displayBookmarkCheckbox.checked;
+    if (displayBookmark !== DEFAULTS.displayBookmarkThisButton) cfg.displayBookmarkThisButton = displayBookmark;
+
+    var titleAttr = bookmarkTitleInput.value;
+    if (titleAttr !== DEFAULTS.bookmarkThisTitleAttribute) cfg.bookmarkThisTitleAttribute = titleAttr;
+
+    var buttonText = bookmarkButtonTextInput.value;
+    if (buttonText !== DEFAULTS.bookmarkThisButtonText) cfg.bookmarkThisButtonText = buttonText;
+
+    if (formatValue() === "local") return { talisAspire: cfg };
+    return cfg;
+  }
+
+  function missingFieldsMessage() {
+    var missing = [];
+    if (!selected || !selected.baseUrl) missing.push("select your institution (or enter a base URL)");
+    if (getMmsId() === null) missing.push("enter your MMS ID institution code");
+    if (missing.length === 0) return "";
+    return "Still needed: " + missing.join(" and ") + ".";
+  }
+
+  function addStatusRow(rows, state, icon, text) {
+    rows.push({ state: state, icon: icon, text: text });
+  }
+
+  function buildSummaryRows() {
+    var rows = [];
+
+    if (selected && selected.baseUrl) {
+      addStatusRow(rows, "ok", "🏫", (selected.name ? selected.name : "Custom institution") + " — " + selected.baseUrl);
+    } else {
+      addStatusRow(rows, "warn", "⚠️", "No institution selected yet");
+    }
+
+    if (selected && selected.httpBaseUrl) {
+      addStatusRow(rows, "info", "🌐", "HTTP base URL override included (differs from baseUrl's domain): " + selected.httpBaseUrl);
+    }
+
+    var mmsId = getMmsId();
+    if (mmsId !== null) {
+      addStatusRow(rows, "ok", "🔢", "MMS ID institution code set: " + mmsId);
+    } else {
+      addStatusRow(rows, "error", "❌", "MMS ID institution code not set — required");
+    }
+
+    if (displayBookmarkCheckbox.checked) {
+      addStatusRow(rows, "ok", "✅", 'Bookmark button shown, labelled "' + bookmarkButtonTextInput.value + '"');
+      addStatusRow(rows, "info", "💬", 'Bookmark button tooltip: "' + bookmarkTitleInput.value + '"');
+    } else {
+      addStatusRow(rows, "off", "🚫", "Bookmark button hidden");
+    }
+
+    addStatusRow(rows, "info", "📚", 'Related lists section label: "' + relatedListsLabelInput.value + '"');
+
+    if (formatValue() === "local") {
+      addStatusRow(rows, "warn", "🧪", "Local development format — will not work if uploaded to Alma");
+    } else {
+      addStatusRow(rows, "ok", "📦", "Production format — ready to upload to Alma");
+    }
+
+    return rows;
+  }
+
+  function renderSummary() {
+    summaryList.innerHTML = "";
+    buildSummaryRows().forEach(function (row) {
+      var div = document.createElement("div");
+      div.className = "status-row status-" + row.state;
+      var icon = document.createElement("span");
+      icon.className = "status-icon";
+      icon.textContent = row.icon;
+      var text = document.createElement("span");
+      text.textContent = row.text;
+      div.appendChild(icon);
+      div.appendChild(text);
+      summaryList.appendChild(div);
+    });
+  }
+
+  function updatePreview() {
+    renderSummary();
+    var cfg = buildConfig();
+    if (!cfg) {
+      previewCode.textContent = missingFieldsMessage() || "Search for and select your institution to get started.";
+      copyBtn.disabled = true;
+      downloadBtn.disabled = true;
+      return;
+    }
+    previewCode.textContent = JSON.stringify(cfg, null, 2);
+    copyBtn.disabled = false;
+    downloadBtn.disabled = false;
+  }
+
+  function flashActionHint(msg) {
+    actionHint.textContent = msg;
+    clearTimeout(actionHintTimer);
+    actionHintTimer = setTimeout(function () { actionHint.textContent = ""; }, 2500);
+  }
+
+  copyBtn.addEventListener("click", function () {
+    var cfg = buildConfig();
+    if (!cfg) return;
+    var text = JSON.stringify(cfg, null, 2);
+    var done = function () { flashActionHint("Copied to clipboard."); };
+    var fallback = function () {
+      var ta = document.createElement("textarea");
+      ta.value = text;
+      ta.style.position = "fixed";
+      ta.style.opacity = "0";
+      document.body.appendChild(ta);
+      ta.select();
+      try { document.execCommand("copy"); } catch (e) { /* ignore */ }
+      document.body.removeChild(ta);
+      done();
+    };
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(text).then(done, fallback);
+    } else {
+      fallback();
+    }
+  });
+
+  downloadBtn.addEventListener("click", function () {
+    var cfg = buildConfig();
+    if (!cfg) return;
+    var filename = formatValue() === "local" ? "talis-aspire-local-config.json" : "talis-aspire-config.json";
+    var blob = new Blob([JSON.stringify(cfg, null, 2)], { type: "application/json" });
+    var url = URL.createObjectURL(blob);
+    var a = document.createElement("a");
+    a.href = url;
+    a.download = filename;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+    flashActionHint("Downloaded " + filename + ".");
+  });
+
+  function loadDirectory() {
+    fetch(CUSTOMERS_URL)
+      .then(function (res) {
+        if (!res.ok) throw new Error("Bad response: " + res.status);
+        return res.json();
+      })
+      .then(function (data) {
+        customers = Object.keys(data)
+          .filter(function (key) { return data[key] && data[key].apps && data[key].apps.rl; })
+          .map(function (key) {
+            return { key: key, name: data[key].name || key, rlUrl: data[key].apps.rl };
+          })
+          .sort(function (a, b) { return a.name.localeCompare(b.name); });
+        directoryStatus.textContent = customers.length + " institutions loaded — start typing to search.";
+        institutionInput.disabled = false;
+        institutionInput.placeholder = "Start typing your institution name…";
+      })
+      .catch(function () {
+        directoryStatus.classList.add("hidden");
+        manualFallback.classList.remove("hidden");
+        document.getElementById("directory-search").classList.add("hidden");
+      });
+  }
+
+  loadDirectory();
+  updatePreview();
+})();
+</script>
+</body>
+</html>
