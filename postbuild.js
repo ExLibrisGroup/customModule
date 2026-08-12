@@ -11,9 +11,90 @@ function removeDirectory(directory, callback) {
     fs.rm(directory, { recursive: true, force: true }, callback);
 }
 
+function normalizeManifestPath(filePath, rootDirectory) {
+    const absoluteRootDirectory = path.resolve(rootDirectory || path.dirname(filePath));
+    const absoluteFilePath = path.resolve(filePath);
+    const relativePath = path.relative(absoluteRootDirectory, absoluteFilePath);
+    if (!relativePath || relativePath === '.' || relativePath.startsWith('..')) {
+        return '';
+    }
+
+    return relativePath.split(path.sep).join('/');
+}
+
+function collectAssetManifest(rootDirectory) {
+    if (!fs.existsSync(rootDirectory)) {
+        throw new Error(`Asset manifest generation failed: output directory does not exist: ${rootDirectory}`);
+    }
+
+    if (!fs.statSync(rootDirectory).isDirectory()) {
+        throw new Error(`Asset manifest generation failed: output path is not a directory: ${rootDirectory}`);
+    }
+
+    const files = [];
+    const directories = new Set();
+    const stack = [rootDirectory];
+
+    while (stack.length > 0) {
+        const currentDirectory = stack.pop();
+        const entries = fs.readdirSync(currentDirectory, { withFileTypes: true }).sort((a, b) => a.name.localeCompare(b.name));
+
+        for (const entry of entries) {
+            const fullPath = path.join(currentDirectory, entry.name);
+            const relativePath = normalizeManifestPath(fullPath, rootDirectory);
+
+            if (!relativePath) {
+                continue;
+            }
+
+            if (entry.isDirectory()) {
+                directories.add(relativePath);
+                stack.push(fullPath);
+            } else if (entry.isFile()) {
+                if (entry.name === 'asset-manifest.json') {
+                    continue;
+                }
+                files.push(relativePath);
+            }
+        }
+    }
+
+    const parentDirectories = new Set();
+    for (const filePath of files) {
+        const parts = filePath.split('/').slice(0, -1);
+        let currentPath = '';
+
+        for (const part of parts) {
+            currentPath = currentPath ? `${currentPath}/${part}` : part;
+            parentDirectories.add(currentPath);
+        }
+    }
+
+    for (const parentDirectory of parentDirectories) {
+        directories.add(parentDirectory);
+    }
+
+    return {
+        files: files.sort((a, b) => a.localeCompare(b)),
+        directories: Array.from(directories).sort((a, b) => a.localeCompare(b)),
+    };
+}
+
+function writeAssetManifest(rootDirectory) {
+    if (!fs.existsSync(rootDirectory)) {
+        throw new Error(`Asset manifest generation failed: output directory does not exist: ${rootDirectory}`);
+    }
+
+    const manifest = collectAssetManifest(rootDirectory);
+    const manifestPath = path.join(rootDirectory, 'asset-manifest.json');
+    fs.writeFileSync(manifestPath, `${JSON.stringify(manifest, null, 2)}\n`, 'utf8');
+    console.log(`[AssetManifest] Created ${manifestPath} with ${manifest.files.length} files and ${manifest.directories.length} directories`);
+    return manifestPath;
+}
+
 function renameAndArchive() {
-    fs.rename(distPath, targetPath, (err) => {
-        if (err) throw err;
+    try {
+        fs.renameSync(distPath, targetPath);
         console.log(`Renamed directory to ${targetPath}`);
 
         const output = fs.createWriteStream(zipPath);
@@ -38,17 +119,35 @@ function renameAndArchive() {
         });
 
         archive.pipe(output);
-        archive.directory(targetPath, path.basename(targetPath)); // This ensures the directory itself is included
+        archive.directory(targetPath, path.basename(targetPath));
         archive.finalize();
-    });
+    } catch (error) {
+        console.error(error.message);
+        process.exit(1);
+    }
 }
 
-// Check if target directory exists and remove it if it does
-if (fs.existsSync(targetPath)) {
-    removeDirectory(targetPath, (err) => {
-        if (err) throw err;
+function runPostbuild() {
+    if (fs.existsSync(targetPath)) {
+        removeDirectory(targetPath, (err) => {
+            if (err) {
+                console.error(err.message);
+                process.exit(1);
+            }
+            renameAndArchive();
+        });
+    } else {
         renameAndArchive();
-    });
-} else {
-    renameAndArchive();
+    }
 }
+
+if (require.main === module) {
+    runPostbuild();
+}
+
+module.exports = {
+    removeDirectory,
+    normalizeManifestPath,
+    collectAssetManifest,
+    writeAssetManifest,
+};
