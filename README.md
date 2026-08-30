@@ -1,7 +1,7 @@
 # CustomModule
 
 ## ✨ New Feature (9th November 2025): Support for all customization files in assets folder:
-All files that are you are able to customize through the assets folder of your customization package are now supported for preview when using the custom module in proxy mode.
+All files that you are able to customize through the assets folder of your customization package are now supported for preview when using the custom module in proxy mode.
 
 For example to preview your brand logo you can now place your customized logo file in the following path in your local project:
 `src/assets/images/library-logo.png`
@@ -286,7 +286,7 @@ this.routerSubscription = this.router.events.subscribe((event) => {
 
 You can translate codes in your custom component by using ngx-translate (https://github.com/ngx-translate/core).
 
-- If you are using a stand alone component you will need to add the TranslateModule to your component imports list.
+- If you are using a standalone component you will need to add the TranslateModule to your component imports list.
 - In your components HTML you can translate a label like so:
 ```angular2html
 <span>This is some translated code: {{'delivery.code.ext_not_restricted' | translate}}</span>
@@ -298,14 +298,14 @@ You can translate codes in your custom component by using ngx-translate (https:/
 ## Creating your own color theme
 
 The NDE theming is based on Angular Material. 
-We allow via the view configuration to choose between a number of pre built themes.
+We allow via the view configuration to choose between a number of pre-built themes.
 
 ![prebuilt theme image](./readme-files/prebuilt-themes.png "prebuilt themes configuration")
 
 
 If you want to create your own theme instead of using one of our options follow these steps:
 
-1. Create a material 3 theme by running:
+1. Create a Material 3 theme by running:
     ```bash
     ng generate @angular/material:m3-theme
     ``` 
@@ -320,11 +320,11 @@ If you want to create your own theme instead of using one of our options follow 
 ? Choose light, dark, or both to generate the corresponding themes light
 
 ```
-- Note that it is imporant to answer yes when asked if you want to use system-level variables.
+- Note that it is important to answer yes when asked if you want to use system-level variables.
 
 - Also note that I'm only entering the primary color and not secondary or tertiary. They will be selected automatically based on my primary color.
 
-Once this script completes successfully you will recieve this message: 
+Once this script completes successfully you will receive this message: 
 
 `CREATE src/app/styles/m3-theme.scss (2710 bytes)`
 
