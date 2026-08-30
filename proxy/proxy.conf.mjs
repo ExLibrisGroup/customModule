@@ -1,7 +1,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import {PROXY_TARGET} from "./proxy.const.mjs";
-import {buildMergedManifestResponse, createLocalCustomModuleAssetManifest, deepMerge, getAssetRelativePath, isCustomModuleAssetManifestRequest, proxyAgent, resolveCustomModuleManifestPath, resolveLocalAssetFilePath} from "./proxy-utils.mjs";
+import {buildMergedManifestResponse, createLocalCustomModuleAssetManifest, deepMerge, getAssetRelativePath, isCustomModuleAssetManifestRequest, targetProxyAgent, resolveCustomModuleManifestPath, resolveLocalAssetFilePath} from "./proxy-utils.mjs";
 
 const assetContentTypes = {
   '.css': 'text/css',
@@ -47,7 +47,7 @@ const proxyRules = [
   {
     context: ['/nde/home', '/home'],
     target: PROXY_TARGET,
-    agent: proxyAgent,
+    agent: targetProxyAgent,
     secure: false,
     changeOrigin: true,
     logLevel: 'debug',
@@ -71,7 +71,7 @@ const proxyRules = [
       '/nde/custom/*/assets/**'
     ],
     target: PROXY_TARGET,
-    agent: proxyAgent,
+    agent: targetProxyAgent,
     secure: false,
     changeOrigin: true,
     logLevel: 'debug',
@@ -100,7 +100,7 @@ const proxyRules = [
   {
     context: ['/custom/*/asset-manifest.json', '/nde/custom/*/asset-manifest.json'],
     target: PROXY_TARGET,
-    agent: proxyAgent,
+    agent: targetProxyAgent,
     secure: false,
     changeOrigin: true,
     logLevel: 'debug',
@@ -125,7 +125,7 @@ const proxyRules = [
   {
     context: ['/primaws/rest/pub/configuration/vid/'],
     target: PROXY_TARGET,
-    agent: proxyAgent,
+    agent: targetProxyAgent,
     secure: false,
     changeOrigin: true,
     logLevel: 'debug',
@@ -167,7 +167,7 @@ const proxyRules = [
       '**', '!/nde/custom/**', '!/nde/home', '!/home', '!/assets/**', '!/.well-known/**'
     ],
     target: PROXY_TARGET,
-    agent: proxyAgent,
+    agent: targetProxyAgent,
     secure: false,
     changeOrigin: true,
     logLevel: 'debug',
