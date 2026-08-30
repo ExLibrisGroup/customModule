@@ -54,9 +54,9 @@
     "karma-jasmine-html-reporter": "~2.1.0",
     "ngx-build-plus": "^19.0.0",
     "typescript": "^5.5.4",
-    "webpack": "^5.88.2",
+    "webpack": "5.88.2",
     "webpack-cli": "^5.1.4",
-    "webpack-dev-server": "^4.15.1"
+    "webpack-dev-server": "4.15.1"
   },
   "allowScripts": {
     "lmdb@3.0.13": true,
