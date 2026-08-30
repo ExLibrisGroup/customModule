@@ -77,7 +77,7 @@ module.exports = {
         "rxjs": { requiredVersion: "auto" },
         "@angular/common/http": { requiredVersion: "auto" },
         '@angular/platform-browser': { requiredVersion: 'auto' },
-        '@ngx-translate/core': { singleton: true},
+        // '@ngx-translate/core': { requiredVersion: 'auto' },
         '@ngrx/store': { singleton: true},
         ...sharedMappings.getDescriptors()
       })
