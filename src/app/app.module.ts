@@ -12,7 +12,6 @@ import {SHELL_ROUTER} from "./injection-tokens";
 
 
 export const AppModule = ({providers, shellRouter, translateService}: {providers:any, shellRouter: Router, translateService: TranslateService}) => {
-  translateService = translateService ? translateService : providers[1].useValue // this is for pre November release compatibility. Assuming TranslateService is the second provider in the array
   @NgModule({
     declarations: [
       AppComponent,
