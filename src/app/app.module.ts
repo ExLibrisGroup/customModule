@@ -4,15 +4,16 @@ import {AppComponent} from './app.component';
 import {createCustomElement, NgElementConstructor} from "@angular/elements";
 import {Router} from "@angular/router";
 import {selectorComponentMap} from "./custom1-module/customComponentMappings";
-import {TranslateModule} from "@ngx-translate/core";
+import {TranslateService} from "@ngx-translate/core";
 import { CommonModule } from '@angular/common';
 import { AutoAssetSrcDirective } from './services/auto-asset-src.directive';
 import {SHELL_ROUTER} from "./injection-tokens";
 
 
-
-export const AppModule = ({providers, shellRouter}: {providers:any, shellRouter: Router}) => {
-   @NgModule({
+export const AppModule = ({providers, shellRouter, translateService}: {providers:any, shellRouter: Router, translateService: TranslateService}) => {
+  //fallback to the old way translateService is provided in providers[1] if translateService is not passed in
+  const translateProvider = translateService !== undefined ? [{provide: TranslateService, useValue: translateService}] : [{provide: TranslateService, useValue: providers?.[1]?.useValue}];
+  @NgModule({
     declarations: [
       AppComponent,
       AutoAssetSrcDirective
@@ -20,10 +21,13 @@ export const AppModule = ({providers, shellRouter}: {providers:any, shellRouter:
     exports: [AutoAssetSrcDirective],
     imports: [
       BrowserModule,
-      CommonModule,
-      TranslateModule.forRoot({})
+      CommonModule
     ],
-    providers: [...providers, {provide: SHELL_ROUTER, useValue: shellRouter}],
+    providers: [
+      ...providers,
+      {provide: SHELL_ROUTER, useValue: shellRouter},
+      ...translateProvider
+    ],
     bootstrap: []
   })
   class AppModule implements DoBootstrap{

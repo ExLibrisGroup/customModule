@@ -24,6 +24,11 @@ export const proxyAgent = new ProxyTlsAgent({
   secureOptions: crypto.constants.SSL_OP_LEGACY_SERVER_CONNECT,
 });
 
+// Only use the custom TLS agent for https targets.
+// For plain http targets, forcing an https.Agent triggers
+// ERR_INVALID_PROTOCOL ("Protocol http: not supported. Expected https:").
+export const targetProxyAgent = PROXY_TARGET.startsWith('https:') ? proxyAgent : undefined;
+
 // Added deepMerge utility to retain unspecified fields
 export function deepMerge(target, source) {
   if (typeof target !== 'object' || target === null) return source;

@@ -50,9 +50,9 @@ module.exports = {
       ]
     }),
     // DISABLE ngDevMode as it is not needed in a remoteEntry work around for issue: https://github.com/angular-architects/module-federation-plugin/issues/458
-    // new webpack.DefinePlugin({
-    //   ngDevMode: "undefined",
-    // }),
+    new webpack.DefinePlugin({
+      ngDevMode: "undefined",
+    }),
     // END DISABLE ngDevMode as it is not needed in a remoteEntry
     new ModuleFederationPlugin({
         library: { type: "module" },
@@ -77,7 +77,7 @@ module.exports = {
         "rxjs": { requiredVersion: "auto" },
         "@angular/common/http": { requiredVersion: "auto" },
         '@angular/platform-browser': { requiredVersion: 'auto' },
-        '@ngx-translate/core': { singleton: true},
+        // '@ngx-translate/core': { requiredVersion: 'auto' },
         '@ngrx/store': { singleton: true},
         ...sharedMappings.getDescriptors()
       })
