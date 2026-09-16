@@ -10,8 +10,9 @@ import { AutoAssetSrcDirective } from './services/auto-asset-src.directive';
 import {SHELL_ROUTER} from "./injection-tokens";
 
 
-
 export const AppModule = ({providers, shellRouter, translateService}: {providers:any, shellRouter: Router, translateService: TranslateService}) => {
+  //fallback to the old way translateService is provided in providers[1] if translateService is not passed in
+  const translateProvider = translateService !== undefined ? [{provide: TranslateService, useValue: translateService}] : [{provide: TranslateService, useValue: providers?.[1]?.useValue}];
   @NgModule({
     declarations: [
       AppComponent,
@@ -25,7 +26,7 @@ export const AppModule = ({providers, shellRouter, translateService}: {providers
     providers: [
       ...providers,
       {provide: SHELL_ROUTER, useValue: shellRouter},
-      {provide: TranslateService, useValue: translateService}
+      ...translateProvider
     ],
     bootstrap: []
   })
