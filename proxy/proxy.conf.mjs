@@ -152,7 +152,7 @@ const proxyRules = [
     ],
     target: 'not-needed',
     router: (req) => {
-      const url = `${req.protocol}://${req.get('host')}`
+      const url = `http://${req.headers.host}`
       console.log(url);
       return url;
 
