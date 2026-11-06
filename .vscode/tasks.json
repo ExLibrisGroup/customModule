@@ -15,7 +15,7 @@
             "regexp": "(.*?)"
           },
           "endsPattern": {
-            "regexp": "bundle generation complete"
+            "regexp": "ready in"
           }
         }
       }

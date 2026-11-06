@@ -3,20 +3,18 @@
   "version": "2.0.0",
   "scripts": {
     "ng": "ng",
-    "start": "ng serve",
+    "start": "vite",
     "prestart": "node prebuild.js",
-    "start:no-prebundle": "ng serve --prebundle=false",
-    "start:proxy": "ng serve --proxy-config ./proxy/proxy.conf.mjs",
-    "build": "ng build",
-    "watch": "ng build --watch --configuration development",
+    "start:proxy": "vite --mode proxy",
+    "build": "vite build",
+    "watch": "vite build --watch --mode development",
     "test": "ng test",
     "postbuild": "node postbuild.js",
-    "prebuild": "node prebuild.js",
-    "run:all": "node node_modules/@angular-architects/module-federation/src/server/mf-dev-server.js"
+    "prebuild": "node prebuild.js"
   },
   "private": true,
   "dependencies": {
-    "@angular-architects/module-federation": "^18.0.6",
+    "@angular-architects/module-federation-runtime": "^18.0.6",
     "@angular/animations": "^18.2.8",
     "@angular/cdk": "18.2.9",
     "@angular/common": "^18.2.8",
@@ -40,28 +38,30 @@
     "zone.js": "~0.14.10"
   },
   "devDependencies": {
+    "@analogjs/vite-plugin-angular": "^1.22.5",
     "@angular-architects/module-federation-tools": "^19.0.1",
     "@angular-devkit/build-angular": "^18.2.9",
     "@angular/cli": "^18.2.9",
     "@angular/compiler-cli": "^18.2.8",
+    "@module-federation/vite": "1.23.11",
     "@types/jasmine": "~4.3.0",
     "archiver": "^7.0.1",
+    "http-proxy-middleware": "^2.0.11",
     "jasmine-core": "~4.6.0",
     "karma": "~6.4.0",
     "karma-chrome-launcher": "~3.2.0",
     "karma-coverage": "~2.2.0",
     "karma-jasmine": "~5.1.0",
     "karma-jasmine-html-reporter": "~2.1.0",
-    "ngx-build-plus": "^18.0.0",
+    "sass": "~1.77.6",
     "typescript": "^5.5.4",
-    "webpack": "^5.88.2",
-    "webpack-cli": "^5.1.4",
-    "webpack-dev-server": "^4.15.1"
+    "vite": "^6.4.5"
   },
   "allowScripts": {
     "lmdb@3.0.13": true,
     "msgpackr-extract@3.0.3": true,
     "esbuild@0.21.5": true,
-    "esbuild@0.23.0": true
+    "esbuild@0.23.0": true,
+    "esbuild@0.25.12": true
   }
 }

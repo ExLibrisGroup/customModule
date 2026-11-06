@@ -1,7 +1,5 @@
 import { Directive, ElementRef, Input, OnChanges, Renderer2 } from '@angular/core';
 
-declare const __webpack_public_path__: string;
-
 @Directive({
   selector: 'img[src],source[src],link[href],script[src],a[href]',
   standalone: true,
@@ -34,9 +32,7 @@ export class AssetsPublicPathDirective implements OnChanges {
     const clean = url.startsWith('/') ? url.slice(1) : url;
 
     if (clean.startsWith('assets/')) {
-      const base = (typeof __webpack_public_path__ === 'string' ? __webpack_public_path__ : '') || '';
-      const baseFixed = base && !base.endsWith('/') ? base + '/' : base;
-      return baseFixed + clean;
+      return new URL(import.meta.env.DEV ? `/${clean}` : clean, import.meta.url).href;
     }
 
     return url;

@@ -211,10 +211,10 @@ To fix this, we provide:
 
 src/app/services/assets-public-path.directive.ts
 
-This directive automatically rewrites any src / href that starts with assets/ (or /assets/) to:
+This directive automatically rewrites any src / href that starts with assets/ (or /assets/) to the URL the custom module was loaded from:
 
 ```js
-__webpack_public_path__ + 'assets/...'
+new URL('assets/...', import.meta.url).href
 ```
 Import the directive in a component (Standalone)
 Add the directive to the component imports:
